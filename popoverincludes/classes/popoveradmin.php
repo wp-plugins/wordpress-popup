@@ -268,11 +268,7 @@ if(!class_exists('popoveradmin')) {
 																		break;
 												case 'commented':		$this->admin_main('commented','Visitor has never commented', 'Shows the popover if the user has never left a comment.', true);
 																		break;
-												case 'searchengine':	$this->admin_main('searchengine','Visit via a search engine', 'Shows the popover if the user arrived via a search engine.', true);
-																		break;
 												case 'internal':		$this->admin_main('internal','Visit not via an Internal link', 'Shows the popover if the user did not arrive on this page via another page on your site.', true);
-																		break;
-												case 'referrer':		$this->admin_referer('referrer','Visit via specific referer', 'Shows the popover if the user arrived via the following referrer:', $popover_ereg);
 																		break;
 												case 'count':			$this->admin_viewcount('count','Popover shown less than', 'Shows the popover if the user has only seen it less than the following number of times:', $popover_count);
 																		break;
@@ -387,16 +383,8 @@ if(!class_exists('popoveradmin')) {
 							$this->admin_main('commented','Visitor has never commented', 'Shows the popover if the user has never left a comment.', true);
 						}
 
-						if(!isset($popover_check['searchengine'])) {
-							$this->admin_main('searchengine','Visit via a search engine', 'Shows the popover if the user arrived via a search engine.', true);
-						}
-
 						if(!isset($popover_check['internal'])) {
 							$this->admin_main('internal','Visit not via an Internal link', 'Shows the popover if the user did not arrive on this page via another page on your site.', true);
-						}
-
-						if(!isset($popover_check['referrer'])) {
-							$this->admin_referer('referrer','Visit via specific referer', 'Shows the popover if the user arrived via the following referrer:', $popover_ereg);
 						}
 
 						//$popover_count
@@ -443,22 +431,10 @@ if(!class_exists('popoveradmin')) {
 										$this->admin_sidebar('commented','Visitor has never commented', false);
 									}
 
-									if(isset($popover_check['searchengine'])) {
-										$this->admin_sidebar('searchengine','Visit via a search engine', true);
-									} else {
-										$this->admin_sidebar('searchengine','Visit via a search engine', false);
-									}
-
 									if(isset($popover_check['internal'])) {
 										$this->admin_sidebar('internal','Visit not via an Internal link', true);
 									} else {
 										$this->admin_sidebar('internal','Visit not via an Internal link', false);
-									}
-
-									if(isset($popover_check['referrer'])) {
-										$this->admin_sidebar('referrer','Visit via specific referer', true);
-									} else {
-										$this->admin_sidebar('referrer','Visit via specific referer', false);
 									}
 
 									//$popover_count
@@ -781,25 +757,12 @@ if(!class_exists('popoveradmin')) {
 										</td>
 										<th valign='bottom' scope='row'><?php _e('Visitor has never commented here before.','popover'); ?></th>
 									</tr>
-									<tr>
-										<td valign='middle' style='width: 5%;'>
-											<input type='checkbox' name='popovercheck[searchengine]' <?php if(isset($popover_check['searchengine'])) echo "checked='checked'"; ?> />
-										</td>
-										<th valign='bottom' scope='row'><?php _e('Visitor came from a search engine.','popover'); ?></th>
-									</tr>
+
 									<tr>
 										<td valign='middle' style='width: 5%;'>
 											<input type='checkbox' name='popovercheck[internal]' <?php if(isset($popover_check['internal'])) echo "checked='checked'"; ?> />
 										</td>
 										<th valign='bottom' scope='row'><?php _e('Visitor did not come from an internal page.','popover'); ?></th>
-									</tr>
-									<tr>
-										<td valign='middle' style='width: 5%;'>
-											<input type='checkbox' name='popovercheck[referrer]' <?php if(isset($popover_check['referrer'])) echo "checked='checked'"; ?> />
-										</td>
-										<th valign='bottom' scope='row'><?php _e('Visitor referrer matches','popover'); ?>&nbsp;
-										<input type='text' name='popoverereg' id='popoverereg' style='width: 10em;' value='<?php echo htmlentities($popover_ereg,ENT_QUOTES, 'UTF-8'); ?>' />
-										</th>
 									</tr>
 
 									</table>

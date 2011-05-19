@@ -81,24 +81,8 @@ if(!class_exists('popoverpublic')) {
 											}
 											break;
 
-						case "searchengine":
-											if($this->is_fromsearchengine()) {
-												$show = true;
-											} else {
-												return false;
-											}
-											break;
-
 						case "internal":	$internal = str_replace('http://','',get_option('siteurl'));
 											if(!$this->referrer_matches(addcslashes($internal,"/"))) {
-												$show = true;
-											} else {
-												return false;
-											}
-											break;
-
-						case "referrer":	$match = $getoption('popover_ereg','');
-											if($this->is_fromsearchengine(addcslashes($match,"/"))) {
 												$show = true;
 											} else {
 												return false;
@@ -203,17 +187,6 @@ if(!class_exists('popoverpublic')) {
 			<?php
 		}
 
-		function is_fromsearchengine() {
-			$ref = $_SERVER['HTTP_REFERER'];
-
-			$SE = array('/search?', 'images.google.', 'web.info.com', 'search.', 'del.icio.us/search', 'soso.com', '/search/', '.yahoo.' );
-
-			foreach ($SE as $url) {
-				if (strpos($ref,$url)!==false) return true;
-			}
-			return false;
-		}
-
 		function is_ie()
 		{
 		    if (isset($_SERVER['HTTP_USER_AGENT']) && (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') !== false))
@@ -234,15 +207,6 @@ if(!class_exists('popoverpublic')) {
 			}
 		}
 
-		function referrer_matches($check) {
-
-			if(preg_match( '/' . $check . '/i', $_SERVER['HTTP_REFERER'] )) {
-				return true;
-			} else {
-				return false;
-			}
-
-		}
 
 		function has_reached_limit($count = 3) {
 			if ( isset($_COOKIE['popover_view_'.COOKIEHASH]) && addslashes($_COOKIE['popover_view_'.COOKIEHASH]) >= $count ) {
