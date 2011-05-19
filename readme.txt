@@ -5,7 +5,7 @@ Requires at least: 3.1
 Tested up to: 3.1.2
 Stable tag: 3.0
 
-Allows you to display a fancy popup (powered as a popover!) to visitors sitewide or per blog, a *very* effective way of advertising a mailing list, special offer or running a plan old ad.
+Allows you to display a fancy popup (powered as a popover!) to visitors sitewide or per blog, a *very* effective way of advertising a mailing list.
 
 == Description ==
 
