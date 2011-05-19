@@ -5,7 +5,7 @@ Plugin URI:  http://gist.github.com/378450
 Description: Tests for the existence and functionality of wp_head and wp_footer in the active theme
 Author:      Matt Martz
 Author URI:  http://sivel.net/
-Version:     1.0
+Version:     3.1
 
 	Copyright (c) 2010 Matt Martz (http://sivel.net/)
 	Test Head Footer is released under the GNU General Public License (GPL)
