@@ -207,6 +207,15 @@ if(!class_exists('popoverpublic')) {
 			}
 		}
 
+		function referrer_matches($check) {
+
+			if(preg_match( '/' . $check . '/i', $_SERVER['HTTP_REFERER'] )) {
+				return true;
+			} else {
+				return false;
+			}
+
+		}
 
 		function has_reached_limit($count = 3) {
 			if ( isset($_COOKIE['popover_view_'.COOKIEHASH]) && addslashes($_COOKIE['popover_view_'.COOKIEHASH]) >= $count ) {
