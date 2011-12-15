@@ -170,10 +170,18 @@ if(!class_exists('popoveradmin')) {
 
 		function add_admin_header_popover() {
 
+			global $wp_version;
+
 			wp_enqueue_script('popoveradminjs', popover_url('popoverincludes/js/popoveradmin.js'), array( 'jquery-ui-sortable', 'jquery-ui-draggable', 'jquery-ui-droppable' ), $this->build);
-			wp_enqueue_style('popoveradmincss', popover_url('popoverincludes/css/popoveradmin.css'), array('widgets'), $this->build);
+
+			if(version_compare( preg_replace('/-.*$/', '', $wp_version), "3.3", '<')) {
+				wp_enqueue_style('popoveradmincss', popover_url('popoverincludes/css/popoveradmin.css'), array('widgets'), $this->build);
+			} else {
+				wp_enqueue_style('popoveradmincss', popover_url('popoverincludes/css/popoveradmin.css'), array(), $this->build);
+			}
 
 			$this->update_admin_header_popover();
+
 		}
 
 		function handle_admin_panel() {

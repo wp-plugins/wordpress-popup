@@ -2,8 +2,8 @@
 Contributors: WPMUDEV
 Tags: buddypress, wpmu, wpmu plugin, buddypress plugin, making money, seo, Advertising, multisite, Advertising
 Requires at least: 3.1
-Tested up to: 3.1.3
-Stable tag: 3.1.3
+Tested up to: 3.3
+Stable tag: 3.1.4
 
 Allows you to display a fancy popup (powered as a popover!) to visitors sitewide or per blog, a *very* effective way of advertising a mailing list.
 
@@ -67,6 +67,9 @@ For site-wide control, leave as is.
 For blog by blog control - comment out the PO_GLOBAL line at the top of the plugin file.
 
 == Changelog ==
+
+= 3.1.4 =
+* WP3.3 style updating
 
 = 3.0 =
 * Initial release
