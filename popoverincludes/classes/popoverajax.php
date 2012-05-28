@@ -1,16 +1,14 @@
 <?php
+if(!class_exists('popoverajax')) {
 
-if(!class_exists('popoverpublic')) {
-
-	class popoverpublic {
+	class popoverajax {
 
 		var $mylocation = '';
-		var $build = 5;
+		var $build = 3;
 		var $db;
 
-		var $tables = array( 'popover', 'popover_ip_cache' );
+		var $tables = array( 'popover' );
 		var $popover;
-		var $popover_ip_cache;
 
 		var $activepopover = false;
 
@@ -24,58 +22,21 @@ if(!class_exists('popoverpublic')) {
 				$this->$table = popover_db_prefix($this->db, $table);
 			}
 
-			add_action('init', array(&$this, 'selective_message_display'), 99);
+			//add_action('init', array(&$this, 'selective_message_display'), 1);
 
 			add_action( 'plugins_loaded', array(&$this, 'load_textdomain'));
 
 			$directories = explode(DIRECTORY_SEPARATOR,dirname(__FILE__));
 			$this->mylocation = $directories[count($directories)-1];
 
-			$installed = get_option('popover_installed', false);
-
-			if($installed === false || $installed != $this->build) {
-				$this->install();
-
-				update_option('popover_installed', $this->build);
-			}
+			// Adding in Ajax calls - need to be in the admin area as it uses admin_url :/
+			add_action('wp_ajax_po_popover', array(&$this, 'selective_message_display') );
+			add_action('wp_ajax_nopriv_po_popover', array(&$this, 'selective_message_display') );
 
 		}
 
-		function popoverpublic() {
+		function popoverajax() {
 			$this->__construct();
-		}
-
-		function install() {
-
-			if($this->db->get_var( "SHOW TABLES LIKE '" . $this->popover . "' ") != $this->popover) {
-				 $sql = "CREATE TABLE `" . $this->popover . "` (
-				  	`id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-					  `popover_title` varchar(250) DEFAULT NULL,
-					  `popover_content` text,
-					  `popover_settings` text,
-					  `popover_order` bigint(20) DEFAULT '0',
-					  `popover_active` int(11) DEFAULT '0',
-					  PRIMARY KEY (`id`)
-					)";
-
-				$this->db->query($sql);
-
-			}
-
-			// Add in IP cache table
-			if($this->db->get_var( "SHOW TABLES LIKE '" . $this->popover_ip_cache . "' ") != $this->popover_ip_cache) {
-				 $sql = "CREATE TABLE `" . $this->popover_ip_cache . "` (
-				  	`IP` varchar(12) NOT NULL DEFAULT '',
-					  `country` varchar(2) DEFAULT NULL,
-					  `cached` bigint(20) DEFAULT NULL,
-					  PRIMARY KEY (`IP`),
-					  KEY `cached` (`cached`)
-					)";
-
-				$this->db->query($sql);
-
-			}
-
 		}
 
 		function load_textdomain() {
@@ -95,6 +56,8 @@ if(!class_exists('popoverpublic')) {
 		}
 
 		function selective_message_display() {
+
+			die('hello');
 
 			if(function_exists('get_site_option') && defined('PO_GLOBAL') && PO_GLOBAL == true) {
 				$updateoption = 'update_site_option';
@@ -137,9 +100,6 @@ if(!class_exists('popoverpublic')) {
 
 					$popover_onurl = $popover->popover_settings['onurl'];
 					$popover_notonurl = $popover->popover_settings['notonurl'];
-
-					$popover_incountry = $popover->popover_settings['incountry'];
-					$popover_notincountry = $popover->popover_settings['notincountry'];
 
 					$popover_onurl = $this->sanitise_array($popover_onurl);
 					$popover_notonurl = $this->sanitise_array($popover_notonurl);
@@ -277,7 +237,7 @@ if(!class_exists('popoverpublic')) {
 
 		function sanitise_array($arrayin) {
 
-			foreach( (array) $arrayin as $key => $value) {
+			foreach($arrayin as $key => $value) {
 				$arrayin[$key] = htmlentities(stripslashes($value) ,ENT_QUOTES, 'UTF-8');
 			}
 
@@ -493,29 +453,6 @@ if(!class_exists('popoverpublic')) {
 
 		}
 
-		function insertonduplicate($table, $data) {
-
-			global $wpdb;
-
-			$fields = array_keys($data);
-			$formatted_fields = array();
-			foreach ( $fields as $field ) {
-				$form = '%s';
-				$formatted_fields[] = $form;
-			}
-			$sql = "INSERT INTO `$table` (`" . implode( '`,`', $fields ) . "`) VALUES ('" . implode( "','", $formatted_fields ) . "')";
-			$sql .= " ON DUPLICATE KEY UPDATE ";
-
-			$dup = array();
-			foreach($fields as $field) {
-				$dup[] = "`" . $field . "` = VALUES(`" . $field . "`)";
-			}
-
-			$sql .= implode(',', $dup);
-
-			return $wpdb->query( $wpdb->prepare( $sql, $data) );
-		}
-
 		function clear_forever() {
 			if ( isset($_COOKIE['popover_never_view']) ) {
 				return true;
@@ -525,7 +462,5 @@ if(!class_exists('popoverpublic')) {
 		}
 
 	}
-
 }
-
 ?>
