@@ -6,7 +6,7 @@ Description: Allows you to display a fancy popup (powered as a popover!) to visi
 Author: Barry (Incsub)
 Version: 4.3.2
 Author URI: http://premium.wpmudev.org
-WDP ID: 123
+WDP ID: 230
 
 Copyright 2007-2010 Incsub (http://incsub.com)
 
