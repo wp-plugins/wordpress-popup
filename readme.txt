@@ -58,13 +58,12 @@ WPMU Installation Instructions:
 
 ----------------------------------------------------------------------
 
-1) Place the popover.php file in the mu-plugins directory
-2) Place the popoverincludes in the mu-plugins directory
+1) Place the popover directory in the plugins directory
+2) Network Activate the plugin
 
-For site-wide control, leave as is.
+For blog by blog, leave as is.
 
-
-For blog by blog control - comment out the PO_GLOBAL line at the top of the plugin file.
+For network wide control - add the line define('PO_GLOBAL', true); to your wp-config.php file.
 
 == Screenshots ==
 
