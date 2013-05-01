@@ -98,15 +98,15 @@ if(!class_exists('popoveradmin')) {
 
 			if(is_multisite() && (defined('PO_GLOBAL') && PO_GLOBAL == true)) {
 				if(function_exists('is_network_admin') && is_network_admin()) {
-					add_menu_page(__('Pop Overs','popover'), __('Pop Overs','popover'), 'manage_options',  'popover', array(&$this,'handle_popover_admin'), popover_url('popoverincludes/images/window.png'));
+					add_menu_page(__('Pop Ups','popover'), __('Pop Ups','popover'), 'manage_options',  'popover', array(&$this,'handle_popover_admin'), popover_url('popoverincludes/images/window.png'));
 				}
 			} else {
 				if(!function_exists('is_network_admin') || !is_network_admin()) {
-					add_menu_page(__('Pop Overs','popover'), __('Pop Overs','popover'), 'manage_options',  'popover', array(&$this,'handle_popover_admin'), popover_url('popoverincludes/images/window.png'));
+					add_menu_page(__('Pop Ups','popover'), __('Pop Ups','popover'), 'manage_options',  'popover', array(&$this,'handle_popover_admin'), popover_url('popoverincludes/images/window.png'));
 				}
 			}
 
-			$addnew = add_submenu_page('popover', __('Create New Pop Over','popover'), __('Create New','popover'), 'manage_options', "popover&amp;action=add", array(&$this,'handle_addnewpopover_panel'));
+			$addnew = add_submenu_page('popover', __('Create New Pop Up','popover'), __('Create New','popover'), 'manage_options', "popover&amp;action=add", array(&$this,'handle_addnewpopover_panel'));
 			add_submenu_page('popover', __('Manage Add-ons Plugins','popover'), __('Add-ons','popover'), 'manage_options', "popoveraddons", array(&$this,'handle_addons_panel'));
 
 			add_submenu_page('popover', __('Settings','popover'), __('Settings','popover'), 'manage_options', "popoversettings", array(&$this,'handle_settings_page'));
@@ -257,8 +257,8 @@ if(!class_exists('popoveradmin')) {
 
 				wp_localize_script('popoveradminjs', 'popover', array(	'ajaxurl'		=>	admin_url( 'admin-ajax.php' ),
 				 														'ordernonce'	=>	wp_create_nonce('popover_order'),
-																		'dragerror'		=>	__('An error occured updating the Pop Over order.','popover'),
-																		'deletepopover'	=>	__('Are you sure you want to delete this Pop Over?','popover')
+																		'dragerror'		=>	__('An error occured updating the Pop Up order.','popover'),
+																		'deletepopover'	=>	__('Are you sure you want to delete this Pop Up?','popover')
 																	));
 
 				wp_enqueue_style('popoveradmincss', popover_url('popoverincludes/css/popovermenu.css'), array(), $this->build);
@@ -689,26 +689,26 @@ if(!class_exists('popoveradmin')) {
 			}
 
 			$messages = array();
-			$messages[1] = __('Pop Over updated.','popover');
-			$messages[2] = __('Pop Over not updated.','popover');
+			$messages[1] = __('Pop Up updated.','popover');
+			$messages[2] = __('Pop Up not updated.','popover');
 
-			$messages[3] = __('Pop Over activated.','popover');
-			$messages[4] = __('Pop Over not activated.','popover');
+			$messages[3] = __('Pop Up activated.','popover');
+			$messages[4] = __('Pop Up not activated.','popover');
 
-			$messages[5] = __('Pop Over deactivated.','popover');
-			$messages[6] = __('Pop Over not deactivated.','popover');
+			$messages[5] = __('Pop Up deactivated.','popover');
+			$messages[6] = __('Pop Up not deactivated.','popover');
 
-			$messages[7] = __('Pop Over activation toggled.','popover');
+			$messages[7] = __('Pop Up activation toggled.','popover');
 
-			$messages[8] = __('Pop Over deleted.','popover');
-			$messages[9] = __('Pop Over not deleted.','popover');
+			$messages[8] = __('Pop Up deleted.','popover');
+			$messages[9] = __('Pop Up not deleted.','popover');
 
-			$messages[10] = __('Pop Over added.','popover');
-			$messages[11] = __('Pop Over not added.','popover');
+			$messages[10] = __('Pop Up added.','popover');
+			$messages[11] = __('Pop Up not added.','popover');
 			?>
 			<div class='wrap'>
 				<div class="icon32" id="icon-themes"><br></div>
-				<h2><?php _e('Edit Pop Overs','popover'); ?><a class="add-new-h2" href="admin.php?page=<?php echo $page; ?>&action=add"><?php _e('Add New','membership'); ?></a></h2>
+				<h2><?php _e('Edit Pop Ups','popover'); ?><a class="add-new-h2" href="admin.php?page=<?php echo $page; ?>&action=add"><?php _e('Add New','membership'); ?></a></h2>
 
 				<?php
 				if ( isset($_GET['msg']) ) {
@@ -743,7 +743,7 @@ if(!class_exists('popoveradmin')) {
 				<?php
 					wp_original_referer_field(true, 'previous'); wp_nonce_field('bulk-popovers');
 
-					$columns = array(	"name"		=>	__('Pop Over Name', 'popover'),
+					$columns = array(	"name"		=>	__('Pop Up Name', 'popover'),
 										"rules" 	=> 	__('Conditions','popover'),
 										"active"	=>	__('Active','popover')
 									);
@@ -888,7 +888,7 @@ if(!class_exists('popoveradmin')) {
 							$columncount = count($columns) + 2;
 							?>
 							<tr valign="middle" class="alternate" >
-								<td colspan="<?php echo $columncount; ?>" scope="row"><?php _e('No Pop Overs were found.','popover'); ?></td>
+								<td colspan="<?php echo $columncount; ?>" scope="row"><?php _e('No Pop Ups were found.','popover'); ?></td>
 						    </tr>
 							<?php
 						}
@@ -937,7 +937,7 @@ if(!class_exists('popoveradmin')) {
 				$popover->popover_settings = unserialize($popover->popover_settings);
 			} else {
 				$popover = new stdClass;
-				$popover->popover_title = __('New Pop Over','popover');
+				$popover->popover_title = __('New Pop Up','popover');
 				$popover->popover_content = "";
 			}
 
@@ -992,9 +992,9 @@ if(!class_exists('popoveradmin')) {
 			<div class='wrap nosubsub'>
 				<div class="icon32" id="icon-themes"><br></div>
 				<?php if($id !== false) { ?>
-					<h2><?php echo __('Edit Pop Over','popover'); ?></h2>
+					<h2><?php echo __('Edit Pop Up','popover'); ?></h2>
 				<?php } else { ?>
-					<h2><?php echo __('Add Pop Over','popover'); ?></h2>
+					<h2><?php echo __('Add Pop Up','popover'); ?></h2>
 				<?php } ?>
 				<div class='popover-liquid-left'>
 
@@ -1007,7 +1007,7 @@ if(!class_exists('popoveradmin')) {
 
 						<div id='edit-popover' class='popover-holder-wrap'>
 							<div class='sidebar-name no-movecursor'>
-								<h3><?php echo __('Pop Over Settings','popover'); ?></h3>
+								<h3><?php echo __('Pop Up Settings','popover'); ?></h3>
 							</div>
 							<div class='popover-holder'>
 
@@ -1080,7 +1080,7 @@ if(!class_exists('popoveradmin')) {
 								<h3><?php _e('Appearance settings','popover'); ?></h3>
 								<table class='form-table' style=''>
 									<tr>
-										<th valign='top' scope='row' style='width: 25%;'><strong><?php _e('Pop Over Size','popover'); ?></strong></th>
+										<th valign='top' scope='row' style='width: 25%;'><strong><?php _e('Pop Up Size','popover'); ?></strong></th>
 										<td valign='top'>
 											<?php _e('Width:','popover'); ?>&nbsp;
 											<input type='text' name='popoverwidth' id='popoverwidth' style='width: 5em;' value='<?php echo $popover_size['width']; ?>' />&nbsp;
@@ -1090,7 +1090,7 @@ if(!class_exists('popoveradmin')) {
 									</tr>
 
 									<tr>
-										<th valign='top' scope='row' style='width: 25%;'><strong><?php _e('Pop Over Position','popover'); ?></strong></th>
+										<th valign='top' scope='row' style='width: 25%;'><strong><?php _e('Pop Up Position','popover'); ?></strong></th>
 										<td valign='top'>
 											<?php _e('Left:','popover'); ?>&nbsp;
 											<input type='text' name='popoverleft' id='popoverleft' style='width: 5em;' value='<?php echo $popover_location['left']; ?>' />&nbsp;
@@ -1100,7 +1100,7 @@ if(!class_exists('popoveradmin')) {
 									</tr>
 
 									<tr>
-										<th valign='top' scope='row' style='width: 25%;'><strong><?php _e('Pop Over Margins','popover'); ?></strong></th>
+										<th valign='top' scope='row' style='width: 25%;'><strong><?php _e('Pop Up Margins','popover'); ?></strong></th>
 										<td valign='top'>
 											<?php _e('Left:','popover'); ?>&nbsp;
 											<input type='text' name='popovermarginleft' style='width: 5em;' value='<?php echo $popover_margin['left']; ?>' />&nbsp;
@@ -1146,7 +1146,7 @@ if(!class_exists('popoveradmin')) {
 
 								if(count($availablestyles) > 1) {
 									?>
-									<h3><?php _e('Pop Over Style','popover'); ?></h3>
+									<h3><?php _e('Pop Up Style','popover'); ?></h3>
 									<table class='form-table'>
 
 									<tr>
@@ -1190,7 +1190,7 @@ if(!class_exists('popoveradmin')) {
 								<h3><?php _e('Pop over appearance delays','popover'); ?></h3>
 								<table class='form-table' style=''>
 									<tr>
-										<th valign='top' scope='row' style='width: 25%;'><strong><?php _e('Show Pop Over','popover'); ?></strong></th>
+										<th valign='top' scope='row' style='width: 25%;'><strong><?php _e('Show Pop Up','popover'); ?></strong></th>
 										<td valign='top'>
 											<select name='popoverdelay'>
 												<option value='immediate' <?php selected('immediate', $popover_delay); ?>><?php _e('immediately','popover'); ?></option>
@@ -1688,7 +1688,7 @@ if(!class_exists('popoveradmin')) {
 			<div class='wrap nosubsub'>
 
 				<div class="icon32" id="icon-options-general"><br></div>
-				<h2><?php _e('Pop Over Settings','popover'); ?></h2>
+				<h2><?php _e('Pop Up Settings','popover'); ?></h2>
 
 				<?php
 				if ( isset($_GET['msg']) ) {
@@ -1707,18 +1707,18 @@ if(!class_exists('popoveradmin')) {
 					?>
 
 					<div class="postbox">
-						<h3 class="hndle" style='cursor:auto;'><span><?php _e('Pop Over loading method','popover'); ?></span></h3>
+						<h3 class="hndle" style='cursor:auto;'><span><?php _e('Pop Up loading method','popover'); ?></span></h3>
 						<div class="inside">
-							<p><?php _e('Select the loading method you want to use for your Pop Overs.','popover'); ?></p>
+							<p><?php _e('Select the loading method you want to use for your Pop Ups.','popover'); ?></p>
 							<ul>
-								<li><em><?php _e('- Page Footer : The pop over is included as part of the page html.','popover'); ?></em></li>
-								<li><em><?php _e('- External Load : The pop over is loaded separately from the page, this is the best option if you are running a caching system.','popover'); ?></em></li>
+								<li><em><?php _e('- Page Footer : The pop up is included as part of the page html.','popover'); ?></em></li>
+								<li><em><?php _e('- External Load : The pop up is loaded separately from the page, this is the best option if you are running a caching system.','popover'); ?></em></li>
 							</ul>
 
 							<table class="form-table">
 							<tbody>
 								<tr valign="top">
-									<th scope="row"><?php _e('Pop Over loaded using','popover'); ?></th>
+									<th scope="row"><?php _e('Pop Up loaded using','popover'); ?></th>
 									<td>
 										<?php
 											$settings = get_popover_option('popover-settings', array( 'loadingmethod' => 'external'));
