@@ -51,6 +51,10 @@ if(!class_exists('popoverajax')) {
 										add_action( 'wp_ajax_nopriv_popover_selective_ajax', array(&$this,'ajax_selective_message_display') );
 										break;
 
+				case 'frontloading':	if( isset( $_GET['popoverajaxaction']) && $_GET['popoverajaxaction'] == 'popover_selective_ajax' ) {
+											$this->ajax_selective_message_display();
+										}
+										break;
 			}
 
 		}
@@ -194,6 +198,19 @@ if(!class_exists('popoverajax')) {
 													break;
 
 								case 'notonurl':	if($this->onurl( $popover_notonurl, $_REQUEST['thefrom'] )) {
+														$show = false;
+													}
+													break;
+
+								case 'incountry':	$incountry = $this->incountry( $popover_incountry );
+													if(!$incountry || $incountry === 'XX') {
+														$show = false;
+													}
+													break;
+
+								case 'notincountry':
+													$incountry = $this->incountry( $popover_notincountry );
+													if($incountry || $incountry === 'XX') {
 														$show = false;
 													}
 													break;
@@ -445,6 +462,69 @@ if(!class_exists('popoverajax')) {
 				return false;
 			} else {
 				return true;
+			}
+
+		}
+
+		function incountry( $countrycode ) {
+			// Grab the users IP address
+			$ip = $_SERVER["REMOTE_ADDR"];
+
+			if( has_filter('popover_pre_incountry') ) {
+				// We have an override for the ipcountry in place so ignore the rest
+				return apply_filters('popover_pre_incountry', false, $ip, $countrycode );
+			}
+
+			$country = $this->get_country_from_cache( $ip );
+
+			if(empty($country)) {
+				// No country to get from API
+				$country = $this->get_country_from_api( $ip );
+
+				if($country !== false) {
+					$this->put_country_in_cache( $ip, $country );
+				} else {
+					$country = 'XX';
+				}
+			}
+
+			if($country == $countrycode) {
+				return true;
+			} else {
+				return false;
+			}
+
+		}
+
+		function get_country_from_cache( $ip ) {
+
+			$country = $this->db->get_var( $this->db->prepare( "SELECT country FROM {$this->popover_ip_cache} WHERE IP = %s", $ip ) );
+
+			return $country;
+
+		}
+
+		function put_country_in_cache( $ip, $country ) {
+
+			return $this->insertonduplicate( $this->popover_ip_cache, array( 'IP' => $ip, 'country' => $country, 'cached' => time() ) );
+
+		}
+
+		function get_country_from_api( $ip ) {
+
+			$url = str_replace('%ip%', $ip, PO_REMOTE_IP_URL);
+
+			$response = wp_remote_get( $url );
+
+			if(!is_wp_error($response) && $response['response']['code'] == '200' && $response['body'] != 'XX') {
+				// cache the response for future use
+				$country = trim($response['body']);
+			} else {
+				if(PO_DEFAULT_COUNTRY !== false) {
+					return PO_DEFAULT_COUNTRY;
+				} else {
+					return false;
+				}
 			}
 
 		}

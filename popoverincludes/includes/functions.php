@@ -6,10 +6,10 @@ function set_popover_url($base) {
 
 	if(defined('WPMU_PLUGIN_URL') && defined('WPMU_PLUGIN_DIR') && file_exists(WPMU_PLUGIN_DIR . '/' . basename($base))) {
 		$popover_url = trailingslashit(WPMU_PLUGIN_URL);
-	} elseif(defined('WP_PLUGIN_URL') && defined('WP_PLUGIN_DIR') && file_exists(WP_PLUGIN_DIR . '/wordpress-popup/' . basename($base))) {
-		$popover_url = trailingslashit(WP_PLUGIN_URL . '/wordpress-popup');
+	} elseif(defined('WP_PLUGIN_URL') && defined('WP_PLUGIN_DIR') && file_exists(WP_PLUGIN_DIR . '/'.PO_PLUGIN_DIR.'/' . basename($base))) {
+		$popover_url = trailingslashit(WP_PLUGIN_URL . '/'.PO_PLUGIN_DIR);
 	} else {
-		$popover_url = trailingslashit(WP_PLUGIN_URL . '/wordpress-popup');
+		$popover_url = trailingslashit(WP_PLUGIN_URL . '/'.PO_PLUGIN_DIR);
 	}
 
 }
@@ -20,10 +20,10 @@ function set_popover_dir($base) {
 
 	if(defined('WPMU_PLUGIN_DIR') && file_exists(WPMU_PLUGIN_DIR . '/' . basename($base))) {
 		$popover_dir = trailingslashit(WPMU_PLUGIN_URL);
-	} elseif(defined('WP_PLUGIN_DIR') && file_exists(WP_PLUGIN_DIR . '/wordpress-popup/' . basename($base))) {
-		$popover_dir = trailingslashit(WP_PLUGIN_DIR . '/wordpress-popup');
+	} elseif(defined('WP_PLUGIN_DIR') && file_exists(WP_PLUGIN_DIR . '/'.PO_PLUGIN_DIR.'/' . basename($base))) {
+		$popover_dir = trailingslashit(WP_PLUGIN_DIR . '/'.PO_PLUGIN_DIR);
 	} else {
-		$popover_dir = trailingslashit(WP_PLUGIN_DIR . '/wordpress-popup');
+		$popover_dir = trailingslashit(WP_PLUGIN_DIR . '/'.PO_PLUGIN_DIR);
 	}
 
 
@@ -401,7 +401,7 @@ function P_CountryList() {
 
 function get_popover_option($key, $default = false) {
 
-	if(is_multisite() && function_exists('is_plugin_active_for_network') && is_plugin_active_for_network('wordpress-popup/popover.php')) {
+	if(is_multisite() && function_exists('is_plugin_active_for_network') && is_plugin_active_for_network('popover/popover.php')) {
 		return get_site_option($key, $default);
 	} else {
 		return get_option($key, $default);
@@ -411,7 +411,7 @@ function get_popover_option($key, $default = false) {
 
 function update_popover_option($key, $value) {
 
-	if(is_multisite() && function_exists('is_plugin_active_for_network') && is_plugin_active_for_network('wordpress-popup/popover.php')) {
+	if(is_multisite() && function_exists('is_plugin_active_for_network') && is_plugin_active_for_network('popover/popover.php')) {
 		return update_site_option($key, $value);
 	} else {
 		return update_option($key, $value);
@@ -421,7 +421,7 @@ function update_popover_option($key, $value) {
 
 function delete_popover_option($key) {
 
-	if(is_multisite() && function_exists('is_plugin_active_for_network') && is_plugin_active_for_network('wordpress-popup/popover.php')) {
+	if(is_multisite() && function_exists('is_plugin_active_for_network') && is_plugin_active_for_network('popover/popover.php')) {
 		return delete_site_option($key);
 	} else {
 		return delete_option($key);
