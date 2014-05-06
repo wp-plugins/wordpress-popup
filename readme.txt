@@ -2,7 +2,7 @@
 Contributors: WPMUDEV
 Tags: popup, popover, advertising, buddypress, wpmu, wpmu plugin, buddypress plugin, making money, SEO, multisite
 Requires at least: 3.1
-Tested up to: 3.7.1
+Tested up to: 3.9.1
 Stable tag: 4.4.5.4
 
 Allows you to display a fancy popup to visitors, a *very* effective way of advertising a mailing list, special offer or running a plain old ad.
@@ -10,6 +10,8 @@ Allows you to display a fancy popup to visitors, a *very* effective way of adver
 == Description ==
 
 One of the most effective ways to advertise your mailing list, special offer or simply to show ads is via javascript ‘pop over’ on your site. And that’s exactly what his easy-to-use and guaranteed-to-work plugin does.
+
+[youtube  https://www.youtube.com/watch?v=eqhZebtA-SU]
 
 Here is just a taste of what it can do:
 
