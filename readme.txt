@@ -1,6 +1,6 @@
 === WordPress PopUp ===
 Contributors: WPMUDEV
-Tags: Buddypress,buddypress plugin,Geo Tag,Geo Target,GEOTag,Jquery,Light Box,Lightbox,making money,multisite,Pop Over,Pop Over Box,Pop Over Message,Pop Up Message,Pop-up,Pop-up advertising,Pop-up advertising Box,Popover,Popover Box,Popover Message,Popup,Popup Box,Popup Message,Post Type,Post Type Rules,SEO,Show On Click,Show On Exit,WordPress Pop Over,WordPress Pop Up,WordPress Popover,WordPress Popup,wpmu,wpmu plugin,xProfile Fields, Popover WP Roles, Popover Responsive Rules, Popover Specific Country, Popover Specific URL, Popup WP Roles, Popup Responsive Rules, Popup Specific Country, Popup Specific URL, Exit Intent, Exit Popup, Exit Popover, Popover Ads, Popup Ads, Pop Over Ads, Pop Up Ads, Pop-up Ads, xProfile
+Tags: Buddypress,buddypress plugin,Geo Tag,Geo Target,GEOTag,Jquery,Light Box,Lightbox,making money,multisite,Pop Over,Pop Over Box,Pop Over Message,PopUp Message,Pop-up,Pop-up advertising,Pop-up advertising Box,Popover,Popover Box,Popover Message,Popup,Popup Box,Popup Message,Post Type,Post Type Rules,SEO,Show On Click,Show On Exit,WordPress Pop Over,WordPress PopUp,WordPress Popover,WordPress Popup,wpmu,wpmu plugin,xProfile Fields, Popover WP Roles, Popover Responsive Rules, Popover Specific Country, Popover Specific URL, Popup WP Roles, Popup Responsive Rules, Popup Specific Country, Popup Specific URL, Exit Intent, Exit Popup, Exit Popover, Popover Ads, Popup Ads, Pop Over Ads, PopUp Ads, Pop-up Ads, xProfile
 Requires at least: 3.1
 Tested up to: 3.9.1
 Stable tag: 4.4.5.4
@@ -15,11 +15,11 @@ One of the most effective ways to advertise your mailing list, special offer or 
 
 Here is just a taste of what it can do:
 
-- Display fancy pop up(s) (powered as a popover!) to visitors network wide, per site or on specific URLs
+- Display fancy PopUp(s) (powered as a popover!) to visitors network wide, per site or on specific URLs
 - Hassle-free interface. Creating your new pop over is as simple as adding a new post to your WordPress blog.
 - Extensive options for customizing who sees your pop overs including logged out users, visitors who have never commented , search engine visitors.
 - Includes optional hide a pop over forever.
-- Ability to set the amount of time that passes between when the user hits your site and when the pop up displays
+- Ability to set the amount of time that passes between when the user hits your site and when the PopUp displays
 - Compatible with any WordPress theme. Customize the style and layout of your pop over to fit with your existing site design.
 - Works perfectly with WordPress, Multisite and BuddyPress.
 - Use this plugin on any WordPress project you like.
@@ -85,12 +85,12 @@ For network wide control - add the line define('PO_GLOBAL', true); to your wp-co
 * Fixed issue with dynamic JavaScript loading
 * Added PO_PLUGIN_DIR in config for changing plugin directory name
 
-= 4.4.5.2 = 
+= 4.4.5.2 =
 
 * Added missing translatable strings
 * Updated language file
 
-= 4.4.5.1 = 
+= 4.4.5.1 =
 
 * added collation to tables creation code
 * updated require calls to include directory path
@@ -102,23 +102,23 @@ For network wide control - add the line define('PO_GLOBAL', true); to your wp-co
 * Added different custom loading method that should be cache resistant and remove issues with other ajax loading method.
 * Made On URL rule more specific so that it doesn't match child pages when the main page is specified
 
-= 4.4.4 = 
+= 4.4.4 =
 
-* Added option to switch from JS loading to standard loading of pop ups.
+* Added option to switch from JS loading to standard loading of PopUps.
 * Added ability to use regular expressions in the referrers and on url conditions.
 * Prepared code to make it easy to upgrade interface for future releases.
 
-= 4.4.3 = 
+= 4.4.3 =
 
 * Updated for WP 3.5
 * Added initial attempt to distinguish referrers from Google search and referrers from Google custom site search.
 
-= 4.4.2 = 
+= 4.4.2 =
 
 * Removed unneeded css and js files
 * Updated language file
 
-= 4.4.1 = 
+= 4.4.1 =
 
 * Moved popover loading js to be created by a php file due to needing extra processing.
 * Fixed issue with directory based sites loading popover script from main site.

@@ -1,0 +1,42 @@
+Plugin Name: WordPress PopUp
+Author: Barry (Incsub), Marko Miljus (Incsub), Philipp Stracker (Incsub)
+
+Change Log:
+----------------------------------------------------------------------
+
+4.6 - 2014-08-22
+----------------------------------------------------------------------
+- Completely re-build the UI from ground up!
+- Migrated PopUps to a much more flexible data structure.
+- Merged sections "Add-Ons" and "Settings" to a single page.
+- Removed old legacy code; plugin is cleaner and faster.
+- New feature: Preview PopUp inside the Editor!
+- Three new, modern PopUp styles added.
+- Featured Image support for new PopUp styles.
+
+4.5.3 - 2013-11-15
+----------------------------------------------------------------------
+- Fix for argument passing issue.
+- Fix for popup pending inital state.
+
+4.5.2 - 2013-11-05
+----------------------------------------------------------------------
+- Fix for display issue with absolute sizes/positioning.
+- Added the XProfile fields value matching add-on.
+
+4.5.1 - 2013-10-30
+----------------------------------------------------------------------
+- Sizing calculus update.
+- Performance update.
+
+4.5 - 2013-10-16
+----------------------------------------------------------------------
+- Javascript update.
+- Separated size and positioning javascript.
+- Added new expiry options and updated existing ones.
+- Added anonymous loading method add-on.
+- Added advanced URL rules add-on.
+- Added maximum width rule add-on.
+- Added post types rules add-on.
+- Added show on click rule add-on.
+- Added show on exit rule add-on.
