@@ -18,7 +18,7 @@ Because the WordPress PopUp interface provides a simple, flexible design templat
 ★★★★★
 “The plugin works great on Multisite. It is amazingly fast, easy to install and very flexible.” – spkane
 
-Need More?
+<h4>Need More?</4>
 
 While WordPress PopUp is feature-rich and flexible, you may need more – so we created <a href="http://premium.wpmudev.org/project/the-pop-over-plugin/">PopUp Pro</a>. PopUp Pro takes everything you love about the free version and adds more templates, greater design control and an unlimited number of pop-ups with extended powerful behaviors for setting specific times, locations and who the pop-ups are displayed to.
 
@@ -67,9 +67,9 @@ For network wide control - add the line define('PO_GLOBAL', true); to your wp-co
 
 == Screenshots ==
 
-1. screenshot-1.png WordPress PopUp in action.
-2. screenshot-2.png PopUp 'Behaviors' make it easy to trigger you pop-up at just the right time.
-3. screenshot-3.png PopUp settings are clear and easy to navigate.
+1. screenshot-1.jpg WordPress PopUp in action.
+2. screenshot-2.jpg PopUp 'Behaviors' make it easy to trigger you pop-up at just the right time.
+3. screenshot-3.jpg PopUp settings are clear and easy to navigate.
 
 == Changelog ==
 
