@@ -15,7 +15,7 @@ WordPress PopUp brings a proven solution for effective advertising to your site 
 
 Because the WordPress PopUp interface provides a simple, flexible design template in a familiar workspace, you can spend more time creating and less time building. Plus, with this fully-responsive plugin, your pop-ups will look fantastic on every device.
 
-★★★★★
+<h6>★★★★★</h6>
 “The plugin works great on Multisite. It is amazingly fast, easy to install and very flexible.” – spkane
 
 <h4>Need More?</h4>
