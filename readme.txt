@@ -1,6 +1,6 @@
 === WordPress PopUp ===
 Contributors: WPMUDEV
-Tags: Buddypress,buddypress plugin,Geo Tag,Geo Target,GEOTag,Jquery,Light Box,Lightbox,making money,multisite,Pop Over,Pop Over Box,Pop Over Message,Pop Up Message,Pop-up,Pop-up advertising,Pop-up advertising Box,Popover,Popover Box,Popover Message,Popup,Popup Box,Popup Message,Post Type,Post Type Rules,SEO,Show On Click,Show On Exit,WordPress Pop Over,WordPress Pop Up,WordPress Popover,WordPress Popup,wpmu,wpmu plugin,xProfile Fields, Popover WP Roles, Popover Responsive Rules, Popover Specific Country, Popover Specific URL, Popup WP Roles, Popup Responsive Rules, Popup Specific Country, Popup Specific URL, Exit Intent, Exit Popup, Exit Popover, Popover Ads, Popup Ads, Pop Over Ads, Pop Up Ads, Pop-up Ads, xProfile
+Tags: Popover, Popup, Pop-up, Advertising, Responsive, Show On Click, Show On Exit, WordPress Popover, WordPress Pop Up, Pop-up Ads
 Requires at least: 3.1
 Tested up to: 3.9.1
 Stable tag: trunk
@@ -20,10 +20,10 @@ Because the WordPress PopUp interface provides a simple, flexible design templat
 
 <h4>Need More?</h4>
 
-While WordPress PopUp is feature-rich and flexible, you may need more – so we created <a href="http://premium.wpmudev.org/project/the-pop-over-plugin/">PopUp Pro</a>. PopUp Pro takes everything you love about the free version and adds more templates, greater design control and an unlimited number of pop-ups with extended powerful behaviors for setting specific times, locations and who the pop-ups are displayed to.
+While WordPress PopUp is feature-rich and flexible, you may need more – so we created <a href="http://premium.wpmudev.org/project/the-pop-over-plugin/?utm_source=wordpress.org&utm_medium=readme">PopUp Pro</a>. PopUp Pro takes everything you love about the free version and adds more templates, greater design control and an unlimited number of pop-ups with extended powerful behaviors for setting specific times, locations and who the pop-ups are displayed to.
 
 <blockquote>
-<h4>See What WordPress PopUp and <a href="http://premium.wpmudev.org/project/the-pop-over-plugin/">PopUp Pro</a> Can Do For You:</h4>
+<h4>See What WordPress PopUp and <a href="http://premium.wpmudev.org/project/the-pop-over-plugin/?utm_source=wordpress.org&utm_medium=readme">PopUp Pro</a> Can Do For You:</h4>
 <br />
 <ul>
 <li>Design pop-ups from a familiar intuitive interface</li>
@@ -39,7 +39,7 @@ While WordPress PopUp is feature-rich and flexible, you may need more – so we 
 </ul>
 </blockquote>
 
-If you are looking to build your mailing list, increase sales or even promote an event, use WordPress PopUp or <a href="http://premium.wpmudev.org/project/the-pop-over-plugin/">PopUp Pro</a> – it just works.
+If you are looking to build your mailing list, increase sales or even promote an event, use WordPress PopUp or <a href="http://premium.wpmudev.org/project/the-pop-over-plugin/?utm_source=wordpress.org&utm_medium=readme">PopUp Pro</a> – it just works.
 
 
 == Installation ==
@@ -48,22 +48,22 @@ WordPress Installation Instructions:
 
 ----------------------------------------------------------------------
 
-1) Place the popover directory in the plugins directory
+1) Place the wordpress-popup directory in the plugins directory
 2) Activate the plugin
 
 
-WPMU Installation Instructions:
+Multisite Installation Instructions:
 
 ----------------------------------------------------------------------
 
-1) Place the popover directory in the plugins directory
+1) Place the wordpress-popup directory in the plugins directory
 2) Network Activate the plugin
 
 For blog by blog, leave as is.
 
 For network wide control - add the line define('PO_GLOBAL', true); to your wp-config.php file.
 
-* You can find <a href='http://premium.wpmudev.org/manuals/installing-regular-plugins-on-wpmu/'>in-depth setup and usage instructions with screenshots here &raquo;</a>
+* You can find <a href='http://premium.wpmudev.org/manuals/installing-regular-plugins-on-wpmu/?utm_source=wordpress.org&utm_medium=readme'>in-depth setup and usage instructions with screenshots here &raquo;</a>
 
 == Screenshots ==
 
