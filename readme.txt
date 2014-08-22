@@ -1,8 +1,8 @@
 === WordPress PopUp ===
 Contributors: WPMUDEV
-Tags: buddypress, wpmu, wpmu plugin, buddypress plugin, making money, seo, Advertising, multisite, Advertising
+Tags: Buddypress,buddypress plugin,Geo Tag,Geo Target,GEOTag,Jquery,Light Box,Lightbox,making money,multisite,Pop Over,Pop Over Box,Pop Over Message,Pop Up Message,Pop-up,Pop-up advertising,Pop-up advertising Box,Popover,Popover Box,Popover Message,Popup,Popup Box,Popup Message,Post Type,Post Type Rules,SEO,Show On Click,Show On Exit,WordPress Pop Over,WordPress Pop Up,WordPress Popover,WordPress Popup,wpmu,wpmu plugin,xProfile Fields, Popover WP Roles, Popover Responsive Rules, Popover Specific Country, Popover Specific URL, Popup WP Roles, Popup Responsive Rules, Popup Specific Country, Popup Specific URL, Exit Intent, Exit Popup, Exit Popover, Popover Ads, Popup Ads, Pop Over Ads, Pop Up Ads, Pop-up Ads, xProfile
 Requires at least: 3.1
-Tested up to: 3.5.1
+Tested up to: 3.9.1
 Stable tag: 4.6
 
 Allows you to display a fancy popup to visitors, a *very* effective way of advertising a mailing list, special offer or running a plain old ad.
@@ -10,6 +10,8 @@ Allows you to display a fancy popup to visitors, a *very* effective way of adver
 == Description ==
 
 One of the most effective ways to advertise your mailing list, special offer or simply to show ads is via javascript ‘pop over’ on your site. And that’s exactly what his easy-to-use and guaranteed-to-work plugin does.
+
+[youtube  https://www.youtube.com/watch?v=eqhZebtA-SU]
 
 Here is just a taste of what it can do:
 
@@ -44,6 +46,8 @@ Then, set the display rules, namely: Show the Pop Over if one of the following c
 
 And you’re good to go!
 
+* <a href='http://premium.wpmudev.org/project/the-pop-over-plugin/'>Download the pro version &raquo;</a>
+
 == Installation ==
 
 WordPress Installation Instructions:
@@ -65,6 +69,8 @@ For blog by blog, leave as is.
 
 For network wide control - add the line define('PO_GLOBAL', true); to your wp-config.php file.
 
+* You can find <a href='http://premium.wpmudev.org/manuals/installing-regular-plugins-on-wpmu/'>in-depth setup and usage instructions with screenshots here &raquo;</a>
+
 == Screenshots ==
 
 1. The PopUp in action
@@ -74,6 +80,7 @@ For network wide control - add the line define('PO_GLOBAL', true); to your wp-co
 == Changelog ==
 
 = 4.6 =
+
 * Completely re-build the UI from ground up!
 * Migrated PopUps to a much more flexible data structure.
 * Merged sections "Add-Ons" and "Settings" to a single page.
@@ -82,12 +89,66 @@ For network wide control - add the line define('PO_GLOBAL', true); to your wp-co
 * Three new, modern PopUp styles added.
 * Featured Image support for new PopUp styles.
 
+= 4.4.5.4 =
+
+* Performance improvements
+* Fixed issue with dynamic JavaScript loading
+* Added PO_PLUGIN_DIR in config for changing plugin directory name
+
+= 4.4.5.2 = 
+
+* Added missing translatable strings
+* Updated language file
+
+= 4.4.5.1 = 
+
+* added collation to tables creation code
+* updated require calls to include directory path
+* moved custom loading out of experimental status
+* set default loading method to custom loading
+
+= 4.4.5 =
+
+* Added different custom loading method that should be cache resistant and remove issues with other ajax loading method.
+* Made On URL rule more specific so that it doesn't match child pages when the main page is specified
+
+= 4.4.4 = 
+
+* Added option to switch from JS loading to standard loading of pop ups.
+* Added ability to use regular expressions in the referrers and on url conditions.
+* Prepared code to make it easy to upgrade interface for future releases.
+
+= 4.4.3 = 
+
+* Updated for WP 3.5
+* Added initial attempt to distinguish referrers from Google search and referrers from Google custom site search.
+
+= 4.4.2 = 
+
+* Removed unneeded css and js files
+* Updated language file
+
+= 4.4.1 = 
+
+* Moved popover loading js to be created by a php file due to needing extra processing.
+* Fixed issue with directory based sites loading popover script from main site.
+* Fixed issue of popover loading on login and register pages.
+
+= 4.4 =
+
+* Updated Popover to load via ajax call rather than page creation for cache plugin compatibility
+
 = 4.3.2 =
+
 * Major rewrite
 * Multiple PopUps can be created
+* Fixed issue of network activation not creating tables until admin area visited
+* Updated code to remove all notifications, warnings and depreciated function calls ready for WP 3.4
 
 = 3.1.4 =
+
 * WP3.3 style updating
 
 = 3.0 =
+
 * Initial release
