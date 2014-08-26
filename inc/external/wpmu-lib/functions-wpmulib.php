@@ -1,7 +1,7 @@
 <?php
 
 // Based on Jigsaw plugin by Jared Novack (http://jigsaw.upstatement.com/)
-class TheLib_1_0_9 {
+class TheLib_1_0_10 {
 
 	// --- Start of 5.2 compatibility functions
 
@@ -163,9 +163,9 @@ class TheLib_1_0_9 {
 			default:
 				$ext = strrchr( $module, '.' );
 				if ( '.css' === $ext ) {
-					$this->add_css( $module, $onpage );
+					$this->add_css( $module, $onpage, 20 );
 				} else if ( '.js' === $ext ) {
-					$this->add_js( $module, $onpage );
+					$this->add_js( $module, $onpage, 20 );
 				}
 		}
 	}
@@ -187,9 +187,10 @@ class TheLib_1_0_9 {
 	 * @since  1.0.0
 	 * @param  string $url Full URL to the javascript file.
 	 * @param  string $onpage A page hook; files will only be loaded on this page.
+	 * @param  int $priority Loading order. The higher the number, the later it is loaded.
 	 */
-	public function add_js( $url, $onpage = null ) {
-		$this->_prepare_js_or_css( $url, 'js', $onpage );
+	public function add_js( $url, $onpage = null, $priority = 10 ) {
+		$this->_prepare_js_or_css( $url, 'js', $onpage, $priority );
 	}
 
 	/**
@@ -198,9 +199,10 @@ class TheLib_1_0_9 {
 	 * @since  1.0.0
 	 * @param  string $url Full URL to the css filename.
 	 * @param  string $onpage A page hook; files will only be loaded on this page.
+	 * @param  int $priority Loading order. The higher the number, the later it is loaded.
 	 */
-	public function add_css( $url, $onpage = null ) {
-		$this->_prepare_js_or_css( $url, 'css', $onpage );
+	public function add_css( $url, $onpage = null, $priority = 10 ) {
+		$this->_prepare_js_or_css( $url, 'css', $onpage, $priority );
 	}
 
 	/**
@@ -211,10 +213,11 @@ class TheLib_1_0_9 {
 	 * @param  string $url Full URL to the javascript/css file.
 	 * @param  string $type 'css' or 'js'
 	 * @param  string $onpage A page hook; files will only be loaded on this page.
+	 * @param  int $priority Loading order. The higher the number, the later it is loaded.
 	 */
-	protected function _prepare_js_or_css( $url, $type, $onpage ) {
+	protected function _prepare_js_or_css( $url, $type, $onpage, $priority ) {
 		$hooked = $this->_have( 'js_or_css' );
-		$this->_add( 'js_or_css', compact( 'url', 'type', 'onpage' ) );
+		$this->_add( 'js_or_css', compact( 'url', 'type', 'onpage', 'priority' ) );
 
 		if ( ! did_action( 'init' ) ) {
 			$hooked || add_action(
@@ -252,7 +255,7 @@ class TheLib_1_0_9 {
 		$this->_clear( 'js_or_css' );
 
 		foreach ( $scripts as $script ) {
-			extract( $script ); // url, type, onpage
+			extract( $script ); // url, type, onpage, priority
 
 			$type = ( 'css' == $type || 'style' == $type ? 'css' : 'js' );
 
@@ -298,14 +301,14 @@ class TheLib_1_0_9 {
 				$this->_have( 'css' ) || add_action(
 					'admin_enqueue_scripts',
 					array( $this, '_enqueue_style_callback' ),
-					15 // Load custom styles a bit later than core styles.
+					100 + $priority // Load custom styles a bit later than core styles.
 				);
 				$this->_add( 'css', $item );
 			} else {
 				$this->_have( 'js' ) || add_action(
 					'admin_enqueue_scripts',
 					array( $this, '_enqueue_script_callback' ),
-					15 // Load custom scripts a bit later than core scripts.
+					100 + $priority // Load custom scripts a bit later than core scripts.
 				);
 				$this->_add( 'js', $item );
 			}

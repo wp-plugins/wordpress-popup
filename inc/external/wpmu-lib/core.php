@@ -3,13 +3,13 @@
 Plugin Name: WPMU Dev code library
 Plugin URI:  http://premium.wpmudev.org/
 Description: Framework to support creating WordPress plugins and themes.
-Version:     1.0.9
+Version:     1.0.10
 Author:      WPMU DEV
 Author URI:  http://premium.wpmudev.org/
 Textdomain:  wpmu-lib
 */
 
-$version = '1.0.9'; // Remember to update the class-name in functions-wpmulib.php!!
+$version = '1.0.10'; // Remember to update the class-name in functions-wpmulib.php!!
 
 /**
  * Load TheLib class definition if not some other plugin already loaded it.

@@ -1,46 +1,52 @@
 === WordPress PopUp ===
 Contributors: WPMUDEV
-Tags: Popover, Popup, Pop-up, Advertising, Responsive, Show On Click, Show On Exit, WordPress Popover, WordPress Pop Up, Pop-up Ads
+Tags: Buddypress,buddypress plugin,Geo Tag,Geo Target,GEOTag,Jquery,Light Box,Lightbox,making money,multisite,Pop Over,Pop Over Box,Pop Over Message,Pop Up Message,Pop-up,Pop-up advertising,Pop-up advertising Box,Popover,Popover Box,Popover Message,Popup,Popup Box,Popup Message,Post Type,Post Type Rules,SEO,Show On Click,Show On Exit,WordPress Pop Over,WordPress Pop Up,WordPress Popover,WordPress Popup,wpmu,wpmu plugin,xProfile Fields, Popover WP Roles, Popover Responsive Rules, Popover Specific Country, Popover Specific URL, Popup WP Roles, Popup Responsive Rules, Popup Specific Country, Popup Specific URL, Exit Intent, Exit Popup, Exit Popover, Popover Ads, Popup Ads, Pop Over Ads, Pop Up Ads, Pop-up Ads, xProfile
 Requires at least: 3.1
 Tested up to: 3.9.1
 Stable tag: trunk
 
-WordPress PopUp is the smart, responsive, customizable and beautifully coded pop-up and pop-over plugin for WordPress and Multisite.
+Allows you to display a fancy popup to visitors, a *very* effective way of advertising a mailing list, special offer or running a plain old ad.
 
 == Description ==
 
-WordPress PopUp brings a proven solution for effective advertising to your site or network. Introduce mailing lists, exclusive offers and other advertisements to your clients, users or visitors with a polished pop-up ad.
+One of the most effective ways to advertise your mailing list, special offer or simply to show ads is via javascript ‘pop over’ on your site. And that’s exactly what his easy-to-use and guaranteed-to-work plugin does.
 
-[youtube https://www.youtube.com/watch?v=lxyomzQkQKc]
+[youtube  https://www.youtube.com/watch?v=eqhZebtA-SU]
 
-Because the WordPress PopUp interface provides a simple, flexible design template in a familiar workspace, you can spend more time creating and less time building. Plus, with this fully-responsive plugin, your pop-ups will look fantastic on every device.
+Here is just a taste of what it can do:
 
-<h6>★★★★★</h6>
-“The plugin works great on Multisite. It is amazingly fast, easy to install and very flexible.” – spkane
+- Display fancy pop up(s) (powered as a popover!) to visitors network wide, per site or on specific URLs
+- Hassle-free interface. Creating your new pop over is as simple as adding a new post to your WordPress blog.
+- Extensive options for customizing who sees your pop overs including logged out users, visitors who have never commented , search engine visitors.
+- Includes optional hide a pop over forever.
+- Ability to set the amount of time that passes between when the user hits your site and when the pop up displays
+- Compatible with any WordPress theme. Customize the style and layout of your pop over to fit with your existing site design.
+- Works perfectly with WordPress, Multisite and BuddyPress.
+- Use this plugin on any WordPress project you like.
 
-<h4>Need More?</h4>
+Visitors from our pop over on WPMU.org results in double the number of pages and twice the length of stay compared to visitors that come via Adwords!
 
-While WordPress PopUp is feature-rich and flexible, you may need more – so we created <a href="http://premium.wpmudev.org/project/the-pop-over-plugin/?utm_source=wordpress.org&utm_medium=readme">PopUp Pro</a>. PopUp Pro takes everything you love about the free version and adds more templates, greater design control and an unlimited number of pop-ups with extended powerful behaviors for setting specific times, locations and who the pop-ups are displayed to.
+And of course it even contains a link allowing users to click it and never see the popover again… just to take care of the complainers! Not that we’ve ever had a single complaint!
 
-<blockquote>
-<h4>See What WordPress PopUp and <a href="http://premium.wpmudev.org/project/the-pop-over-plugin/?utm_source=wordpress.org&utm_medium=readme">PopUp Pro</a> Can Do For You:</h4>
-<br />
-<ul>
-<li>Design pop-ups from a familiar intuitive interface</li>
-<li>Unlimited pop-ups that display across an entire network, on individual sites or on specific URLs – limited to 1 active pop-up in free version</li>
-<li>Both responsive and fixed design options mean your pop-ups look great on every device</li>
-<li>3 built-in modern templates for displaying clean, simple or sophisticated pop-ups – 1 easy-to-use layout in the free version</li>
-<li>Choose to hide pop-ups from mobile devices – pro version only</li>
-<li>Control who sees a pop-up including logged out users, visitors who have never commented and search engine visitors – limited with free version</li>
-<li>Set when a pop-up appears based on time, location, CSS markers and clicks – limited on free version</li>
-<li>Allow visitors to hide a pop-up from ever displaying again</li>
-<li>Display your pop-ups to visitors from specific geographic locations – pro version only</li>
-<li>Access to our brilliant fast 24/7 support team</li>
-</ul>
-</blockquote>
+Like I said, we use it and now so can you!
 
-If you are looking to build your mailing list, increase sales or even promote an event, use WordPress PopUp or <a href="http://premium.wpmudev.org/project/the-pop-over-plugin/?utm_source=wordpress.org&utm_medium=readme">PopUp Pro</a> – it just works.
+Once installed, it’s really simple, just activate it and go to Pop Over > Create New to get started.
 
+Then paste in your ad code… whether its javascript or, like us, an image. And select it’s size, borders, background color, position and even font color.
+
+Then, set the display rules, namely: Show the Pop Over if one of the following checked rules is true:
+
+- Visitor is not logged in.
+- Visitor has never commented here before.
+- Visitor came from a search engine.
+- Visitor did not come from an internal page.
+- Visitor referrer matches
+- And the visitor has seen the pop over less than  X  times
+- Visitor is arriving from a specific link
+
+And you’re good to go!
+
+* <a href='http://premium.wpmudev.org/project/the-pop-over-plugin/'>Download the pro version &raquo;</a>
 
 == Installation ==
 
@@ -48,30 +54,34 @@ WordPress Installation Instructions:
 
 ----------------------------------------------------------------------
 
-1) Place the wordpress-popup directory in the plugins directory
+1) Place the popover directory in the plugins directory
 2) Activate the plugin
 
 
-Multisite Installation Instructions:
+WPMU Installation Instructions:
 
 ----------------------------------------------------------------------
 
-1) Place the wordpress-popup directory in the plugins directory
+1) Place the popover directory in the plugins directory
 2) Network Activate the plugin
 
 For blog by blog, leave as is.
 
 For network wide control - add the line define('PO_GLOBAL', true); to your wp-config.php file.
 
-* You can find <a href='http://premium.wpmudev.org/manuals/installing-regular-plugins-on-wpmu/?utm_source=wordpress.org&utm_medium=readme'>in-depth setup and usage instructions with screenshots here &raquo;</a>
+* You can find <a href='http://premium.wpmudev.org/manuals/installing-regular-plugins-on-wpmu/'>in-depth setup and usage instructions with screenshots here &raquo;</a>
 
 == Screenshots ==
 
-1. screenshot1.jpg WordPress PopUp in action.
-2. screenshot2.jpg PopUp 'Behaviors' make it easy to trigger you pop-up at just the right time.
-3. screenshot3.jpg PopUp settings are clear and easy to navigate.
+1. The PopUp in action
+2. PopUp produces double the number of pages and twice the length of stay compared to visitors that come via Adwords
+3. Some of the settings options
 
 == Changelog ==
+
+= 4.6.1 =
+* Fix: For some users the plugin was not loading after update to 4.6
+* Fix: Old Popups will now replace shortcodes correctly.
 
 = 4.6 =
 
@@ -89,12 +99,12 @@ For network wide control - add the line define('PO_GLOBAL', true); to your wp-co
 * Fixed issue with dynamic JavaScript loading
 * Added PO_PLUGIN_DIR in config for changing plugin directory name
 
-= 4.4.5.2 = 
+= 4.4.5.2 =
 
 * Added missing translatable strings
 * Updated language file
 
-= 4.4.5.1 = 
+= 4.4.5.1 =
 
 * added collation to tables creation code
 * updated require calls to include directory path
@@ -106,23 +116,23 @@ For network wide control - add the line define('PO_GLOBAL', true); to your wp-co
 * Added different custom loading method that should be cache resistant and remove issues with other ajax loading method.
 * Made On URL rule more specific so that it doesn't match child pages when the main page is specified
 
-= 4.4.4 = 
+= 4.4.4 =
 
 * Added option to switch from JS loading to standard loading of pop ups.
 * Added ability to use regular expressions in the referrers and on url conditions.
 * Prepared code to make it easy to upgrade interface for future releases.
 
-= 4.4.3 = 
+= 4.4.3 =
 
 * Updated for WP 3.5
 * Added initial attempt to distinguish referrers from Google search and referrers from Google custom site search.
 
-= 4.4.2 = 
+= 4.4.2 =
 
 * Removed unneeded css and js files
 * Updated language file
 
-= 4.4.1 = 
+= 4.4.1 =
 
 * Moved popover loading js to be created by a php file due to needing extra processing.
 * Fixed issue with directory based sites loading popover script from main site.
