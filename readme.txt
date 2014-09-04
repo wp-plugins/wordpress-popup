@@ -1,8 +1,8 @@
 === WordPress PopUp ===
 Contributors: WPMUDEV
-Tags: Buddypress,buddypress plugin,Geo Tag,Geo Target,GEOTag,Jquery,Light Box,Lightbox,making money,multisite,Pop Over,Pop Over Box,Pop Over Message,Pop Up Message,Pop-up,Pop-up advertising,Pop-up advertising Box,Popover,Popover Box,Popover Message,Popup,Popup Box,Popup Message,Post Type,Post Type Rules,SEO,Show On Click,Show On Exit,WordPress Pop Over,WordPress Pop Up,WordPress Popover,WordPress Popup,wpmu,wpmu plugin,xProfile Fields, Popover WP Roles, Popover Responsive Rules, Popover Specific Country, Popover Specific URL, Popup WP Roles, Popup Responsive Rules, Popup Specific Country, Popup Specific URL, Exit Intent, Exit Popup, Exit Popover, Popover Ads, Popup Ads, Pop Over Ads, Pop Up Ads, Pop-up Ads, xProfile
+Tags: Popup, Pop-up, Pop Over, popover, Responsive Popup, Advertise, Promotion, Marketing, Lightbox, Mailing list pop-up
 Requires at least: 3.1
-Tested up to: 3.9.1
+Tested up to: 4.0
 Stable tag: trunk
 
 Allows you to display a fancy popup to visitors, a *very* effective way of advertising a mailing list, special offer or running a plain old ad.
