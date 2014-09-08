@@ -1,6 +1,7 @@
 <?php
 // Load dependencies.
 require_once PO_INC_DIR . 'class-popup-base.php';
+require_once PO_INC_DIR . 'class-popup-help.php';
 
 /**
  * Defines the popup class for admin pages.
@@ -314,6 +315,12 @@ class IncPopup extends IncPopupBase {
 				break;
 
 			default:
+				/**
+				 * Allow other modules to handle their own ajax requests.
+				 *
+				 * @since  4.6.1.1
+				 */
+				do_action( 'popup-ajax-' . $action );
 				return;
 		}
 
@@ -348,9 +355,12 @@ class IncPopup extends IncPopupBase {
 		if ( @$_POST['action'] == 'updatesettings' ) {
 			check_admin_referer( 'update-popup-settings' );
 
+			$old_settings = IncPopupDatabase::get_settings();
+
 			$settings = array();
 			$settings['loadingmethod'] = @$_POST['po_option']['loadingmethod'];
-			$settings['geo_db'] = isset( $_POST['po_option']['geo_db'] );
+			$settings['geo_lookup'] = @$_POST['po_option']['geo_lookup'];
+			$settings['geo_db'] = ( 'geo_db' == $settings['geo_lookup'] );
 
 			$rules = @$_POST['po_option']['rules'];
 			if ( ! is_array( $rules ) ) { $rules = array(); }
@@ -872,7 +882,7 @@ class IncPopup extends IncPopupBase {
 
 				// Show the new item in the editor.
 				$new_url = remove_query_arg( array( 'post', 'do' ) );
-				$new_url = add_query_arg( array( 'post' => $item->id ), $new_url );
+				$new_url = add_query_arg( array( 'post' => $item->id, 'post_type' => IncPopupItem::POST_TYPE ), $new_url );
 				wp_safe_redirect( $new_url );
 				die();
 

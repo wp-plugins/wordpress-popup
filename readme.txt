@@ -79,6 +79,12 @@ For network wide control - add the line define('PO_GLOBAL', true); to your wp-co
 
 == Changelog ==
 
+= 4.6.1.1 =
+* New: Added Contextual Help to the PopUp editor to show supported shortcodes.
+* Fix: Logic of rule "[Not] On specific URL" corrected.
+* Fix: Close forever now works also via click on background layer.
+* Better: Improved info on supported shortcodes.
+
 = 4.6.1 =
 * Fix: For some users the plugin was not loading after update to 4.6
 * Fix: Old Popups will now replace shortcodes correctly.

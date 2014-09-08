@@ -28,11 +28,17 @@ abstract class IncPopupBase {
 	protected $popups = array();
 
 
+
 	/**
 	 * Constructor
 	 */
 	protected function __construct() {
 		$this->db = IncPopupDatabase::instance();
+
+		// Prepare the URL
+		$this->prepare_url();
+		add_action( 'init', array( $this, 'revert_url' ), 999 ); // prevent 404.
+		add_action( 'parse_query', array( $this, 'prepare_url' ) );
 
 		WDev()->translate_plugin( PO_LANG, PO_LANG_DIR );
 
@@ -72,6 +78,9 @@ abstract class IncPopupBase {
 			'wp_ajax_nopriv_inc_popup',
 			array( $this, 'ajax_load_popup' )
 		);
+
+		// Tell Add-ons and extensions that we are set up.
+		do_action( 'popup-init' );
 	}
 
 	/**
@@ -423,5 +432,40 @@ abstract class IncPopupBase {
 
 		return isset( $_COOKIE[$name] ) || isset( $_COOKIE[$name_old] );
 	}
+
+
+	/*===================================*\
+	=======================================
+	==                                   ==
+	==           COMPATIBILITY           ==
+	==                                   ==
+	=======================================
+	\*===================================*/
+
+
+	/**
+	 * Change the Request-URI, so other plugins use the correct form action, etc.
+	 *
+	 * @since  4.6.1.1
+	 */
+	public function prepare_url() {
+		$this->orig_url = $_SERVER['REQUEST_URI'];
+
+		// Remove internal commands from the query.
+		if ( ! empty( $_REQUEST['thefrom'] ) ) {
+			$_SERVER['REQUEST_URI'] = strtok( $_REQUEST['thefrom'], '#' );
+		}
+	}
+
+	/**
+	 * Revert the Request-URI to the original value.
+	 *
+	 * @since  4.6.1.1
+	 */
+	public function revert_url() {
+		if ( empty( $this->orig_url ) ) { return; }
+		$_SERVER['REQUEST_URI'] = $this->orig_url;
+	}
+
 
 };

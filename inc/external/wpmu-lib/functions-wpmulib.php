@@ -1,7 +1,7 @@
 <?php
 
 // Based on Jigsaw plugin by Jared Novack (http://jigsaw.upstatement.com/)
-class TheLib_1_0_10 {
+class TheLib_1_0_11 {
 
 	// --- Start of 5.2 compatibility functions
 
@@ -513,11 +513,18 @@ class TheLib_1_0_10 {
 	 * @param  string $rel_dir Path to the dictionary folder; relative to ABSPATH.
 	 */
 	public function translate_plugin( $domain, $rel_dir ) {
-		$this->_have( 'textdomain' ) || add_action(
-			'plugins_loaded',
-			array( $this, '_translate_plugin_callback' )
-		);
+		$hooked = $this->_have( 'textdomain' );
+
 		$this->_add( 'textdomain', compact( 'domain', 'rel_dir' ) );
+
+		if ( ! did_action( 'plugins_loaded' ) ) {
+			$hooked || add_action(
+				'plugins_loaded',
+				array( $this, '_translate_plugin_callback' )
+			);
+		} else {
+			$this->_translate_plugin_callback();
+		}
 	}
 
 	/**

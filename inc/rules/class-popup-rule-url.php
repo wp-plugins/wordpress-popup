@@ -189,7 +189,7 @@ class IncPopupRule_Url extends IncPopupRule {
 		if ( empty( $_REQUEST['thefrom'] ) ) {
 			$current_url = home_url( $wp->request );
 		} else {
-			$current_url = $_REQUEST['thefrom'];
+			$current_url = strtok( $_REQUEST['thefrom'], '#' );
 		}
 
 		return $current_url;
@@ -211,8 +211,16 @@ class IncPopupRule_Url extends IncPopupRule {
 			$response = true;
 		} else {
 			foreach ( $list as $match ) {
-				$res = stripos( $test_url, $match );
-				if ( false !== $res ) {
+				if ( false === strpos( $match, '://' ) ) {
+					$match = 'https?://' . $match;
+				}
+				if ( substr( $match, -1 ) != '/' ) {
+					$match .= '/?';
+				} else {
+					$match .= '?';
+				}
+				$res = preg_match( '#^' . $match . '$#i', $test_url );
+				if ( $res ) {
 					$response = true;
 					break;
 				}
