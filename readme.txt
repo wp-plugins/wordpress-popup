@@ -15,13 +15,13 @@ WordPress PopUp brings a proven solution for effective advertising to your site 
 
 Because the WordPress PopUp interface provides a simple, flexible design template in a familiar workspace, you can spend more time creating and less time building. Plus, with this fully-responsive plugin, your pop-ups will look fantastic on every device.
 
-★★★★★
+★★★★★<br />
 “The plugin works great on Multisite. It is amazingly fast, easy to install and very flexible.” - <a href="http://profiles.wordpress.org/spkane" target="_blank">spkane</a>
 
 <strong>Need More?</strong>
 
 <blockquote>
-While WordPress PopUp is feature-rich and flexible, you may need more - so we created <a href="" target="_blank">PopUp Pro</a>. PopUp Pro takes everything you love about the free version and adds more templates, greater design control and an unlimited number of pop-ups with extended powerful behaviors for setting specific times, locations and who the pop-ups are displayed to.
+While WordPress PopUp is feature-rich and flexible, you may need more - so we created <a href="" target="_blank">PopUp Pro</a>. PopUp Pro takes everything you love about the free version and adds more templates, greater design control and an unlimited number of pop-ups with extended powerful behaviors for setting specific times, locations and who the pop-ups are displayed to.<br />
 </blockquote>
 
 <strong>See What WordPress PopUp and PopUp Pro Can Do For You:</strong>
