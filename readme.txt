@@ -39,10 +39,7 @@ While WordPress PopUp is feature-rich and flexible, you may need more - so we cr
 <li>Access to our brilliant fast 24/7 support team</li>
 </ul>
 
-If you are looking to build your mailing list, increase sales or even promote an event, use WordPress PopUp or PopUp Pro - it just works.
-
-
-* <a href='http://premium.wpmudev.org/project/the-pop-over-plugin/'>Download the pro version &raquo;</a>
+If you are looking to build your mailing list, increase sales or even promote an event, use WordPress PopUp or <a href="http://premium.wpmudev.org/project/the-pop-over-plugin/">PopUp Pro</a> - it just works.
 
 == Installation ==
 
