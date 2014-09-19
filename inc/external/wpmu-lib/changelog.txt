@@ -4,6 +4,11 @@ Author:      Philipp Stracker
 Change Log:
 ----------------------------------------------------------------------
 
+1.0.12
+----------------------------------------------------------------------
+- Fix issue with duplicate markup of cloned multiselect elements.
+- Make JS auto-init optional by checking body class 'no-auto-init'.
+
 1.0.11
 ----------------------------------------------------------------------
 - Fixed z-index of overlay and popup window (fixes issues in Firefox)

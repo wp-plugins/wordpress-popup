@@ -1,7 +1,7 @@
 <?php
 
 // Based on Jigsaw plugin by Jared Novack (http://jigsaw.upstatement.com/)
-class TheLib_1_0_11 {
+class TheLib_1_0_12 {
 
 	// --- Start of 5.2 compatibility functions
 
@@ -44,8 +44,6 @@ class TheLib_1_0_11 {
 	}
 
 	protected function _sess_add( $key, $value ) {
-		if ( ! session_id() ) { session_start(); }
-
 		if ( ! is_array( @$_SESSION[ '_lib_persist_' . $key ] ) ) {
 			$_SESSION[ '_lib_persist_' . $key ] = array();
 		}
@@ -53,8 +51,6 @@ class TheLib_1_0_11 {
 	}
 
 	protected function _sess_get( $key ) {
-		if ( ! session_id() ) { session_start(); }
-
 		if ( ! is_array( @$_SESSION[ '_lib_persist_' . $key ] ) ) {
 			$_SESSION[ '_lib_persist_' . $key ] = array();
 		}
@@ -62,15 +58,17 @@ class TheLib_1_0_11 {
 	}
 
 	protected function _sess_clear( $key ) {
-		if ( ! session_id() ) { session_start(); }
-
 		unset( $_SESSION[ '_lib_persist_' . $key ] );
 	}
 
 	// --- End of Session access
 
 	public function __construct() {
-		if ( ! session_id() ) { session_start(); }
+		if ( ! session_id() ) {
+			if ( ! headers_sent() ) {
+				session_start();
+			}
+		}
 
 		// Check for persistent data from last request that needs to be processed.
 		$this->check_persistent_data();

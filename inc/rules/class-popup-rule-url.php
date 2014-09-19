@@ -78,7 +78,7 @@ class IncPopupRule_Url extends IncPopupRule {
 		$urls = implode( "\n", $data );
 		?>
 		<label for="po-rule-data-url">
-			<?php _e( 'URLs (one per line):', PO_LANG ); ?>
+			<?php _e( 'Full URLs (one per line):', PO_LANG ); ?>
 		</label>
 		<textarea name="po_rule_data[url]" id="po-rule-data-url" class="block"><?php
 			echo esc_html( $urls );
@@ -131,7 +131,7 @@ class IncPopupRule_Url extends IncPopupRule {
 		$urls = implode( "\n", $data );
 		?>
 		<label for="po-rule-data-no-url">
-			<?php _e( 'URLs (one per line):', PO_LANG ); ?>
+			<?php _e( 'Full URLs (one per line):', PO_LANG ); ?>
 		</label>
 		<textarea name="po_rule_data[no_url]" id="po-rule-data-no-url" class="block"><?php
 			echo esc_html( $urls );
@@ -182,7 +182,7 @@ class IncPopupRule_Url extends IncPopupRule {
 	 * @since  4.6
 	 * @return string
 	 */
-	protected function current_url() {
+	public function current_url() {
 		global $wp;
 		$current_url = '';
 
@@ -203,14 +203,17 @@ class IncPopupRule_Url extends IncPopupRule {
 	 * @param  array $list List of URL-patterns to test against.
 	 * @return bool
 	 */
-	protected function check_url( $test_url, $list ) {
+	public function check_url( $test_url, $list ) {
 		$response = false;
 		$list = array_map( 'trim', $list );
+		$test_url = strtok( $test_url, '#' );
 
 		if ( empty( $list ) ) {
 			$response = true;
 		} else {
 			foreach ( $list as $match ) {
+				$match = preg_quote( strtok( $match, '#' ) );
+
 				if ( false === strpos( $match, '://' ) ) {
 					$match = 'https?://' . $match;
 				}
@@ -219,13 +222,15 @@ class IncPopupRule_Url extends IncPopupRule {
 				} else {
 					$match .= '?';
 				}
-				$res = preg_match( '#^' . $match . '$#i', $test_url );
+				$exp = '#^' . $match . '$#i';
+				$res = preg_match( $exp, $test_url );
 				if ( $res ) {
 					$response = true;
 					break;
 				}
 			}
 		}
+
 
 		return $response;
 	}

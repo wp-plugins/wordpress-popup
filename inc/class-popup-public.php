@@ -86,6 +86,8 @@ class IncPopup extends IncPopupBase {
 		$cur_method = @$settings['loadingmethod'];
 		if ( empty( $cur_method ) ) { $cur_method = 'ajax'; }
 
+		if ( isset( $_POST['_po_method_'] ) ) { $cur_method = $_POST['_po_method_']; }
+
 		/*
 		 * Apply the specific loading method to include the popup on the page.
 		 * Details to the loading methods are documented in the header comment
@@ -106,6 +108,10 @@ class IncPopup extends IncPopupBase {
 
 			case 'footer':
 				$this->load_method_footer();
+				break;
+
+			case 'raw': // Set via form field "_po_method_"
+				$this->load_method_raw();
 				break;
 
 			default:
@@ -166,6 +172,7 @@ class IncPopup extends IncPopupBase {
 		if ( ! in_array( $pagenow, array( 'wp-login.php', 'wp-register.php' ) ) ) {
 			// Data is loaded via a normal WordPress ajax request.
 			$this->script_data['ajaxurl'] = admin_url( 'admin-ajax.php' );
+			@$this->script_data['ajax_data']['orig_request_uri'] = $_SERVER['REQUEST_URI'];
 			$this->load_scripts();
 		}
 	}
@@ -189,6 +196,7 @@ class IncPopup extends IncPopupBase {
 			 * some URL parameters.
 			 */
 			$this->script_data['ajaxurl'] = '';
+			@$this->script_data['ajax_data']['request_uri'] = $_SERVER['REQUEST_URI'];
 			$this->load_scripts();
 		}
 	}
@@ -233,6 +241,36 @@ class IncPopup extends IncPopupBase {
 			'wp_footer',
 			array( $this, 'show_footer')
 		);
+	}
+
+	/**
+	 * Load-Method: Raw
+	 *
+	 * This is used when a form is submitted inside a PopUp - it means that we
+	 * should only return the contents of the PopUp(s) and not the whole page.
+	 * Set via form field "_po_method_".
+	 *
+	 * @since  4.6.1.2
+	 */
+	protected function load_method_raw() {
+		/**
+		 * Set up the rquest information from here.
+		 * These values are used by some rules and need to be set manually here
+		 * In an ajax request they would already be defined by the ajax url.
+		 */
+		$_REQUEST['thereferrer'] = @$_SERVER['HTTP_REFERER'];
+		$_REQUEST['thefrom'] = WDev()->current_url();
+
+		// Populates $this->popups
+		$this->select_popup();
+
+		if ( empty( $this->popups ) ) { die(); }
+
+		echo '<div>';
+		$this->show_footer();
+		echo '</div>';
+
+		die();
 	}
 
 	/**

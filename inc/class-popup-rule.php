@@ -17,7 +17,7 @@ class IncPopupRules {
 	 * @param  string $classname Class-name (not object!)
 	 */
 	static public function register( $classname ) {
-		self::$classes[] = new $classname();
+		self::$classes[$classname] = new $classname();
 	}
 
 
@@ -76,7 +76,7 @@ class IncPopupRules {
 	 *
 	 * @since 1.0.0
 	 */
-	public function init() {
+	static public function init() {
 		add_filter(
 			'popup-rule-label',
 			array( __CLASS__, '_label' ),

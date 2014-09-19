@@ -27,6 +27,11 @@ abstract class IncPopupBase {
 	 */
 	protected $popups = array();
 
+	/**
+	 * Data collection for compatibility with other plugins.
+	 * @var array
+	 */
+	protected $compat_data = array();
 
 
 	/**
@@ -36,9 +41,11 @@ abstract class IncPopupBase {
 		$this->db = IncPopupDatabase::instance();
 
 		// Prepare the URL
-		$this->prepare_url();
-		add_action( 'init', array( $this, 'revert_url' ), 999 ); // prevent 404.
-		add_action( 'parse_query', array( $this, 'prepare_url' ) );
+		if ( ! empty( $_REQUEST['orig_request_uri'] ) ) {
+			$this->prepare_url();
+			add_action( 'init', array( $this, 'revert_url' ), 999 ); // prevent 404.
+			add_action( 'parse_query', array( $this, 'prepare_url' ) );
+		}
 
 		WDev()->translate_plugin( PO_LANG, PO_LANG_DIR );
 
@@ -78,6 +85,22 @@ abstract class IncPopupBase {
 			'wp_ajax_nopriv_inc_popup',
 			array( $this, 'ajax_load_popup' )
 		);
+
+		// Compatibility with plugins
+		if ( function_exists( 'get_rocket_option' ) && get_rocket_option( 'minify_js' ) ) {
+			foreach ( array( 'edit-inc_popup', 'inc_popup', 'inc_popup_page_settings' ) as $screen ) {
+				WDev()->message(
+					__(
+						'You are using WP Rocket with JS Minification, which has ' .
+						'caused some issues in the past. We recommend to disable ' .
+						'the JS Minification setting in WP Rocket to avoid problems.',
+						PO_LANG
+					),
+					'err',
+					$screen
+				);
+			}
+		}
 
 		// Tell Add-ons and extensions that we are set up.
 		do_action( 'popup-init' );
@@ -202,7 +225,7 @@ abstract class IncPopupBase {
 	 * @since  4.6
 	 * @return array List of rule-files.
 	 */
-	public function get_rules() {
+	static public function get_rules() {
 		$List = null;
 
 		if ( null === $List ) {
@@ -225,7 +248,7 @@ abstract class IncPopupBase {
 	 *
 	 * @since  4.6
 	 */
-	public function load_optional_files() {
+	static public function load_optional_files() {
 		$settings = IncPopupDatabase::get_settings();
 
 		if ( $settings['geo_db'] ) {
@@ -446,15 +469,23 @@ abstract class IncPopupBase {
 	/**
 	 * Change the Request-URI, so other plugins use the correct form action, etc.
 	 *
+	 * Example:
+	 *  Contact-Form-7 is included as shortcode in a PopUp.
+	 *  The PopUp is loaded via WordPress Ajax.
+	 *  When the Contact form is generated, the CF7 plugin will use the AJAX-URL
+	 *  for the contact form, instead of the URL of the host-page...
+	 *
 	 * @since  4.6.1.1
 	 */
 	public function prepare_url() {
-		$this->orig_url = $_SERVER['REQUEST_URI'];
+		if ( empty( $_REQUEST['orig_request_uri'] ) ) { return; }
+
+		if ( empty( $this->orig_url ) ) {
+			$this->orig_url = $_SERVER['REQUEST_URI'];
+		}
 
 		// Remove internal commands from the query.
-		if ( ! empty( $_REQUEST['thefrom'] ) ) {
-			$_SERVER['REQUEST_URI'] = strtok( $_REQUEST['thefrom'], '#' );
-		}
+		$_SERVER['REQUEST_URI'] = strtok( $_REQUEST['orig_request_uri'], '#' );
 	}
 
 	/**
@@ -463,9 +494,12 @@ abstract class IncPopupBase {
 	 * @since  4.6.1.1
 	 */
 	public function revert_url() {
+		if ( empty( $_REQUEST['orig_request_uri'] ) ) { return; }
 		if ( empty( $this->orig_url ) ) { return; }
+
 		$_SERVER['REQUEST_URI'] = $this->orig_url;
 	}
+
 
 
 };

@@ -93,7 +93,7 @@ class IncPopup extends IncPopupBase {
 			WDev()->add_ui( 'core' );
 			WDev()->add_ui( 'select' );
 
-			WDev()->add_ui( PO_CSS_URL . 'popup-admin.css' );
+			WDev()->add_ui( PO_CSS_URL . 'popup-admin.min.css' );
 			WDev()->add_ui( PO_JS_URL . 'popup-admin.min.js' );
 			WDev()->add_ui( PO_JS_URL . 'public.min.js' ); // For Preview.
 
@@ -907,7 +907,7 @@ class IncPopup extends IncPopupBase {
 			__( 'PopUp Contents', PO_LANG ),
 			array( 'IncPopup', 'meta_content' ),
 			IncPopupItem::POST_TYPE,
-			'advanced',
+			'normal',
 			'high'
 		);
 
@@ -916,7 +916,7 @@ class IncPopup extends IncPopupBase {
 			__( 'Appearance', PO_LANG ),
 			array( 'IncPopup', 'meta_appearance' ),
 			IncPopupItem::POST_TYPE,
-			'advanced',
+			'normal',
 			'high'
 		);
 
@@ -925,7 +925,7 @@ class IncPopup extends IncPopupBase {
 			__( 'Behavior', PO_LANG ),
 			array( 'IncPopup', 'meta_behavior' ),
 			IncPopupItem::POST_TYPE,
-			'advanced',
+			'normal',
 			'high'
 		);
 
@@ -934,7 +934,7 @@ class IncPopup extends IncPopupBase {
 			__( 'Displaying Conditions (optional)', PO_LANG ),
 			array( 'IncPopup', 'meta_rules' ),
 			IncPopupItem::POST_TYPE,
-			'advanced',
+			'normal',
 			'default'
 		);
 
@@ -1100,6 +1100,9 @@ class IncPopup extends IncPopupBase {
 			array( 'IncPopup', 'form_redirect' ),
 			10, 2
 		);
+
+		// Update the PopUp object in WP-Cache.
+		IncPopupDatabase::get( $post_id, true );
 	}
 
 	/**

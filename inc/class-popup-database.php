@@ -88,7 +88,7 @@ class IncPopupDatabase {
 	 *
 	 * @since  4.6
 	 */
-	public function db_update() {
+	static public function db_update() {
 		// Required for dbDelta()
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 
@@ -370,11 +370,18 @@ class IncPopupDatabase {
 	 *
 	 * @since  4.6
 	 * @param  int $post_id ID of the PopUp
+	 * @param  bool $clear If TRUE then a new object will be fetched from DB and
+	 *                not from cache.
 	 * @return IncPopupItem
 	 */
-	public function get( $post_id ) {
+	static public function get( $post_id, $clear = false ) {
 		$post_id = absint( $post_id );
+
+		if ( $clear ) {
+			$popup = false;
+		} else {
 		$popup = wp_cache_get( $post_id, IncPopupItem::POST_TYPE );
+		}
 
 		if ( false === $popup ) {
 			self::before_db();
@@ -392,7 +399,7 @@ class IncPopupDatabase {
 	 * @since  4.6
 	 * @return array List of active popups.
 	 */
-	public function get_active_ids() {
+	static public function get_active_ids() {
 		global $wpdb;
 		static $List = null;
 
@@ -423,7 +430,7 @@ class IncPopupDatabase {
 	 * @since  4.6
 	 * @return int Next free order position; bottom of the list.
 	 */
-	public function next_order() {
+	static public function next_order() {
 		global $wpdb;
 		self::before_db();
 
@@ -450,7 +457,7 @@ class IncPopupDatabase {
 	 *
 	 * @since  4.6
 	 */
-	public function refresh_order() {
+	static public function refresh_order() {
 		global $wpdb;
 		self::before_db();
 
@@ -508,7 +515,7 @@ class IncPopupDatabase {
 	 * @param  int $id Optional. Don't count this PopUp in the results.
 	 * @return int Number of active PopUps
 	 */
-	public function count_active( $id = '' ) {
+	static public function count_active( $id = '' ) {
 		global $wpdb;
 
 		if ( ! is_scalar( $id ) ) { $id = ''; }
@@ -528,7 +535,7 @@ class IncPopupDatabase {
 	 *
 	 * @since  4.6
 	 */
-	public function deactivate_all() {
+	static public function deactivate_all() {
 		global $wpdb;
 
 		$sql = "
@@ -606,7 +613,7 @@ class IncPopupDatabase {
 	 * @since  4.6
 	 * @return array.
 	 */
-	public function get_settings() {
+	static public function get_settings() {
 		$defaults = array(
 			'loadingmethod' => 'ajax',
 			'geo_lookup' => 'hostip',
@@ -640,7 +647,7 @@ class IncPopupDatabase {
 	 * @since  4.6
 	 * @param  array $value The value to save.
 	 */
-	public function set_settings( $value ) {
+	static public function set_settings( $value ) {
 		self::_set_option( 'inc_popup-config', $value );
 	}
 
@@ -652,7 +659,7 @@ class IncPopupDatabase {
 	 * @param  string $key
 	 * @return mixed
 	 */
-	public function get_flag( $key ) {
+	static public function get_flag( $key ) {
 		$data = get_user_meta( get_current_user_id(), 'po_data', true );
 		if ( is_object( $data ) ) { $data = (array) $data; }
 		if ( ! is_array( $data ) ) { $data = array(); }
@@ -668,7 +675,7 @@ class IncPopupDatabase {
 	 * @param string $key
 	 * @param mixed $value
 	 */
-	public function set_flag( $key, $value ) {
+	static public function set_flag( $key, $value ) {
 		$data = get_user_meta( get_current_user_id(), 'po_data', true );
 		if ( is_object( $data ) ) { $data = (array) $data; }
 		if ( ! is_array( $data ) ) { $data = array(); }

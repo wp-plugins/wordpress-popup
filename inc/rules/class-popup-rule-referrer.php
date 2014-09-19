@@ -85,7 +85,7 @@ class IncPopupRule_Referrer extends IncPopupRule {
 		else { $referrer = ''; }
 		?>
 		<label for="po-rule-data-referrer">
-			<?php _e( 'Referrers (one per line):', PO_LANG ); ?>
+			<?php _e( 'Referrers. Can be full URL or a pattern like ".example.com" (one per line):', PO_LANG ); ?>
 		</label>
 		<textarea name="po_rule_data[referrer]" id="po-rule-data-referrer" class="block"><?php
 			echo esc_attr( $referrer );
@@ -165,7 +165,7 @@ class IncPopupRule_Referrer extends IncPopupRule {
 	 * @param  array $list List of referers to check.
 	 * @return bool
 	 */
-	protected function test_referrer( $list ) {
+	public function test_referrer( $list ) {
 		$response = false;
 		if ( is_string( $list ) ) { $list = array( $list ); }
 		if ( ! is_array( $list ) ) { return true; }
@@ -173,7 +173,7 @@ class IncPopupRule_Referrer extends IncPopupRule {
 		$referrer = $this->get_referrer();
 
 		if ( empty( $referrer ) ) {
-			$response = true;
+			$response = false;
 		} else {
 			foreach ( $list as $item ) {
 				$item = trim( $item );
@@ -194,7 +194,7 @@ class IncPopupRule_Referrer extends IncPopupRule {
 	 * @since  4.6
 	 * @return bool
 	 */
-	protected function test_searchengine() {
+	public function test_searchengine() {
 		$response = false;
 		$referrer = $this->get_referrer();
 
@@ -234,7 +234,7 @@ class IncPopupRule_Referrer extends IncPopupRule {
 	 * @param  string $referrer
 	 * @return bool
 	 */
-	protected function is_googlesearch( $referrer = '' ) {
+	public function is_googlesearch( $referrer = '' ) {
 		$response = true;
 
 		// Get the query strings and check its a web source.
@@ -261,7 +261,7 @@ class IncPopupRule_Referrer extends IncPopupRule {
 	 * @since  4.6
 	 * @return string
 	 */
-	protected function get_referrer() {
+	public function get_referrer() {
 		$referrer = '';
 		if ( isset( $_REQUEST['thereferrer'] ) ) {
 			$referrer = $_REQUEST['thereferrer'];

@@ -72,6 +72,17 @@ For network wide control - add the line define('PO_GLOBAL', true); to your wp-co
 
 == Changelog ==
 
+= 4.6.1.2 =
+* New: Two new WordPress filters allow custom positioning and styling of PopUps.
+* Fix: Correctly display Meta-boxes of other plugins in the popup-editor.
+* Fix: Plugins that use custom URL rewriting are working now (e.g. NextGen Gallery)
+* Fix: PopUps can be edited even on servers with memcache/similar caching extensions.
+* Fix: Resolve "Strict Standards" notes in PHP 5.4
+* Fix: Rule "Not internal link" now works correctly when opening page directly.
+* Fix: Rule "Specific Referrer" handles empty referrers correctly.
+* Better: Forms inside PopUps will only refresh the PopUp and not reload the page.
+* Better: Detection of theme compatibility for loading method "Page Footer" improved.
+
 = 4.6.1.1 =
 * New: Added Contextual Help to the PopUp editor to show supported shortcodes.
 * Fix: Logic of rule "[Not] On specific URL" corrected.
