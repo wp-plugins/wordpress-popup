@@ -72,6 +72,11 @@ For network wide control - add the line define('PO_GLOBAL', true); to your wp-co
 
 == Changelog ==
 
+= 4.6.1.3 =
+* New: Allow page to be scrolled while PopUp is open.
+* Fix: Prevent PopUps from staying open after submitting a form to external URL.
+* Fix: PopUps without content can be displayed now.
+
 = 4.6.1.2 =
 * New: Two new WordPress filters allow custom positioning and styling of PopUps.
 * Fix: Correctly display Meta-boxes of other plugins in the popup-editor.

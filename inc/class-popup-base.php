@@ -294,6 +294,7 @@ abstract class IncPopupBase {
 			// Meta: Appearance
 			'style' => @$form['po_style'],
 			'round_corners' => ! isset( $form['po_no_round_corners'] ),
+			'scroll_body' => isset( $form['po_scroll_body'] ),
 			'custom_colors' => isset( $form['po_custom_colors'] ),
 			'color' => @$form['po_color'],
 			'custom_size' => isset( $form['po_custom_size'] ),
@@ -421,9 +422,6 @@ abstract class IncPopupBase {
 				// Forced popup ignores all conditions.
 				$show = true;
 			} else {
-				// Ignore empty PopUps.
-				if ( empty( $popup->content ) ) { continue; }
-
 				// Apply the conditions to decide if the popup should be displayed.
 				$show = apply_filters( 'popup-apply-rules', true, $popup );
 			}

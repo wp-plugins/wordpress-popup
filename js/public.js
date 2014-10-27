@@ -1,4 +1,4 @@
-/*! PopUp Free - v4.6.1.2
+/*! PopUp Free - v4.6.13
  * https://wordpress.org/plugins/wordpress-popup/
  * Copyright (c) 2014; * Licensed GPLv2+ */
 /*global window:false */
@@ -191,7 +191,7 @@
 			$po_div.css({
 				'opacity': 0,
 				'z-index': -1,
-				'position': 'absolute',
+				'position': 'fixed',
 				'left': -1000,
 				'width': 100,
 				'right': 'auto',
@@ -309,9 +309,23 @@
 			$win.off("resize.popup")
 				.on("resize.popup", function () { me.move_popup(me.data); });
 
-			$po_div.show().removeAttr( 'style' );
+			$po_div.removeAttr( 'style' ).show();
 			$po_back.show();
-			jQuery( 'html' ).addClass( 'has-popup' );
+
+			if ( me.data.scroll_body ) {
+				jQuery( 'html' ).addClass( 'has-popup can-scroll' );
+			} else {
+				jQuery( 'html' ).addClass( 'has-popup no-scroll' );
+			}
+
+			// Fix issue where Buttons are not available in Chrome
+			// https://app.asana.com/0/11388810124414/18688920614102
+			$po_msg.hide();
+			window.setTimeout(function() {
+				// The timer is so short that the element will *not* be hidden
+				// but webkit will still redraw the element.
+				$po_msg.show();
+			}, 2);
 
 			me.move_popup(me.data);
 			me.setup_popup();
@@ -323,8 +337,8 @@
 		 * Add event handlers to the PopUp controls.
 		 */
 		this.setup_popup = function setup_popup() {
-			$po_hide.off( "click", me.close_forever )
-				.on( "click", me.close_forever );
+			$po_hide.off( 'click', me.close_forever )
+				.on( 'click', me.close_forever );
 
 			if ( me.data && me.data.close_hide ) {
 				$po_close.off( 'click', me.close_forever )
@@ -429,11 +443,18 @@
 			msg.addClass( 'wdpu-loading' );
 
 			jQuery( frame ).load( function(){
-				var inner_new, inner_old;
+				var inner_new, inner_old, html;
 
-				// grab the HTML from the body, using the raw DOM node (frame[0])
-				// and more specifically, it's `contentDocument` property.
-				var html = jQuery( po_id, frame[0].contentDocument );
+				try {
+					// grab the HTML from the body, using the raw DOM node (frame[0])
+					// and more specifically, it's `contentDocument` property.
+					html = jQuery( po_id, frame[0].contentDocument );
+				} catch ( err ) {
+					// In case the iframe link was an external website the above
+					// line will most likely cause a security issue.
+					html = jQuery( '<html></html>' );
+				}
+
 				msg.removeClass( 'wdpu-loading' );
 
 				// Get the new and old Popup Contents.
@@ -446,6 +467,7 @@
 				// In case the new popup content could not be found or is empty:
 				// Close the popup!
 				if ( ! inner_old.length || ! inner_new.length || ! inner_new.text().length ) {
+					$doc.trigger( 'popup-submit-done', [me, me.data] );
 					me.close_popup();
 					return;
 				}
@@ -459,6 +481,8 @@
 
 				me.move_popup();
 				me.setup_popup();
+
+				$doc.trigger( 'popup-submit-done', [me, me.data] );
 			});
 
 			return true;
