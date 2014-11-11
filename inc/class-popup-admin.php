@@ -85,7 +85,10 @@ class IncPopup extends IncPopupBase {
 	 * @since  4.6
 	 */
 	static public function setup_module_specific( $hook ) {
-		if ( IncPopupItem::POST_TYPE === @$hook->post_type ) {
+		WDev()->load_fields( $hook, 'post_type', 'base' );
+		WDev()->load_request_fields( 'post_status' );
+
+		if ( IncPopupItem::POST_TYPE === $hook->post_type ) {
 			// WordPress core scripts
 			WDev()->add_js( 'jquery-ui-slider' );
 			WDev()->add_js( 'jquery-ui-sortable' );
@@ -97,7 +100,7 @@ class IncPopup extends IncPopupBase {
 			WDev()->add_ui( PO_JS_URL . 'popup-admin.min.js' );
 			WDev()->add_ui( PO_JS_URL . 'public.min.js' ); // For Preview.
 
-			if ( @$_REQUEST['post_status'] != 'trash' ) {
+			if ( $_REQUEST['post_status'] !== 'trash' ) {
 				WDev()->add_data(
 					'po_bulk',
 					array(
@@ -123,7 +126,7 @@ class IncPopup extends IncPopupBase {
 
 			// -- PopUp LIST -----------------------
 
-			if ( 'edit' === @$hook->base ) {
+			if ( 'edit' === $hook->base ) {
 				// Customize the columns in the popup list.
 				add_filter(
 					'manage_' . IncPopupItem::POST_TYPE . '_posts_columns',
@@ -185,7 +188,7 @@ class IncPopup extends IncPopupBase {
 
 			// -- PopUp EDITOR -----------------
 
-			if ( 'post' === @$hook->base ) {
+			if ( 'post' === $hook->base ) {
 				WDev()->add_css( 'wp-color-picker' ); // WordPress core script
 				WDev()->add_js( 'wp-color-picker' ); // WordPress core script
 
@@ -230,17 +233,20 @@ class IncPopup extends IncPopupBase {
 	 * @since  4.6
 	 */
 	static public function admin_menus() {
+		global $submenu;
+
 		// correct_level checks:
 		// PO_GLOBAL is true .. We have to be on network-admin/main blog.
 		// PO_GLOBAL is false .. we have to be NOT on network-admin.
 		if ( ! self::correct_level() ) { return; }
 
 		if ( is_network_admin() ) {
-			if ( 'hide' == @$_REQUEST['popup_network'] ) {
+			WDev()->load_request_fields( 'popup_network' );
+			if ( 'hide' === $_REQUEST['popup_network'] ) {
 				IncPopupDatabase::set_flag( 'network_dismiss', true );
 				wp_safe_redirect( admin_url( 'network' ) );
 				die();
-			} else if ( 'show' == @$_REQUEST['popup_network'] ) {
+			} else if ( 'show' === $_REQUEST['popup_network'] ) {
 				IncPopupDatabase::set_flag( 'network_dismiss', false );
 			}
 
@@ -276,7 +282,6 @@ class IncPopup extends IncPopupBase {
 				array( 'IncPopup', 'network_menu_notice' )
 			);
 
-			global $submenu;
 			$submenu[IncPopupItem::POST_TYPE . '-list'][0][0] = _x( 'Global PopUps', 'Post Type General Name', PO_LANG );
 		} else {
 			add_submenu_page(
@@ -306,11 +311,13 @@ class IncPopup extends IncPopupBase {
 	 * @since  4.6
 	 */
 	static public function handle_ajax() {
-		$action = @$_POST['do'];
+		WDev()->load_post_fields( 'do', 'order' );
+
+		$action = $_POST['do'];
 
 		switch ( $action ) {
 			case 'order':
-				$order = explode( ',', @$_POST['order'] );
+				$order = explode( ',', $_POST['order'] );
 				self::post_order( $order );
 				break;
 
@@ -352,17 +359,19 @@ class IncPopup extends IncPopupBase {
 	 * @since  4.6
 	 */
 	static public function handle_settings_update() {
-		if ( @$_POST['action'] == 'updatesettings' ) {
+		WDev()->load_post_fields( 'action', 'po_option' );
+
+		if ( $_POST['action'] == 'updatesettings' ) {
 			check_admin_referer( 'update-popup-settings' );
 
 			$old_settings = IncPopupDatabase::get_settings();
 
 			$settings = array();
-			$settings['loadingmethod'] = @$_POST['po_option']['loadingmethod'];
-			$settings['geo_lookup'] = @$_POST['po_option']['geo_lookup'];
-			$settings['geo_db'] = ( 'geo_db' == $settings['geo_lookup'] );
+			$settings['loadingmethod'] = $_POST['po_option']['loadingmethod'];
+			$settings['geo_lookup'] = $_POST['po_option']['geo_lookup'];
+			$settings['geo_db'] = ( 'geo_db' === $settings['geo_lookup'] );
 
-			$rules = @$_POST['po_option']['rules'];
+			$rules = $_POST['po_option']['rules'];
 			if ( ! is_array( $rules ) ) { $rules = array(); }
 			$settings['rules'] = array_keys( $rules );
 
@@ -393,6 +402,7 @@ class IncPopup extends IncPopupBase {
 	 * @return array
 	 */
 	static public function post_columns( $post_columns ) {
+		WDev()->load_request_fields( 'post_status' );
 
 		$new_columns = array();
 
@@ -405,7 +415,7 @@ class IncPopup extends IncPopupBase {
 		$new_columns['po_name'] = __( 'PopUp Name', PO_LANG );
 		$new_columns['po_cond'] = __( 'Conditions', PO_LANG );
 
-		if ( 'trash' != @$_REQUEST['post_status'] ) {
+		if ( 'trash' !== $_REQUEST['post_status'] ) {
 			$new_columns['po_pos'] = __( 'Order', PO_LANG );
 			$new_columns['po_state'] = __( 'Active', PO_LANG );
 		}
@@ -433,6 +443,7 @@ class IncPopup extends IncPopupBase {
 					$actions['edit'] = array(
 						'url' => get_edit_post_link( $post_id ),
 						'title' => __( 'Edit this PopUp', PO_LANG ),
+						'attr' => '',
 						'label' => __( 'Edit', PO_LANG )
 					);
 				}
@@ -444,6 +455,7 @@ class IncPopup extends IncPopupBase {
 					$actions['deactivate'] = array(
 						'url' => $the_url,
 						'title' => __( 'Deactivate this PopUp', PO_LANG ),
+						'attr' => '',
 						'label' => __( 'Deactivate', PO_LANG )
 					);
 				}
@@ -455,6 +467,7 @@ class IncPopup extends IncPopupBase {
 					$actions['activate'] = array(
 						'url' => $the_url,
 						'title' => __( 'Activate this PopUp', PO_LANG ),
+						'attr' => '',
 						'label' => __( 'Activate', PO_LANG )
 					);
 				}
@@ -474,6 +487,7 @@ class IncPopup extends IncPopupBase {
 						$actions['untrash'] = array(
 							'url' => $the_url,
 							'title' => __( 'Restore this PopUp from the Trash', PO_LANG ),
+							'attr' => '',
 							'label' => __( 'Restore', PO_LANG )
 						);
 					} elseif ( EMPTY_TRASH_DAYS ) {
@@ -511,10 +525,10 @@ class IncPopup extends IncPopupBase {
 					$sep = ( $i == $action_count ) ? '' : ' | ';
 					?>
 					<span class="<?php echo esc_attr( $action ); ?>">
-					<a href="<?php echo esc_url( @$item['url'] ); ?>"
-						title="<?php echo esc_attr( @$item['title'] ); ?>"
-						<?php echo '' . @$item['attr']; ?>>
-						<?php echo esc_html( @$item['label'] ); ?>
+					<a href="<?php echo esc_url( $item['url'] ); ?>"
+						title="<?php echo esc_attr( $item['title'] ); ?>"
+						<?php echo '' . $item['attr']; ?>>
+						<?php echo esc_html( $item['label'] ); ?>
 					</a><?php echo esc_html( $sep ); ?>
 					</span>
 					<?php
@@ -663,8 +677,10 @@ class IncPopup extends IncPopupBase {
 		$wp_list_table = _get_list_table( 'WP_Posts_List_Table' );
 		$action = $wp_list_table->current_action();
 
+		WDev()->load_request_fields( 'mode' );
+
 		if ( $action ) {
-			if ( 'list' === @$_REQUEST['mode'] ) {
+			if ( 'list' === $_REQUEST['mode'] ) {
 				// ----- Custom bulk-action.
 				check_admin_referer( 'bulk-posts' );
 				$post_ids = array();
@@ -726,9 +742,11 @@ class IncPopup extends IncPopupBase {
 				}
 			}
 			else {
+				WDev()->load_request_fields( '_wpnonce', 'post_id' );
+
 				// ----- Custom row-action.
-				$nonce = @$_REQUEST['_wpnonce'];
-				$post_id = absint( @$_REQUEST['post_id'] );
+				$nonce = $_REQUEST['_wpnonce'];
+				$post_id = absint( $_REQUEST['post_id'] );
 				$popup = IncPopupDatabase::get( $post_id );
 
 				if ( ! $popup ) { return; }
@@ -830,7 +848,7 @@ class IncPopup extends IncPopupBase {
 	}
 
 	/**
-	 * Save the popup data to database
+	 * Save the popup data to database.
 	 *
 	 * @since  4.6
 	 * @param  int $post_id Post ID that was saved/created
@@ -868,8 +886,10 @@ class IncPopup extends IncPopupBase {
 	 * @since  4.6
 	 */
 	static protected function form_check_actions() {
-		$popup_id = absint( @$_REQUEST['post'] );
-		$action = @$_REQUEST['do'];
+		WDev()->load_request_fields( 'post', 'do' );
+
+		$popup_id = absint( $_REQUEST['post'] );
+		$action = $_REQUEST['do'];
 
 		if ( empty( $popup_id ) || empty( $action ) ) { return; }
 
@@ -1037,14 +1057,17 @@ class IncPopup extends IncPopupBase {
 	static public function form_save( $post_id, $post, $update ) {
 		$popup = IncPopupDatabase::get( $post_id );
 
+		// Make sure the POST collection contains all required fields.
+		if ( 0 !== WDev()->load_post_fields( 'popup-nonce', 'post_type', 'po-action' ) ) { return; }
+
 		// Autosave is not processed.
 		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) { return; }
 
 		// The nonce is invalid.
-		if ( ! wp_verify_nonce( @$_POST['popup-nonce'], 'save-popup' ) ) { return; }
+		if ( ! wp_verify_nonce( $_POST['popup-nonce'], 'save-popup' ) ) { return; }
 
 		// This save event is for a different post type... ??
-		if ( IncPopupItem::POST_TYPE != @$_POST['post_type'] ) { return; }
+		if ( IncPopupItem::POST_TYPE != $_POST['post_type'] ) { return; }
 
 		// Global PopUp modified in a Network-Blog that is not the Main-Blog.
 		if ( ! IncPopup::correct_level() ) { return; }
@@ -1052,7 +1075,7 @@ class IncPopup extends IncPopupBase {
 		// User does not have permissions for this.
 		if ( ! current_user_can( IncPopupPosttype::$perms ) ) { return; }
 
-		$action = @$_POST['po-action'];
+		$action = $_POST['po-action'];
 		$status = false;
 		switch ( $action ) {
 			case 'save':

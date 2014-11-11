@@ -72,6 +72,10 @@ For network wide control - add the line define('PO_GLOBAL', true); to your wp-co
 
 == Changelog ==
 
+= 4.6.1.4 =
+* Better: Improved handling of forms inside PopUps
+* Better: Ajax calls improved to prevent security errors by iThemes, etc.
+
 = 4.6.1.3 =
 * New: Allow page to be scrolled while PopUp is open.
 * Fix: Prevent PopUps from staying open after submitting a form to external URL.

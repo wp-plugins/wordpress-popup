@@ -1,4 +1,4 @@
-/*! PopUp Free - v4.6.13
+/*! PopUp Free - v4.6.14
  * https://wordpress.org/plugins/wordpress-popup/
  * Copyright (c) 2014; * Licensed GPLv2+ */
 /*global window:false */
@@ -40,19 +40,19 @@ jQuery(function init_admin() {
 		top_offset = submitdiv.position().top;
 
 		var small_make_sticky = function() {
-					if ( ! body.hasClass( 'sticky-submit' ) ) {
-						body.addClass( 'sticky-submit' );
-						submitdiv.css({ 'marginTop': 0 } );
-						submitdiv.find( '.sticky-actions' ).show();
-						submitdiv.find( '.non-sticky' ).hide();
-					}
+			if ( ! body.hasClass( 'sticky-submit' ) ) {
+				body.addClass( 'sticky-submit' );
+				submitdiv.css({ 'marginTop': 0 } );
+				submitdiv.find( '.sticky-actions' ).show();
+				submitdiv.find( '.non-sticky' ).hide();
+			}
 		};
 
 		var small_remove_sticky = function() {
-					if ( body.hasClass( 'sticky-submit' ) ) {
-						body.removeClass( 'sticky-submit' );
-						submitdiv.find( '.sticky-actions' ).hide();
-						submitdiv.find( '.non-sticky' ).show();
+			if ( body.hasClass( 'sticky-submit' ) ) {
+				body.removeClass( 'sticky-submit' );
+				submitdiv.find( '.sticky-actions' ).hide();
+				submitdiv.find( '.non-sticky' ).show();
 			}
 		};
 
@@ -67,7 +67,7 @@ jQuery(function init_admin() {
 				if ( body.hasClass( 'po-small' ) ) {
 					body.removeClass( 'po-small' );
 					small_remove_sticky();
-					}
+				}
 			}
 		}).scroll(function(){
 			if ( postbody.hasClass( 'columns-1' ) || body.hasClass( 'po-small' ) ) {

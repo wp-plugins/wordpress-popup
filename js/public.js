@@ -1,4 +1,4 @@
-/*! PopUp Free - v4.6.13
+/*! PopUp Free - v4.6.14
  * https://wordpress.org/plugins/wordpress-popup/
  * Copyright (c) 2014; * Licensed GPLv2+ */
 /*global window:false */
@@ -7,6 +7,9 @@
 /*jslint evil: true */   // Allows us to keep the `fn = new Function()` line
 
 ;(function () {
+	var recent_ajax_calls = [],
+		doing_ajax = false;
+
 	var Popup = function( _options ) {
 
 		var me = this,
@@ -424,11 +427,12 @@
 		 * A form inside the PopUp is submitted.
 		 */
 		this.form_submit = function form_submit( ev ) {
-			var frame, form = jQuery( this ),
+			var tmr_check, duration, frame, form = jQuery( this ),
 				popup = form.parents( '.wdpu-container' ).first(),
 				msg = popup.find( '.wdpu-msg' ),
 				inp_popup = jQuery( '<input type="hidden" name="_po_method_" />' ),
-				po_id = '.wdpu-' + me.data.popup_id;
+				po_id = '.wdpu-' + me.data.popup_id,
+				iteration;
 
 			if ( ! popup.length ) { return true; }
 
@@ -442,17 +446,46 @@
 
 			msg.addClass( 'wdpu-loading' );
 
-			jQuery( frame ).load( function(){
-				var inner_new, inner_old, html;
+			// Frequently checks the loading state of the hidden iframe.
+			function check_state() {
+				var is_done = false;
+
+				if ( 'complete' === frame[0].contentDocument.readyState &&
+					! doing_ajax
+				) {
+					is_done = true;
+				} else {
+					iteration += 1; // 20 iterations is equal to 1 second.
+
+					// 200 iterations are 10 seconds.
+					if ( iteration > 200 ) { is_done = true; }
+				}
+
+				if ( is_done ) {
+					window.clearInterval( tmr_check );
+					process_document();
+				}
+			}
+
+			// Executed once the iframe is fully loaded.
+			// This will remove the loading animation and update the popup
+			// contents if required.
+			function process_document() {
+				var inner_new, inner_old, html, external;
+
+				// Allow other javascript functions to pre-process the event.
+				$doc.trigger( 'popup-submit-process', [frame, me, me.data] );
 
 				try {
 					// grab the HTML from the body, using the raw DOM node (frame[0])
 					// and more specifically, it's `contentDocument` property.
 					html = jQuery( po_id, frame[0].contentDocument );
+					external = ( 0 === html.length );
 				} catch ( err ) {
 					// In case the iframe link was an external website the above
 					// line will most likely cause a security issue.
 					html = jQuery( '<html></html>' );
+					external = true;
 				}
 
 				msg.removeClass( 'wdpu-loading' );
@@ -464,8 +497,35 @@
 				// remove the temporary iframe.
 				jQuery( "#wdpu-frame" ).remove();
 
-				// In case the new popup content could not be found or is empty:
+				// For external pages we have no access to the response:
 				// Close the popup!
+				if ( external ) {
+					me.data.close_popup = true;
+
+					me.data.ajax_history = recent_ajax_calls;
+					if ( recent_ajax_calls.length ) {
+						me.data.last_ajax = recent_ajax_calls[0];
+					} else {
+						me.data.last_ajax = false;
+					}
+
+					$doc.trigger( 'popup-submit-done', [me, me.data] );
+
+					if ( me.data.close_popup ) {
+						me.close_popup();
+					}
+					return;
+				}
+
+				// The PopUp is completely empty, possibly another ajax-handler
+				// did process the form. Keep the popup open.
+				if ( ! html.html().length ) {
+					$doc.trigger( 'popup-submit-done', [me, me.data] );
+					return;
+				}
+
+				// A new page was loaded that does not contain new content for
+				// the current PopUp. Close the popup!
 				if ( ! inner_old.length || ! inner_new.length || ! inner_new.text().length ) {
 					$doc.trigger( 'popup-submit-done', [me, me.data] );
 					me.close_popup();
@@ -483,7 +543,10 @@
 				me.setup_popup();
 
 				$doc.trigger( 'popup-submit-done', [me, me.data] );
-			});
+			}
+
+			iteration = 0;
+			tmr_check = window.setInterval( check_state, 50 );
 
 			return true;
 		};
@@ -572,7 +635,6 @@
 			document.cookie = cookie_name + "=" + value + expires + "; path=/";
 		};
 
-
 		/*-----  Finished  ------*/
 
 		// Only expose the "init" and "load" functions of the PopUp.
@@ -627,8 +689,8 @@
 	function load_popups( options, id, data ) {
 		var ajax_args, ajax_data,
 			po_id = 0,
-			thefrom = window.location,
-			thereferrer = document.referrer,
+			thefrom = str_reverse( window.location.toString() ),
+			thereferrer = str_reverse( document.referrer.toString() ),
 			the_data = null;
 
 		var handle_done = function handle_done( data ) {
@@ -654,8 +716,8 @@
 
 		ajax_data['action']      = 'inc_popup';
 		ajax_data['do']          = options['do'];
-		ajax_data['thefrom']     = thefrom.toString();
-		ajax_data['thereferrer'] = thereferrer.toString();
+		ajax_data['thefrom']     = thefrom;
+		ajax_data['thereferrer'] = thereferrer;
 
 		if ( po_id ) { ajax_data['po_id'] = po_id; }
 		if ( data )  { ajax_data['data'] = data; }
@@ -673,6 +735,7 @@
 				jQuery( document ).trigger( 'popup-load-done', [the_data] );
 			}
 		};
+
 		return jQuery.ajax(ajax_args);
 	}
 
@@ -719,6 +782,42 @@
 			spawn_popup( popup_data );
 		}
 	}
+
+	// Reverse a string preserving utf characters
+	function str_reverse( str ) {
+		var charArray = [];
+
+		for (var i = 0; i < str.length; i++) {
+			if ( i + 1 < str.length ) {
+				var value = str.charCodeAt( i );
+				var nextValue = str.charCodeAt(i+1);
+				if ( ( value >= 0xD800 && value <= 0xDBFF &&
+					(nextValue & 0xFC00) === 0xDC00) || // Surrogate pair
+					(nextValue >= 0x0300 && nextValue <= 0x036F) // Combining marks
+				) {
+					charArray.unshift( str.substring(i, i+2) );
+					i++; // Skip the other half
+					continue;
+				}
+			}
+
+			// Otherwise we just have a rogue surrogate marker or a plain old character.
+			charArray.unshift( str[i] );
+		}
+
+		return charArray.join( '' );
+	}
+
+	// Store flag whether ajax request is processed
+	jQuery( document ).ajaxStart(function(ev) {
+		doing_ajax = true;
+	});
+
+	// Store all Ajax responses
+	jQuery( document ).ajaxComplete(function(ev, jqXHR, settings) {
+		doing_ajax = false;
+		recent_ajax_calls.unshift( jqXHR );
+	});
 
 	// Initialize the PopUp one the page is loaded.
 	jQuery(function() {

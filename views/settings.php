@@ -7,13 +7,14 @@ $loading_methods = IncPopupDatabase::get_loading_methods();
 
 
 $settings = IncPopupDatabase::get_settings();
-$cur_method = @$settings['loadingmethod'];
+$cur_method = $settings['loadingmethod'];
 $form_url = remove_query_arg( array( 'message', 'action', '_wpnonce' ) );
 
 
 // Theme compatibility.
 $theme_compat = IncPopupAddon_HeaderFooter::check();
 $theme_class = $theme_compat->okay ? 'msg-ok' : 'msg-err';
+
 
 $rules = IncPopup::get_rules();
 $rule_headers = array(
@@ -152,7 +153,7 @@ $ordered_rules = array();
 				);
 				$is_active = ( in_array( $rule, $settings['rules'] ) );
 				if ( empty( $data['name'] ) ) { continue; }
-				$data['limit'] = explode( ',', @$data['limit'] );
+				$data['limit'] = explode( ',', $data['limit'] );
 				$data['limit'] = array_map( 'trim', $data['limit'] );
 
 				$name = __( trim( $data['name'] ), PO_LANG );

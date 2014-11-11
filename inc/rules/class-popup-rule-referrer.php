@@ -6,7 +6,7 @@ Description: Examine how the visitor arrived on the current page.
 Author:      Philipp (Incsub)
 Author URI:  http://premium.wpmudev.org
 Type:        Rule
-Rules:       From a specific referrer, Not from an internal link, From a search engine
+Rules:       From a specific referrer, Not from a specific referrer, Not from an internal link, From a search engine
 Version:     1.0
 
 NOTE: DON'T RENAME THIS FILE!!
@@ -29,6 +29,15 @@ class IncPopupRule_Referrer extends IncPopupRule {
 			'referrer',
 			__( 'From a specific referrer', PO_LANG ),
 			__( 'Shows the PopUp if the user arrived via a specific referrer.', PO_LANG ),
+			'',
+			15
+		);
+
+		// 'no_referrer' rule.
+		$this->add_rule(
+			'no_referrer',
+			__( 'Not from a specific referrer', PO_LANG ),
+			__( 'Hides the PopUp if the user arrived via a specific referrer.', PO_LANG ),
 			'',
 			15
 		);
@@ -101,6 +110,56 @@ class IncPopupRule_Referrer extends IncPopupRule {
 	 */
 	protected function save_referrer() {
 		return explode( "\n", @$_POST['po_rule_data']['referrer'] );
+	}
+
+
+	/*==============================*\
+	==================================
+	==                              ==
+	==           NO_REFERRER           ==
+	==                              ==
+	==================================
+	\*==============================*/
+
+	/**
+	 * Apply the rule-logic to the specified popup
+	 *
+	 * @since  4.6
+	 * @param  mixed $data Rule-data which was saved via the save_() handler.
+	 * @return bool Decission to display popup or not.
+	 */
+	protected function apply_no_referrer( $data ) {
+		return ! $this->test_referrer( $data );
+	}
+
+	/**
+	 * Output the Admin-Form for the active rule.
+	 *
+	 * @since  4.6
+	 * @param  mixed $data Rule-data which was saved via the save_() handler.
+	 */
+	protected function form_no_referrer( $data ) {
+		if ( is_string( $data ) ) { $no_referrer = $data; }
+		else if ( is_array( $data ) ) { $no_referrer = implode( "\n", $data ); }
+		else { $no_referrer = ''; }
+		?>
+		<label for="po-rule-data-no_referrer">
+			<?php _e( 'Referrers. Can be full URL or a pattern like ".example.com" (one per line):', PO_LANG ); ?>
+		</label>
+		<textarea name="po_rule_data[no_referrer]" id="po-rule-data-no_referrer" class="block"><?php
+			echo esc_attr( $no_referrer );
+		?></textarea>
+		<?php
+	}
+
+	/**
+	 * Update and return the $settings array to save the form values.
+	 *
+	 * @since  4.6
+	 * @return mixed Data collection of this rule.
+	 */
+	protected function save_no_referrer() {
+		return explode( "\n", @$_POST['po_rule_data']['no_referrer'] );
 	}
 
 
@@ -204,6 +263,7 @@ class IncPopupRule_Referrer extends IncPopupRule {
 			'web.info.com',
 			'search.',
 			'del.icio.us/search',
+			'delicious.com/search',
 			'soso.com',
 			'/search/',
 			'.yahoo.',
