@@ -1,7 +1,7 @@
 <?php
 
 // Based on Jigsaw plugin by Jared Novack (http://jigsaw.upstatement.com/)
-class TheLib_1_0_15 {
+class TheLib_1_0_16 {
 
 	// --- Start of 5.2 compatibility functions
 
@@ -763,10 +763,8 @@ class TheLib_1_0_15 {
 	 * @return int Number of missing fields that were initialized.
 	 */
 	public function load_post_fields( $fields ) {
-		return $this->load_fields(
-			$_POST,
-			is_array( $fields ) ? $fields : func_get_args()
-		);
+		$fields = is_array( $fields ) ? $fields : func_get_args();
+		return $this->load_fields( $_POST, $fields );
 	}
 
 	/**
@@ -777,10 +775,8 @@ class TheLib_1_0_15 {
 	 * @return int Number of missing fields that were initialized.
 	 */
 	public function load_request_fields( $fields ) {
-		return $this->load_fields(
-			$_REQUEST,
-			is_array( $fields ) ? $fields : func_get_args()
-		);
+		$fields = is_array( $fields ) ? $fields : func_get_args();
+		return $this->load_fields( $_REQUEST, $fields );
 	}
 
 	/**

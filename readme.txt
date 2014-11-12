@@ -72,6 +72,9 @@ For network wide control - add the line define('PO_GLOBAL', true); to your wp-co
 
 == Changelog ==
 
+= 4.6.1.5 =
+* Fix error on servers that run older php version than 5.3
+
 = 4.6.1.4 =
 * Better: Improved handling of forms inside PopUps
 * Better: Ajax calls improved to prevent security errors by iThemes, etc.
