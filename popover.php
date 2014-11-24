@@ -3,7 +3,7 @@
 Plugin Name: WordPress PopUp
 Plugin URI:  http://premium.wpmudev.org/project/the-pop-over-plugin/
 Description: Allows you to display a fancy PopUp to visitors sitewide or per blog. A *very* effective way of advertising a mailing list, special offer or running a plain old ad.
-Version:     4.6.1.5
+Version:     4.7.0.1
 Author:      WPMU DEV
 Author URI:  http://premium.wpmudev.org
 Textdomain:  popover
@@ -40,7 +40,7 @@ function inc_popup_free_init() {
 	if ( ! defined( 'PO_LANG' ) ) {
 		// Used for more readable i18n functions: __( 'text', PO_LANG );
 		define( 'PO_LANG', 'popover' );
-		define( 'PO_VERSION', '4.6' );
+		define( 'PO_VERSION', '4.7' );
 
 		/**
 		 * The current DB/build version. NOT THE SAME AS THE PLUGIN VERSION!

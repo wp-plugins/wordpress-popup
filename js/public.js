@@ -1,4 +1,4 @@
-/*! PopUp Free - v4.6.15
+/*! PopUp Free - v4.7.01
  * https://wordpress.org/plugins/wordpress-popup/
  * Copyright (c) 2014; * Licensed GPLv2+ */
 /*global window:false */
@@ -50,19 +50,23 @@
 		this.close_popup = function close_popup() {
 			jQuery( 'html' ).removeClass( 'has-popup' );
 
-			if ( me.data.display_data['click_multi'] ) {
-				$po_back.hide();
-				$po_div.hide();
-			} else {
-				$po_back.remove();
-				$po_div.remove();
+			function close_it() {
+				if ( me.data.display_data['click_multi'] ) {
+					$po_back.hide();
+					$po_div.hide();
+				} else {
+					$po_back.remove();
+					$po_div.remove();
 
-				me.have_popup = false;
+					me.have_popup = false;
+				}
+
+				$doc.trigger( 'popup-closed' );
+				// Legacy trigger.
+				$doc.trigger( 'popover-closed' );
 			}
 
-			$doc.trigger( 'popup-closed' );
-			// Legacy trigger.
-			$doc.trigger( 'popover-closed' );
+			close_it();
 
 			popup_close( me );
 			return false;
@@ -304,7 +308,7 @@
 
 			count = parseInt( me.get_cookie('po_c'), 10 );
 			if ( isNaN( count ) ) { count = 0; }
-			me.set_cookie( 'po_c', count + 1 );
+			me.set_cookie( 'po_c', count + 1, 365 );
 
 			me.opened += 1;
 			$po_back.on( 'click', me.background_clicked );
@@ -361,7 +365,8 @@
 			// Legacy trigger.
 			$doc.trigger( 'popover-displayed', [me.data, me] );
 
-			$po_div.on( 'submit', 'form', me.form_submit );
+			$po_div.off( 'submit', 'form', me.form_submit )
+				.on( 'submit', 'form', me.form_submit );
 		};
 
 
@@ -471,16 +476,18 @@
 			// This will remove the loading animation and update the popup
 			// contents if required.
 			function process_document() {
-				var inner_new, inner_old, html, external;
+				var inner_new, inner_old, html, external, handled, close_on_fail;
 
 				// Allow other javascript functions to pre-process the event.
 				$doc.trigger( 'popup-submit-process', [frame, me, me.data] );
+				handled = false;
+				close_on_fail = true;
 
 				try {
 					// grab the HTML from the body, using the raw DOM node (frame[0])
 					// and more specifically, it's `contentDocument` property.
 					html = jQuery( po_id, frame[0].contentDocument );
-					external = ( 0 === html.length );
+					external = me.data.did_ajax;
 				} catch ( err ) {
 					// In case the iframe link was an external website the above
 					// line will most likely cause a security issue.
@@ -488,6 +495,7 @@
 					external = true;
 				}
 
+				me.data.close_popup = false;
 				msg.removeClass( 'wdpu-loading' );
 
 				// Get the new and old Popup Contents.
@@ -496,57 +504,86 @@
 
 				// remove the temporary iframe.
 				jQuery( "#wdpu-frame" ).remove();
+				me.data.last_ajax = undefined;
 
 				// For external pages we have no access to the response:
 				// Close the popup!
 				if ( external ) {
-					me.data.close_popup = true;
+					// E.g. Contact Form 7
+					me.data.close_popup = close_on_fail;
 
 					me.data.ajax_history = recent_ajax_calls;
 					if ( recent_ajax_calls.length ) {
 						me.data.last_ajax = recent_ajax_calls[0];
-					} else {
-						me.data.last_ajax = false;
 					}
+
+					$doc.trigger( 'popup-submit-done', [me, me.data] );
+					handled = true;
+
+					if ( me.data.close_popup ) {
+						me.close_popup();
+						return;
+					}
+				}
+
+				// The PopUp is completely empty, possibly another ajax-handler
+				// did process the form. Keep the popup open.
+				else if ( ! html.length || ! html.html().length ) {
+					// E.g. Gravity Forms
+					$doc.trigger( 'popup-submit-done', [me, me.data] );
+					handled = true;
+
+					if ( me.data.close_popup ) {
+						me.close_popup();
+						return;
+					}
+				}
+
+				// A new page was loaded that does not contain new content for
+				// the current PopUp. Close the popup!
+				else if ( ! inner_old.length || ! inner_new.length || ! inner_new.text().length ) {
+					me.data.close_popup = close_on_fail;
+
+					$doc.trigger( 'popup-submit-done', [me, me.data] );
+					handled = true;
+
+					if ( me.data.close_popup ) {
+						me.close_popup();
+						return;
+					}
+				}
+
+				else {
+					// Update the Popup contents.
+					inner_old.replaceWith( inner_new );
+
+					me.move_popup();
+					me.setup_popup();
 
 					$doc.trigger( 'popup-submit-done', [me, me.data] );
 
 					if ( me.data.close_popup ) {
 						me.close_popup();
 					}
-					return;
+
+					me.fetch_dom();
+					me.setup_popup();
+
+					// Re-initialize the local DOM cache.
+					$doc.trigger( 'popup-init', [me, me.data] );
 				}
-
-				// The PopUp is completely empty, possibly another ajax-handler
-				// did process the form. Keep the popup open.
-				if ( ! html.html().length ) {
-					$doc.trigger( 'popup-submit-done', [me, me.data] );
-					return;
-				}
-
-				// A new page was loaded that does not contain new content for
-				// the current PopUp. Close the popup!
-				if ( ! inner_old.length || ! inner_new.length || ! inner_new.text().length ) {
-					$doc.trigger( 'popup-submit-done', [me, me.data] );
-					me.close_popup();
-					return;
-				}
-
-				// Update the Popup contents.
-				inner_old.replaceWith( inner_new );
-
-				// Re-initialize the local DOM cache.
-				me.fetch_dom();
-				$doc.trigger( 'popup-init', [me, me.data] );
-
-				me.move_popup();
-				me.setup_popup();
-
-				$doc.trigger( 'popup-submit-done', [me, me.data] );
 			}
 
-			iteration = 0;
-			tmr_check = window.setInterval( check_state, 50 );
+			if ( doing_ajax ) {
+				// E.g. Contact Form 7
+				me.data.did_ajax = true;
+				iteration = 0;
+				tmr_check = window.setInterval( check_state, 50 );
+			} else {
+				// E.g. Gravity Forms
+				me.data.did_ajax = false;
+				frame.load( process_document );
+			}
 
 			return true;
 		};

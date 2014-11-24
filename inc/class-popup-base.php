@@ -47,6 +47,16 @@ abstract class IncPopupBase {
 			add_action( 'parse_query', array( $this, 'prepare_url' ) );
 		}
 
+		/*
+		 * URLs for the "from" and "referer" fields are transmitted in reversed
+		 * format (moc.elpmaxe//:ptth)
+		 * Reason for this is that plugins like iThemes security might block
+		 * incoming requests that contain the value "http://". This is how
+		 * we bypass that security check.
+		 */
+		if ( ! empty( $_REQUEST['thefrom'] ) ) { $_REQUEST['thefrom'] = strrev( $_REQUEST['thefrom'] ); }
+		if ( ! empty( $_REQUEST['thereferrer'] ) ) { $_REQUEST['thereferrer'] = strrev( $_REQUEST['thereferrer'] ); }
+
 		WDev()->translate_plugin( PO_LANG, PO_LANG_DIR );
 
 		// Register the popup post type.
@@ -201,7 +211,7 @@ abstract class IncPopupBase {
 				'dir' => trailingslashit( PO_TPL_DIR . $key ),
 				'name' => $data->name,
 				'pro' => $data->pro,
-				'deprecated' => $data->deprecated,
+				'deprecated' => (bool) $data->deprecated,
 			);
 			if ( isset( $urls[$data->name] ) ) { unset( $urls[$data->name] ); }
 			if ( isset( $paths[$data->name] ) ) { unset( $paths[$data->name] ); }
@@ -298,7 +308,11 @@ abstract class IncPopupBase {
 			'po_display',
 			'po_display_data',
 			'po_hide_expire',
-			'po_rule'
+			'po_rule',
+			'po_custom_css',
+			'po_animation_in',
+			'po_animation_out',
+			'po_form_submit'
 		);
 
 		$data = array(
@@ -325,6 +339,9 @@ abstract class IncPopupBase {
 				'width' => $form['po_size_width'],
 				'height' => $form['po_size_height'],
 			),
+			'custom_css' => $form['po_custom_css'],
+			'animation_in' => $form['po_animation_in'],
+			'animation_out' => $form['po_animation_out'],
 
 			// Meta: Behavior
 			'display' => $form['po_display'],
@@ -333,6 +350,7 @@ abstract class IncPopupBase {
 			'close_hides' => isset( $form['po_close_hides'] ),
 			'hide_expire' => $form['po_hide_expire'],
 			'overlay_close' => ! isset( $form['po_overlay_close'] ),
+			'form_submit' => $form['po_form_submit'],
 
 			// Meta: Rules:
 			'rule' => $form['po_rule'],
@@ -368,6 +386,7 @@ abstract class IncPopupBase {
 
 				if ( ! empty( $this->popups ) ) {
 					$data = $this->get_popup_data();
+					header( 'Content-Type: application/javascript' );
 					echo 'po_data(' . json_encode( $data ) . ')';
 				}
 				die();

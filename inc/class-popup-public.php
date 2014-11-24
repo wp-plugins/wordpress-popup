@@ -89,9 +89,6 @@ class IncPopup extends IncPopupBase {
 
 		if ( isset( $_POST['_po_method_'] ) ) { $cur_method = $_POST['_po_method_']; }
 
-		if ( ! empty( $_REQUEST['thefrom'] ) ) { $_REQUEST['thefrom'] = strrev( $_REQUEST['thefrom'] ); }
-		if ( ! empty( $_REQUEST['thereferrer'] ) ) { $_REQUEST['thereferrer'] = strrev( $_REQUEST['thereferrer'] ); }
-
 		/*
 		 * Apply the specific loading method to include the popup on the page.
 		 * Details to the loading methods are documented in the header comment
@@ -145,27 +142,17 @@ class IncPopup extends IncPopupBase {
 			return;
 		}
 
-		wp_register_script(
-			'popup-public',
-			PO_JS_URL . 'public.min.js',
-			array( 'jquery' ),
-			false,
-			true
-		);
-
 		$popup_data = apply_filters( 'popup-ajax-data', $this->script_data );
 
-		wp_localize_script(
-			'popup-public',
-			'_popup_data',
-			$popup_data
-		);
-
-		wp_enqueue_script( 'popup-public' );
+		WDev()->add_data( '_popup_data', $popup_data, 'front' );
+		WDev()->add_ui( PO_JS_URL . 'public.min.js', 'front' );
 	}
 
 	/**
 	 * Load-Method: External
+	 *
+	 * IS AJAX
+	 * IS ADMIN
 	 *
 	 * PopUp data is loaded via a normal WordPress ajax request, directed at
 	 * the admin-ajax.php handler.
@@ -185,6 +172,9 @@ class IncPopup extends IncPopupBase {
 
 	/**
 	 * Load-Method: Front/Frontloading
+	 *
+	 * NOT AJAX
+	 * NOT ADMIN
 	 *
 	 * PopUp data is loaded in an ajax request. The ajax request is directed
 	 * at the same URL that is currently displayed, but a few URL-parameters are
@@ -209,6 +199,9 @@ class IncPopup extends IncPopupBase {
 
 	/**
 	 * Load-Method: Footer
+	 *
+	 * NOT AJAX
+	 * NOT ADMIN
 	 *
 	 * The PopUp styles and html is directly injected into the webpage header
 	 * and footer. The PopUp is ready when the page is loaded. No ajax request

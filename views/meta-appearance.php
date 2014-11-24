@@ -8,6 +8,110 @@
 
 $styles = apply_filters( 'popup-styles', array() );
 
+$animations_in = array(
+	__( 'Attention Seekers', PO_LANG ) => array(
+		'bounce' => __( 'Bounce', PO_LANG ),
+		'flash' => __( 'Flash', PO_LANG ),
+		'pulse' => __( 'Pulse', PO_LANG ),
+		'rubberBand' => __( 'Rubber Band', PO_LANG ),
+		'shake' => __( 'Shake', PO_LANG ),
+		'swing' => __( 'Swing', PO_LANG ),
+		'tada' => __( 'Tada', PO_LANG ),
+		'wobble' => __( 'Wobble', PO_LANG ),
+	),
+	__( 'Bouncing Entrances', PO_LANG ) => array(
+		'bounceIn' => __( 'Bounce In', PO_LANG ),
+		'bounceInDown' => __( 'Bounce In Down', PO_LANG ),
+		'bounceInLeft' => __( 'Bounce In Left', PO_LANG ),
+		'bounceInRight' => __( 'Bounce In Right', PO_LANG ),
+		'bounceInUp' => __( 'Bounce In Up', PO_LANG ),
+	),
+	__( 'Fading Entrances', PO_LANG ) => array(
+		'fadeIn' => __( 'Fade In', PO_LANG ),
+		'fadeInDown' => __( 'Fade In Down', PO_LANG ),
+		'fadeInDownBig' => __( 'Fade In Down Big', PO_LANG ),
+		'fadeInLeft' => __( 'Fade In Left', PO_LANG ),
+		'fadeInLeftBig' => __( 'Fade In Left Big', PO_LANG ),
+		'fadeInRight' => __( 'Fade In Right', PO_LANG ),
+		'fadeInRightBig' => __( 'Fade In Right Big', PO_LANG ),
+		'fadeInUp' => __( 'Fade In Up', PO_LANG ),
+		'fadeInUpBig' => __( 'Fade In Up Big', PO_LANG ),
+	),
+	__( 'Flippers', PO_LANG ) => array(
+		'flip' => __( 'Flip', PO_LANG ),
+		'flipInX' => __( 'Flip In X', PO_LANG ),
+		'flipInY' => __( 'Flip In Y', PO_LANG ),
+	),
+	__( 'Lightspeed', PO_LANG ) => array(
+		'lightSpeedIn' => __( 'Light Speed In', PO_LANG ),
+	),
+	__( 'Rotating Entrances', PO_LANG ) => array(
+		'rotateIn' => __( 'Rotate In', PO_LANG ),
+		'rotateInDownLeft' => __( 'Rotate In Down Left', PO_LANG ),
+		'rotateInDownRight' => __( 'Rotate In Down Right', PO_LANG ),
+		'rotateInUpLeft' => __( 'Rotate In Up Left', PO_LANG ),
+		'rotateInUpRight' => __( 'Rotate In Up Right', PO_LANG ),
+	),
+	__( 'Specials', PO_LANG ) => array(
+		'rollIn' => __( 'Roll In', PO_LANG ),
+	),
+	__( 'Zoom Entrances', PO_LANG ) => array(
+		'zoomIn' => __( 'Zoom In', PO_LANG ),
+		'zoomInDown' => __( 'Zoom In Down', PO_LANG ),
+		'zoomInLeft' => __( 'Zoom In Left', PO_LANG ),
+		'zoomInRight' => __( 'Zoom In Right', PO_LANG ),
+		'zoomInUp' => __( 'Zoom In Up', PO_LANG ),
+	),
+);
+
+$animations_out = array(
+	__( 'Bouncing Exits', PO_LANG ) => array(
+		'bounceOut' => __( 'Bounce Out', PO_LANG ),
+		'bounceOutDown' => __( 'Bounce Out Down', PO_LANG ),
+		'bounceOutLeft' => __( 'Bounce Out Left', PO_LANG ),
+		'bounceOutRight' => __( 'Bounce Out Right', PO_LANG ),
+		'bounceOutUp' => __( 'Bounce Out Up', PO_LANG ),
+	),
+	__( 'Fading Exits', PO_LANG ) => array(
+		'fadeOut' => __( 'Fade Out', PO_LANG ),
+		'fadeOutDown' => __( 'Fade Out Down', PO_LANG ),
+		'fadeOutDownBig' => __( 'Fade Out Down Big', PO_LANG ),
+		'fadeOutLeft' => __( 'Fade Out Left', PO_LANG ),
+		'fadeOutLeftBig' => __( 'Fade Out Left Big', PO_LANG ),
+		'fadeOutRight' => __( 'Fade Out Right', PO_LANG ),
+		'fadeOutRightBig' => __( 'Fade Out Right Big', PO_LANG ),
+		'fadeOutUp' => __( 'Fade Out Up', PO_LANG ),
+		'fadeOutUpBig' => __( 'Fade Out Up Big', PO_LANG ),
+	),
+	__( 'Flippers', PO_LANG ) => array(
+		'flipOutX' => __( 'Flip Out X', PO_LANG ),
+		'flipOutY' => __( 'Flip Out Y', PO_LANG ),
+	),
+	__( 'Lightspeed', PO_LANG ) => array(
+		'lightSpeedOut' => __( 'Light Speed Out', PO_LANG ),
+	),
+	__( 'Rotating Exits', PO_LANG ) => array(
+		'rotateOut' => __( 'Rotate Out', PO_LANG ),
+		'rotateOutDownLeft' => __( 'Rotate Out Down Left', PO_LANG ),
+		'rotateOutDownRight' => __( 'Rotate Out Down Right', PO_LANG ),
+		'rotateOutUpLeft' => __( 'Rotate Out Up Left', PO_LANG ),
+		'rotateOutUpRight' => __( 'Rotate Out Up Right', PO_LANG ),
+	),
+	__( 'Specials', PO_LANG ) => array(
+		'hinge' => __( 'Hinge', PO_LANG ),
+		'rollOut' => __( 'Roll Out', PO_LANG ),
+	),
+	__( 'Zoom Exits', PO_LANG ) => array(
+		'zoomOut' => __( 'Zoom Out', PO_LANG ),
+		'zoomOutDown' => __( 'Zoom Out Down', PO_LANG ),
+		'zoomOutLeft' => __( 'Zoom Out Left', PO_LANG ),
+		'zoomOutRight' => __( 'Zoom Out Right', PO_LANG ),
+		'zoomOutUp' => __( 'Zoom Out Up', PO_LANG ),
+	),
+);
+
+
+
 ?>
 <div class="wpmui-grid-12">
 	<div class="col-12">
@@ -29,26 +133,32 @@ $styles = apply_filters( 'popup-styles', array() );
 			name="po_orig_style_old"
 			value="<?php echo esc_attr( $popup->deprecated_style ); ?>" />
 		<select class="block" id="po-style" name="po_style">
-			<?php foreach ( $styles as $key => $data ) : ?>
-				<?php if ( $data->deprecated && $popup->style != $key ) { continue; } ?>
-				<?php if ( ! $data->pro && PO_VERSION != 'pro' ) : ?>
+			<?php
+			foreach ( $styles as $key => $data ) :
+				if ( ! isset( $data->deprecated ) ) { $data->deprecated = false; }
+				if ( $data->deprecated && $popup->style != $key ) { continue; }
+				if ( ! $data->pro && PO_VERSION != 'pro' ) : ?>
 					<option value="<?php echo esc_attr( $key ); ?>"
 						data-old="<?php echo esc_attr( $data->deprecated ); ?>"
 						<?php selected( $key, $popup->style ); ?>>
 						<?php echo esc_attr( $data->name ); ?>
 						<?php if ( $data->deprecated ) : ?>*)<?php endif; ?>
 					</option>
-				<?php endif; ?>
-			<?php endforeach; ?>
-			<?php foreach ( $styles as $key => $data ) : ?>
-				<?php if ( $data->deprecated ) { continue; } ?>
-				<?php if ( $data->pro && PO_VERSION != 'pro' ) : ?>
+				<?php
+				endif;
+			endforeach;
+			foreach ( $styles as $key => $data ) :
+				if ( ! isset( $data->deprecated ) ) { $data->deprecated = false; }
+				if ( $data->deprecated ) { continue; }
+				if ( $data->pro && PO_VERSION != 'pro' ) : ?>
 					<option disabled="disabled">
 						<?php echo esc_attr( $data->name ); ?> -
 						<?php _e( 'PRO Version only', PO_LANG ); ?>
 					</option>
-				<?php endif; ?>
-			<?php endforeach; ?>
+				<?php
+				endif;
+			endforeach;
+			?>
 		</select>
 	</div>
 	<div class="col-5">
@@ -161,5 +271,65 @@ endif; ?>
 				<?php checked( $popup->scroll_body ); ?> />
 			<?php _e( 'Allow page to be scrolled while PopUp is visible', PO_LANG ); ?>
 		</label>
+	</div>
+</div>
+
+<hr />
+
+<div class="wpmui-grid-12">
+	<div class="col-6 inp-row">
+		<label for="po-animation-in">
+			<?php _e( 'PopUp display animation', PO_LANG ); ?>
+		</label>
+	</div>
+	<div class="col-6 inp-row">
+		<label for="po-animation-out">
+			<?php _e( 'PopUp closing animation', PO_LANG ); ?>
+		</label>
+	</div>
+	<div class="col-6 inp-row">
+		<select id="po-animation-in" name="po_animation_in">
+			<option value="" selected="selected"><?php _e( '(No Animation)', PO_LANG ); ?></option>
+			<?php foreach ( $animations_in as $group => $items ) : ?>
+				<?php if ( ! empty( $group ) ) : ?>
+				<optgroup label="<?php echo esc_attr( $group ); ?>">
+				<?php endif; ?>
+
+				<?php foreach ( $items as $key => $label ) : ?>
+					<option value="<?php echo esc_attr( $key ); ?>"
+						disabled="disabled">
+						<?php echo esc_attr( $label ); ?> -
+						<?php _e( 'PRO Version only', PO_LANG ); ?>
+					</option>
+				<?php endforeach; ?>
+
+				<?php if ( ! empty( $group ) ) : ?>
+				</optgroup>
+				<?php endif; ?>
+			<?php endforeach; ?>
+		</select>
+	</div>
+
+	<div class="col-6 inp-row">
+		<select id="po-animation-out" name="po_animation_out">
+			<option value="" selected="selected"><?php _e( '(No Animation)', PO_LANG ); ?></option>
+			<?php foreach ( $animations_out as $group => $items ) : ?>
+				<?php if ( ! empty( $group ) ) : ?>
+				<optgroup label="<?php echo esc_attr( $group ); ?>">
+				<?php endif; ?>
+
+				<?php foreach ( $items as $key => $label ) : ?>
+					<option value="<?php echo esc_attr( $key ); ?>"
+						disabled="disabled">
+						<?php echo esc_attr( $label ); ?> -
+						<?php _e( 'PRO Version only', PO_LANG ); ?>
+					</option>
+				<?php endforeach; ?>
+
+				<?php if ( ! empty( $group ) ) : ?>
+				</optgroup>
+				<?php endif; ?>
+			<?php endforeach; ?>
+		</select>
 	</div>
 </div>

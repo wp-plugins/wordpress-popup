@@ -72,6 +72,18 @@ For network wide control - add the line define('PO_GLOBAL', true); to your wp-co
 
 == Changelog ==
 
+= 4.7.0.1 =
+* Fix small JavaScript error
+
+= 4.7.0 =
+* Add PopUp Animations (PRO version)
+* Add Behavior option: Form submit behavior (PRO version)
+* Add new meta box: Custom CSS for individual PopUps (PRO version)
+* Add validation of PopUp shortcodes for the current loading method
+* Fix an issue where the PopUp closes when Gravity Forms is submitted
+* Fix the on-URL rules in Ajax loading methods
+* Fix the Ajax loading methods when Strict-Mime-Check is enabled
+
 = 4.6.1.5 =
 * Fix error on servers that run older php version than 5.3
 

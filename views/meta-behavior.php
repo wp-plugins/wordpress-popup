@@ -186,5 +186,42 @@
 	); ?>
 	</div>
 </div>
+</div>
+
+<hr />
+
+<?php
+/**
+ * Choose what to do when the PopUp contains a form.
+ *
+ * @since  4.7.0
+ */
+?>
+<div class="wpmui-grid-12">
+	<div class="col-12">
+		<strong><?php _e( 'Form submit', PO_LANG ); ?></strong>
+	</div>
+</div>
+<div class="wpmui-grid-12">
+	<div class="col-12 inp-row">
+		<label for="po-form-submit">
+			<?php _e( 'In case your PopUp contains a form (e.g. a contact form) then you can change the form-submit behavior here.', PO_LANG ); ?>
+		</label>
+	</div>
+	<div class="col-12 inp-row">
+		<select name="po_form_submit" id="po-form-submit">
+			<option value="default" selected="selected">
+				<?php _e( 'Refresh PopUp or close (default)', PO_LANG ); ?>
+			</option>
+			<option value="ignore" disabled="disabled">
+				<?php _e( 'Refresh PopUp or do nothing (use for Ajax Forms)', PO_LANG ); ?> -
+				<?php _e( 'PRO Version only', PO_LANG ); ?>
+			</option>
+			<option value="redirect" disabled="disabled">
+				<?php _e( 'Redirect to form target URL', PO_LANG ); ?> -
+				<?php _e( 'PRO Version only', PO_LANG ); ?>
+			</option>
+		</select>
+	</div>
 
 </div>

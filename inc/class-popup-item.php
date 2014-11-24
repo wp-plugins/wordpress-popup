@@ -89,6 +89,9 @@ class IncPopupItem {
 	// Allow page to be scrolled while PopUp is open.
 	public $scroll_body = true;
 
+	// CSS code to customize this PopUp
+	public $custom_css = '';
+
 	// -- "Never show again" options
 
 	// Add button "Never show popup again".
@@ -100,8 +103,13 @@ class IncPopupItem {
 	// Expiration of "Never show popup again" (in days).
 	public $hide_expire = 365;
 
+	// -- Behavior options
+
 	// Close popup when user clicks on the background overlay?
 	public $overlay_close = true;
+
+	// What do do when form is submitted inside PopUp
+	public $form_submit = 'default';
 
 	// -- Display options
 
@@ -110,6 +118,12 @@ class IncPopupItem {
 
 	// Collection of additional options for the $display option (e.g. delay, ...)
 	public $display_data = array();
+
+	// Display animation
+	public $animation_in = '';
+
+	// Hiding animation
+	public $animation_out = '';
 
 	// -- Conditions
 
@@ -188,6 +202,7 @@ class IncPopupItem {
 			'col2' => '',
 		);
 		$this->style = 'minimal';
+		$this->custom_css = '';
 		$this->deprecated_style = false;
 		$this->round_corners = true;
 		$this->scroll_body = false;
@@ -195,6 +210,7 @@ class IncPopupItem {
 		$this->close_hides = false;
 		$this->hide_expire = 365;
 		$this->overlay_close = true;
+		$this->form_submit = 'default';
 		$this->display = 'delay';
 		$this->display_data = array(
 			'delay' => 0,
@@ -203,6 +219,8 @@ class IncPopupItem {
 			'scroll_type' => '%',
 			'anchor' => '',
 		);
+		$this->animation_in = '';
+		$this->animation_out = '';
 		$this->rule = array();
 		$this->rule_files = array();
 		$this->rule_data = array();
@@ -247,6 +265,9 @@ class IncPopupItem {
 		isset( $data['cta_label'] ) && $this->cta_label = $data['cta_label'];
 		isset( $data['cta_link'] ) && $this->cta_link = $data['cta_link'];
 		isset( $data['custom_size'] ) && $this->custom_size = $data['custom_size'];
+		isset( $data['custom_css'] ) && $this->custom_css = $data['custom_css'];
+		isset( $data['animation_in'] ) && $this->animation_in = $data['animation_in'];
+		isset( $data['animation_out'] ) && $this->animation_out = $data['animation_out'];
 
 		isset( $data['size']['width'] ) && $this->size['width'] = $data['size']['width'];
 		isset( $data['size']['height'] ) && $this->size['height'] = $data['size']['height'];
@@ -265,6 +286,7 @@ class IncPopupItem {
 		isset( $data['close_hides'] ) && $this->close_hides = (true == $data['close_hides']);
 		absint( @$data['hide_expire'] ) > 0 && $this->hide_expire = absint( $data['hide_expire'] );
 		isset( $data['overlay_close'] ) && $this->overlay_close = ( true == $data['overlay_close'] );
+		isset( $data['form_submit'] ) && $this->form_submit = $data['form_submit'];
 
 		in_array( @$data['display'], self::$display_opts ) && $this->display = $data['display'];
 
@@ -367,6 +389,10 @@ class IncPopupItem {
 			$this->code->color2 = $this->color['col2'];
 		}
 
+		// Very rough validation that makes sure that the field does not close
+		// the <style> tag manually.
+		$this->custom_css = str_replace( '</s', 's', $this->custom_css );
+
 		$this->script_data['html_id'] = $this->code->id;
 		$this->script_data['popup_id'] = $this->id;
 		$this->script_data['close_hide'] = $this->close_hides;
@@ -378,6 +404,9 @@ class IncPopupItem {
 		$this->script_data['display'] = $this->display;
 		$this->script_data['display_data'] = $this->display_data;
 		$this->script_data['scroll_body'] = $this->scroll_body;
+		$this->script_data['form_submit'] = $this->form_submit;
+		$this->script_data['animation_in'] = $this->animation_in;
+		$this->script_data['animation_out'] = $this->animation_out;
 
 		// Validation only done when editing popups.
 		if ( is_admin() ) {
@@ -458,12 +487,16 @@ class IncPopupItem {
 		$this->color = get_post_meta( $this->id, 'po_color', true );
 		$this->custom_colors = get_post_meta( $this->id, 'po_custom_colors', true );
 		$this->style = get_post_meta( $this->id, 'po_style', true );
+		$this->custom_css = get_post_meta( $this->id, 'po_custom_css', true );
+		$this->animation_in = get_post_meta( $this->id, 'po_animation_in', true );
+		$this->animation_out = get_post_meta( $this->id, 'po_animation_out', true );
 		$this->round_corners = get_post_meta( $this->id, 'po_round_corners', true );
 		$this->scroll_body = get_post_meta( $this->id, 'po_scroll_body', true );
 		$this->can_hide = get_post_meta( $this->id, 'po_can_hide', true );
 		$this->close_hides = get_post_meta( $this->id, 'po_close_hides', true );
 		$this->hide_expire = get_post_meta( $this->id, 'po_hide_expire', true );
 		$this->overlay_close = get_post_meta( $this->id, 'po_overlay_close', true );
+		$this->form_submit = get_post_meta( $this->id, 'po_form_submit', true );
 		$this->display = get_post_meta( $this->id, 'po_display', true );
 		$this->display_data = get_post_meta( $this->id, 'po_display_data', true );
 		$this->rule = get_post_meta( $this->id, 'po_rule', true );
@@ -518,9 +551,14 @@ class IncPopupItem {
 		}
 
 		// When the content changed make sure to only allow valid code!
-		if ( $this->content != $this->orig_content && ! current_user_can( 'unfiltered_html' ) ) {
+		if ( $this->content != $this->orig_content
+			&& ! current_user_can( 'unfiltered_html' )
+		) {
 			$this->content = wp_kses( $this->content, $allowedposttags );
 		}
+
+		// Check if the content contains (potentially) incompatible shortcodes.
+		self::validate_shortcodes( $this->content );
 
 		$post = array(
 			'ID' => (0 == $this->id ? '' : $this->id),
@@ -550,12 +588,16 @@ class IncPopupItem {
 			update_post_meta( $this->id, 'po_color', $this->color );
 			update_post_meta( $this->id, 'po_custom_colors', $this->custom_colors );
 			update_post_meta( $this->id, 'po_style', $this->style );
+			update_post_meta( $this->id, 'po_custom_css', $this->custom_css );
+			update_post_meta( $this->id, 'po_animation_in', $this->animation_in );
+			update_post_meta( $this->id, 'po_animation_out', $this->animation_out );
 			update_post_meta( $this->id, 'po_round_corners', $this->round_corners );
 			update_post_meta( $this->id, 'po_scroll_body', $this->scroll_body );
 			update_post_meta( $this->id, 'po_can_hide', $this->can_hide );
 			update_post_meta( $this->id, 'po_close_hides', $this->close_hides );
 			update_post_meta( $this->id, 'po_hide_expire', $this->hide_expire );
 			update_post_meta( $this->id, 'po_overlay_close', $this->overlay_close );
+			update_post_meta( $this->id, 'po_form_submit', $this->form_submit );
 			update_post_meta( $this->id, 'po_display', $this->display );
 			update_post_meta( $this->id, 'po_display_data', $this->display_data );
 			update_post_meta( $this->id, 'po_rule', $this->rule );
@@ -593,6 +635,52 @@ class IncPopupItem {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Parses the specified content and looks for shortcodes that are not
+	 * compatible with the current PopUp loading method.
+	 *
+	 * The function does not return a value, but if incompatible shortcodes are
+	 * detected a new Admin Notification will be generated which is displayed to
+	 * the user after the page has finished loading.
+	 *
+	 * @since  4.7.0
+	 * @param  string $content
+	 */
+	public static function validate_shortcodes( $content ) {
+		$settings = IncPopupDatabase::get_settings();
+		$method = isset( $settings['loadingmethod'] ) ? $settings['loadingmethod'] : 'ajax';
+
+		switch ( $method ) {
+			case 'ajax':
+			case 'anonymous':
+				// Check if the content contains any of the Front-Shortcodes:
+				$check = IncPopupAddon_HeaderFooter::check();
+				$content = do_shortcode( $content );
+				foreach ( $check->shortcodes as $code ) {
+					$match = array();
+					if ( preg_match( '#\[' . $code . '(\s.*?\]|\])#', $content, $match ) ) {
+						WDev()->message(
+							sprintf(
+								__( 'Shortcode <code>%s</code> requires a different <a href="%s">loading method</a> to work.<br />Try "Page Footer", though sometimes the method "Custom AJAX" also works (please test the result)', PO_LANG ),
+								$match[0],
+								'edit.php?post_type=' . IncPopupItem::POST_TYPE . '&page=settings'
+							),
+							'err'
+						);
+					}
+				}
+				break;
+
+			case 'footer':
+			case 'front':
+				// Nothing needs to be validated here...
+				break;
+
+			default:
+				//WDev()->message( 'Shortcode-Check not defined for: ' . $method );
+		}
 	}
 
 	/**
@@ -674,6 +762,11 @@ class IncPopupItem {
 				$Code[ $this->id ] = str_replace( '#000001', $this->code->color1, $Code[ $this->id ] );
 				$Code[ $this->id ] = str_replace( '#000002', $this->code->color2, $Code[ $this->id ] );
 			}
+			$custom_css = $this->custom_css;
+			$custom_css = str_replace( '#popup', '#' . $this->code->id, $custom_css );
+			$custom_css = str_replace( '#messagebox', '#' . $this->code->id, $custom_css );
+			$custom_css = str_replace( '%styleurl%', $details->url, $custom_css );
+			$Code[ $this->id ] .= $custom_css;
 		}
 		return $Code[ $this->id ];
 	}
