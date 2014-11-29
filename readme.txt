@@ -72,6 +72,9 @@ For network wide control - add the line define('PO_GLOBAL', true); to your wp-co
 
 == Changelog ==
 
+= 4.7.0.2 =
+* Fix incompatibility with Custom Sidebars plugin
+
 = 4.7.0.1 =
 * Fix small JavaScript error
 

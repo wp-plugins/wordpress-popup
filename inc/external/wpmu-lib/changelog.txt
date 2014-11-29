@@ -4,6 +4,10 @@ Author:      Philipp Stracker
 Change Log:
 ----------------------------------------------------------------------
 
+1.0.17
+----------------------------------------------------------------------
+- Fix issue where scripts were not loaded in some cases
+
 1.0.16
 ----------------------------------------------------------------------
 - Fix error on servers that run older version than PHP 5.3

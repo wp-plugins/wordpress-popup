@@ -1,7 +1,7 @@
 <?php
 
 // Based on Jigsaw plugin by Jared Novack (http://jigsaw.upstatement.com/)
-class TheLib_1_0_16 {
+class TheLib_1_0_17 {
 
 	// --- Start of 5.2 compatibility functions
 
@@ -337,8 +337,9 @@ class TheLib_1_0_16 {
 			}
 
 			$item = compact( 'url', 'alias', 'onpage' );
-			$hooked = $this->_have( $type );
+			$hooked = $this->_have( $hook . $type );
 			$this->_add( $type, $item );
+			$this->_add( $hook . $type, true );
 
 			if ( ! did_action( $hook ) ) {
 				$hooked || add_action(
