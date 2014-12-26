@@ -3,7 +3,7 @@
 Plugin Name: WPMU Dev code library
 Plugin URI:  http://premium.wpmudev.org/
 Description: Framework to support creating WordPress plugins and themes.
-Version:     1.0.17
+Version:     1.1.1
 Author:      WPMU DEV
 Author URI:  http://premium.wpmudev.org/
 Textdomain:  wpmu-lib
@@ -16,16 +16,25 @@ Textdomain:  wpmu-lib
  * define( 'WDEV_DEBUG', true ) // Activate WDev()->debug() without having to enable WP_DEBUG
  */
 
-$version = '1.0.17'; // Remember to update the class-name in functions-wpmulib.php!!
+$version = '1.1.1'; // Remember to update the class-name in functions-wpmulib.php!!
 
 /**
  * Load TheLib class definition if not some other plugin already loaded it.
  */
-$dirname = dirname( __FILE__ ) . '/';
-$class_file = 'functions-wpmulib.php';
-$class_name = 'TheLib_' . str_replace( '.', '_', $version );
-if ( ! class_exists( $class_name ) && file_exists( $dirname . $class_file ) ) {
-	require_once( $dirname . $class_file );
+$dirname = dirname( __FILE__ ) . '/inc/';
+$file_ver = str_replace( '.', '_', $version );
+$main_class = 'TheLib_' . $file_ver;
+
+$files = array(
+	$main_class . '_Base' => 'class-thelib-base.php',
+	$main_class . '_Html' => 'class-thelib-html.php',
+	$main_class           => 'class-thelib.php',
+);
+
+foreach ( $files as $class_name => $class_file ) {
+	if ( ! class_exists( $class_name ) && file_exists( $dirname . $class_file ) ) {
+		require_once( $dirname . $class_file );
+	}
 }
 
 if ( ! class_exists( 'TheLibWrap' ) ) {
@@ -47,7 +56,7 @@ if ( ! class_exists( 'TheLibWrap' ) ) {
 		}
 	};
 }
-$obj = new $class_name();
+$obj = new $main_class();
 TheLibWrap::set_obj( $version, $obj );
 
 if ( ! function_exists( 'WDev' ) ) {
@@ -58,6 +67,18 @@ if ( ! function_exists( 'WDev' ) ) {
 	 *   WDev()->message();
 	 */
 	function WDev() {
-		return TheLibWrap::$object;
+		$obj = TheLibWrap::$object;
+
+		if ( func_num_args() ) {
+			$func = func_get_arg( 0 );
+			$args = func_get_args();
+			array_shift( $args );
+
+			if ( is_callable( array( $obj, $func ) ) ) {
+				return call_user_method_array( $func, $obj, $args );
+			}
+		}
+
+		return $obj;
 	}
 }

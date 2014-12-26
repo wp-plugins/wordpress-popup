@@ -1,137 +1,32 @@
 <?php
 
 // Based on Jigsaw plugin by Jared Novack (http://jigsaw.upstatement.com/)
-class TheLib_1_0_17 {
-
-	// --- Start of 5.2 compatibility functions
+class TheLib_1_1_1 extends TheLib_1_1_1_Base {
 
 	/**
-	 * Internal data collection used to pass arguments to callback functions.
-	 * Only used for 5.2 version as alternative to closures.
-	 * @var array
+	 * Holds the HTML Helper component
+	 *
+	 * @since 1.1.0
+	 *
+	 * @var   TheLib_Html
 	 */
-	protected $data = array();
+	public $html = null;
 
-	protected function _have( $key ) {
-		return isset( $this->data[ $key ] );
-	}
-
-	protected function _add( $key, $value ) {
-		if ( ! is_array( @$this->data[ $key ] ) ) {
-			$this->data[ $key ] = array();
-		}
-		$this->data[ $key ][] = $value;
-	}
-
-	protected function _get( $key ) {
-		if ( ! is_array( @$this->data[ $key ] ) ) {
-			$this->data[ $key ] = array();
-		}
-		return $this->data[ $key ];
-	}
-
-	protected function _clear( $key ) {
-		$this->data[ $key ] = array();
-	}
-
-
-	// --- End of 5.2 compatibility functions
-
-	// --- Start of Session access
-
-	protected function _sess_have( $key ) {
-		return isset( $_SESSION[ '_lib_persist_' . $key ] );
-	}
-
-	protected function _sess_add( $key, $value ) {
-		if ( ! is_array( @$_SESSION[ '_lib_persist_' . $key ] ) ) {
-			$_SESSION[ '_lib_persist_' . $key ] = array();
-		}
-		$_SESSION[ '_lib_persist_' . $key ][] = $value;
-	}
-
-	protected function _sess_get( $key ) {
-		if ( ! is_array( @$_SESSION[ '_lib_persist_' . $key ] ) ) {
-			$_SESSION[ '_lib_persist_' . $key ] = array();
-		}
-		return $_SESSION[ '_lib_persist_' . $key ];
-	}
-
-	protected function _sess_clear( $key ) {
-		unset( $_SESSION[ '_lib_persist_' . $key ] );
-	}
-
-	// --- End of Session access
-
+	/**
+	 * Class constructor
+	 *
+	 * @since 1.0.0
+	 */
 	public function __construct() {
-		if ( ! session_id() ) {
-			if ( ! headers_sent() ) {
-				session_start();
-			}
-		}
+		parent::__construct();
 
 		// Check for persistent data from last request that needs to be processed.
 		$this->check_persistent_data();
+
+		// Create a new HTML helper component.
+		$class_name = __CLASS__ . '_Html';
+		$this->html = new $class_name();
 	}
-
-	/**
-	 * Returns the full URL to an internal CSS file of the code library.
-	 *
-	 * @since  1.0.0
-	 * @private
-	 * @param  string $file The filename, relative to this plugins folder.
-	 * @return string
-	 */
-	protected function _css_url( $file ) {
-		static $Url = null;
-
-		if ( defined( 'WDEV_UNMINIFIED' ) && WDEV_UNMINIFIED ) {
-			$file = str_replace( '.min.css', '.css', $file );
-		}
-		if ( null === $Url ) {
-			$Url = plugins_url( 'css/', __FILE__ );
-		}
-		return $Url . $file;
-	}
-
-	/**
-	 * Returns the full URL to an internal JS file of the code library.
-	 *
-	 * @since  1.0.0
-	 * @private
-	 * @param  string $file The filename, relative to this plugins folder.
-	 * @return string
-	 */
-	protected function _js_url( $file ) {
-		static $Url = null;
-
-		if ( defined( 'WDEV_UNMINIFIED' ) && WDEV_UNMINIFIED ) {
-			$file = str_replace( '.min.js', '.js', $file );
-		}
-		if ( null === $Url ) {
-			$Url = plugins_url( 'js/', __FILE__ );
-		}
-		return $Url . $file;
-	}
-
-	/**
-	 * Returns the full path to an internal php partial of the code library.
-	 *
-	 * @since  1.0.0
-	 * @private
-	 * @param  string $file The filename, relative to this plugins folder.
-	 * @return string
-	 */
-	protected function _include_path( $file ) {
-		static $Path = null;
-		if ( null === $Path ) {
-			$basedir = dirname( __FILE__ ) . '/';
-			$Path = $basedir . 'inc/';
-		}
-		return $Path . $file;
-	}
-
-
 
 	/**
 	 * Enqueue core UI files (CSS/JS).
@@ -167,8 +62,29 @@ class TheLib_1_0_17 {
 				$this->add_js( $this->_js_url( 'wpmu-vnav.min.js' ), $onpage );
 				break;
 
+			case 'card-list':
+			case 'card_list':
+				$this->add_css( $this->_css_url( 'wpmu-card-list.min.css' ), $onpage );
+				$this->add_js( $this->_js_url( 'wpmu-card-list.min.js' ), $onpage );
+				break;
+
+			case 'html-element':
+			case 'html_element':
+				$this->add_css( $this->_css_url( 'wpmu-html.min.css' ), $onpage );
+				break;
+
 			case 'media':
 				$this->add_js( 'wpmu:media', $onpage );
+				break;
+
+			case 'fontawesome':
+				$this->add_css( $this->_css_url( 'fontawesome.min.css' ), $onpage );
+				break;
+
+			case 'jquery-ui':
+				$this->add_js( 'jquery-ui-core', $onpage );
+				$this->add_js( 'jquery-ui-datepicker', $onpage );
+				$this->add_css( $this->_css_url( 'jquery-ui.wpmui.min.css' ), $onpage );
 				break;
 
 			default:
@@ -189,22 +105,31 @@ class TheLib_1_0_17 {
 	 * Adds a variable to javascript.
 	 *
 	 * @since 1.0.7
+	 *
 	 * @param string $name Name of the variable
 	 * @param mixed $data Value of the variable
 	 */
-	public function add_data( $name, $data, $onpage = null ) {
-		if ( did_action( 'wp_enqueue_scripts' ) || did_action( 'admin_enqueue_scripts' ) ) {
+	public function add_data( $name, $data ) {
+		$hooked = $this->_have( 'js_data_hook' );
+		$this->_add( 'js_data_hook', true );
+
+		// Determine which hook should print the data.
+		$hook = ( is_admin() ? 'admin_head' : 'wp_head' );
+
+		// Enqueue the data for output with javascript sources.
+		$this->_add( 'js_data', array( $name, $data ) );
+
+		if ( ! $hooked && ! did_action( $hook ) ) {
+			add_action(
+				$hook,
+				array( $this, '_print_script_data' )
+			);
+		}
+
+		if ( did_action( $hook ) ) {
 			// Javascript sources already enqueued:
 			// Directly output the data right now.
-			printf(
-				'<script>window.%1$s = %2$s;</script>',
-				sanitize_html_class( $name ),
-				json_encode( $data )
-			);
-		} else {
-			// Enqueue the data for output with javascript sources.
-			$this->_add( 'js_data', array( $name, $data ) );
-			$this->_prepare_js_or_css( 'jquery', 'js', $onpage, 1 );
+			$this->_print_script_data();
 		}
 	}
 
@@ -212,6 +137,7 @@ class TheLib_1_0_17 {
 	 * Enqueue a javascript file.
 	 *
 	 * @since  1.0.0
+	 *
 	 * @param  string $url Full URL to the javascript file.
 	 * @param  string $onpage A page hook; files will only be loaded on this page.
 	 * @param  int $priority Loading order. The higher the number, the later it is loaded.
@@ -224,6 +150,7 @@ class TheLib_1_0_17 {
 	 * Enqueue a css file.
 	 *
 	 * @since  1.0.0
+	 *
 	 * @param  string $url Full URL to the css filename.
 	 * @param  string $onpage A page hook; files will only be loaded on this page.
 	 * @param  int $priority Loading order. The higher the number, the later it is loaded.
@@ -237,6 +164,7 @@ class TheLib_1_0_17 {
 	 *
 	 * @since  1.0.7
 	 * @private
+	 *
 	 * @param  string $url Full URL to the javascript/css file.
 	 * @param  string $type 'css' or 'js'
 	 * @param  string $onpage A page hook; files will only be loaded on this page.
@@ -337,9 +265,8 @@ class TheLib_1_0_17 {
 			}
 
 			$item = compact( 'url', 'alias', 'onpage' );
-			$hooked = $this->_have( $hook . $type );
+			$hooked = $this->_have( $type );
 			$this->_add( $type, $item );
-			$this->_add( $hook . $type, true );
 
 			if ( ! did_action( $hook ) ) {
 				$hooked || add_action(
@@ -358,6 +285,7 @@ class TheLib_1_0_17 {
 	 *
 	 * @since  1.0.1
 	 * @private
+	 *
 	 * @param  string $hook The current admin page that is rendered.
 	 */
 	public function _enqueue_style_callback( $hook = '' ) {
@@ -367,12 +295,17 @@ class TheLib_1_0_17 {
 
 		foreach ( $items as $item ) {
 			extract( $item ); // url, alias, onpage
-			if ( '' !== $onpage && $hook !== $onpage ) { continue; }
 
-			if ( empty( $url ) ) {
-				wp_enqueue_style( $alias );
-			} else {
-				wp_enqueue_style( $alias, $url );
+			if ( empty( $onpage ) ) { $onpage = 'all'; }
+
+			// onpage == 'all' will always load the script.
+			// otherwise onpage must match the enqueue-hook.
+			if ( 'all' == $onpage || $hook == $onpage ) {
+				if ( empty( $url ) ) {
+					wp_enqueue_style( $alias );
+				} else {
+					wp_enqueue_style( $alias, $url );
+				}
 			}
 		}
 	}
@@ -382,45 +315,63 @@ class TheLib_1_0_17 {
 	 *
 	 * @since  1.0.1
 	 * @private
+	 *
 	 * @param  string $hook The current admin page that is rendered.
 	 */
 	public function _enqueue_script_callback( $hook = '' ) {
 		$items = $this->_get( 'js' );
-
-		$data = $this->_get( 'js_data' );
-		$this->_clear( 'js_data' );
 
 		if ( empty( $hook ) ) { $hook = 'front'; }
 
 		foreach ( $items as $item ) {
 			extract( $item ); // url, alias, onpage
 
-			if ( '' !== $onpage && $hook !== $onpage ) { continue; }
+			if ( empty( $onpage ) ) { $onpage = 'all'; }
 
-			// Load the Media-library functions.
-			if ( 'wpmu:media' === $url ) {
-				wp_enqueue_media();
-				continue;
-			}
-
-			// Register script if it has an URL.
-			if ( ! empty( $url ) ) {
-				wp_register_script( $alias, $url, array( 'jquery' ), false, true );
-			}
-
-			// Append javascript data to the script output.
-			if ( ! empty( $data ) ) {
-				foreach ( $data as $item ) {
-					wp_localize_script( $alias, $item[0], $item[1] );
+			// onpage == 'all' will always load the script.
+			// otherwise onpage must match the enqueue-hook.
+			if ( 'all' == $onpage || $hook == $onpage ) {
+				// Load the Media-library functions.
+				if ( 'wpmu:media' === $url ) {
+					wp_enqueue_media();
+					continue;
 				}
-				$data = false;
-			}
 
-			// Enqueue the script for output in the page footer.
-			wp_enqueue_script( $alias );
+				// Register script if it has an URL.
+				if ( ! empty( $url ) ) {
+					wp_register_script( $alias, $url, array( 'jquery' ), false, true );
+				}
+
+				// Enqueue the script for output in the page footer.
+				wp_enqueue_script( $alias );
+			}
 		}
 	}
 
+	/**
+	 * Prints extra script data to the page.
+	 *
+	 * @action `wp_head`
+	 * @since  1.1.1
+	 * @private
+	 */
+	public function _print_script_data() {
+		$data = $this->_get( 'js_data' );
+		$this->_clear( 'js_data' );
+
+		// Append javascript data to the script output.
+		if ( is_array( $data ) ) {
+			foreach ( $data as $item ) {
+				if ( ! is_array( $item ) ) { continue; }
+
+				printf(
+					'<script>window.%1$s = %2$s;</script>',
+					sanitize_html_class( $item[0] ),
+					json_encode( $item[1] )
+				);
+			}
+		}
+	}
 
 
 	/**
@@ -433,75 +384,7 @@ class TheLib_1_0_17 {
 	 * @param  string $body Text of the pointer.
 	 */
 	public function pointer( $pointer_id, $html_el, $title, $body ) {
-		if ( ! is_admin() ) {
-			return;
-		}
-
-		$this->_have( 'init_pointer' ) || add_action(
-			'init',
-			array( $this, '_init_pointer' )
-		);
-		$this->_add( 'init_pointer', compact( 'pointer_id', 'html_el', 'title', 'body' ) );
-	}
-
-	/**
-	 * Action handler for plugins_loaded. This decides if the pointer will be displayed.
-	 *
-	 * @since  1.0.2
-	 * @private
-	 */
-	public function _init_pointer() {
-		$items = $this->_get( 'init_pointer' );
-		foreach ( $items as $item ) {
-			extract( $item );
-
-			// Find out which pointer IDs this user has already seen.
-			$seen = (string) get_user_meta(
-				get_current_user_id(),
-				'dismissed_wp_pointers',
-				true
-			);
-			$seen_list = explode( ',', $seen );
-
-			// Handle our first pointer announcing the plugin's new settings screen.
-			if ( ! in_array( $pointer_id, $seen_list ) ) {
-				$this->_have( 'pointer' ) || add_action(
-					'admin_print_footer_scripts',
-					array( $this, '_pointer_print_scripts' )
-				);
-				$this->_have( 'pointer' ) || add_action(
-					'admin_enqueue_scripts',
-					array( $this, '_enqueue_pointer' )
-				);
-				$this->_add( 'pointer', $item );
-			}
-		}
-	}
-
-	/**
-	 * Enqueue wp-pointer (for PHP <5.3 only)
-	 *
-	 * @since  1.0.1
-	 * @private
-	 */
-	public function _enqueue_pointer() {
-		// Load the JS/CSS for WP Pointers
-		wp_enqueue_script( 'wp-pointer' );
-		wp_enqueue_style( 'wp-pointer' );
-	}
-
-	/**
-	 * Action hook for admin footer scripts (for PHP <5.3 only)
-	 *
-	 * @since  1.0.1
-	 * @private
-	 */
-	public function _pointer_print_scripts() {
-		$items = $this->_get( 'pointer' );
-		foreach ( $items as $item ) {
-			extract( $item ); // pointer_id, html_el, title, body
-			include $this->_include_path( 'pointer.php' );
-		}
+		$this->html->pointer( $pointer_id, $html_el, $title, $body );
 	}
 
 
@@ -513,8 +396,9 @@ class TheLib_1_0_17 {
 	 * @param  string $text Text to display.
 	 * @param  string $class Message-type [updated|error]
 	 * @param  string $screen Limit message to this screen-ID
+	 * @param  string $id Message ID. Prevents adding duplicate messages.
 	 */
-	public function message( $text, $class = '', $screen = '' ) {
+	public function message( $text, $class = '', $screen = '', $id = '' ) {
 		if ( 'red' == $class || 'err' == $class || 'error' == $class ) {
 			$class = 'error';
 		} else {
@@ -522,7 +406,7 @@ class TheLib_1_0_17 {
 		}
 
 		// Check if the message is already queued...
-		$items = $this->_sess_get( 'message' );
+		$items = self::_sess_get( 'message' );
 		foreach ( $items as $key => $data ) {
 			if (
 				$data['text'] == $text &&
@@ -531,9 +415,18 @@ class TheLib_1_0_17 {
 			) {
 				return; // Don't add duplicate message to queue.
 			}
+
+			/**
+			 * `$id` prevents adding duplicate messages.
+			 *
+			 * @since 1.1.0
+			 */
+			if ( ! empty( $id ) && $data['id'] == $id ) {
+				return; // Don't add duplicate message to queue.
+			}
 		}
 
-		$this->_sess_add( 'message', compact( 'text', 'class', 'screen' ) );
+		self::_sess_add( 'message', compact( 'text', 'class', 'screen', 'id' ) );
 
 		if ( did_action( 'admin_notices' ) ) {
 			$this->_admin_notice_callback();
@@ -554,15 +447,20 @@ class TheLib_1_0_17 {
 	 * @private
 	 */
 	public function _admin_notice_callback() {
-		$items = $this->_sess_get( 'message' );
-		$this->_sess_clear( 'message' );
+		$items = self::_sess_get( 'message' );
+		self::_sess_clear( 'message' );
 		$screen_info = get_current_screen();
 		$screen_id = $screen_info->id;
 
 		foreach ( $items as $item ) {
-			extract( $item ); // text, class, screen
+			extract( $item ); // text, class, screen, id
 			if ( empty( $screen ) || $screen_id == $screen ) {
-				echo '<div class="' . esc_attr( $class ) . '"><p>' . $text . '</p></div>';
+				printf(
+					'<div class="%1$s %3$s"><p>%2$s</p></div>',
+					esc_attr( $class ),
+					$text,
+					esc_attr( $id )
+				);
 			}
 		}
 	}
@@ -615,7 +513,7 @@ class TheLib_1_0_17 {
 	 */
 	public function check_persistent_data() {
 		// $this->message()
-		if ( $this->_sess_have( 'message' ) ) {
+		if ( self::_sess_have( 'message' ) ) {
 			$this->_have( '_admin_notice' ) || add_action(
 				'admin_notices',
 				array( $this, '_admin_notice_callback' ),
@@ -631,27 +529,46 @@ class TheLib_1_0_17 {
 	 * E.g. Hashtags are missing ("index.php#section-a")
 	 *
 	 * @since  1.0.7
+	 * @param  string $protocol Optional. Define URL protocol ('http', 'https')
 	 * @return string Full URL to current page.
 	 */
-	public function current_url() {
-		$Url = null;
+	public function current_url( $protocol = null ) {
+		static $Url = array();
 
-		if ( null === $Url ) {
-			if ( isset( $_SERVER['HTTPS'] ) && strtolower( $_SERVER['HTTPS'] ) == 'on' ) {
-				$Url .= 'https://';
-			} else {
-				$Url = 'http://';
-			}
-
-			if ( $_SERVER['SERVER_PORT'] != '80' ) {
-				$Url .= $_SERVER['SERVER_NAME'] . ':' . $_SERVER['SERVER_PORT'] . $_SERVER['REQUEST_URI'];
-			} else {
-				$Url .= $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
-			}
-			$Url = trailingslashit( $Url );
+		if ( null !== $protocol ) {
+			// Remove the "://" part, if it was provided
+			$protocol = array_shift( explode( ':', $protocol ) );
 		}
 
-		return $Url;
+		if ( ! isset( $Url[$protocol] ) ) {
+			if ( null === $protocol ) {
+				$cur_url = 'http';
+
+				if ( isset( $_SERVER['HTTPS'] )
+					&& strtolower( $_SERVER['HTTPS'] ) === 'on'
+				) {
+					$cur_url .= 's';
+				}
+			} else {
+				$cur_url = $protocol;
+			}
+
+			$is_ssl = 'https' === $cur_url;
+			$cur_url .= '://';
+			$cur_url .= $_SERVER['SERVER_NAME'];
+
+			if ( ( ! $is_ssl && $_SERVER['SERVER_PORT'] != '80' ) ||
+				( $is_ssl && $_SERVER['SERVER_PORT'] != '443' )
+			) {
+				$cur_url .= ':' . $_SERVER['SERVER_PORT'];
+			}
+
+			$cur_url .= $_SERVER['REQUEST_URI'];
+
+			$Url[$protocol] = trailingslashit( $cur_url );
+		}
+
+		return $Url[$protocol];
 	}
 
 	/**
@@ -662,7 +579,7 @@ class TheLib_1_0_17 {
 	 * @param  mixed $value Value to store.
 	 */
 	public function store_add( $key, $value ) {
-		$this->_sess_add( 'store:' . $key, $value );
+		self::_sess_add( 'store:' . $key, $value );
 	}
 
 	/**
@@ -673,7 +590,7 @@ class TheLib_1_0_17 {
 	 * @return array The value, or an empty array if no value was assigned yet.
 	 */
 	public function store_get( $key ) {
-		$vals = $this->_sess_get( 'store:' . $key );
+		$vals = self::_sess_get( 'store:' . $key );
 		foreach ( $vals as $key => $val ) {
 			if ( null === $val ) { unset( $vals[ $key ] ); }
 		}
@@ -691,7 +608,7 @@ class TheLib_1_0_17 {
 	 */
 	public function store_get_clear( $key ) {
 		$val = $this->store_get( $key );
-		$this->_sess_clear( 'store:' . $key );
+		self::_sess_clear( 'store:' . $key );
 		return $val;
 	}
 
@@ -781,6 +698,87 @@ class TheLib_1_0_17 {
 	}
 
 	/**
+	 * Starts a file download and terminates the current request.
+	 * Note that this does not work inside Ajax requests!
+	 *
+	 * @since  1.1.0
+	 * @param  string $contents The file contents (text file).
+	 * @param  string $filename The file name.
+	 */
+	public function file_download( $contents, $filename ) {
+		// Send the download headers.
+		header( 'Pragma: public' );
+		header( 'Expires: 0' );
+		header( 'Cache-Control: must-revalidate, post-check=0, pre-check=0' );
+		header( 'Cache-Control: private', false ); // required for certain browsers
+		header( 'Content-type: application/json' );
+		header( 'Content-Disposition: attachment; filename="' . $filename . '"' );
+		header( 'Content-Transfer-Encoding: binary' );
+		header( 'Content-Length: ' . strlen( $contents ) );
+
+		// Finally send the export-file content.
+		echo '' . $contents;
+
+		exit;
+	}
+
+	/**
+	 * Checks if the provided value evaluates to a boolean TRUE.
+	 *
+	 * Following values are considered true:
+	 *  - Boolean: true
+	 *  - Number: anything except 0
+	 *  - Strings: true, yes, on (case insensitive)
+	 *
+	 * @since  1.1.0
+	 * @param  [type] $value [description]
+	 * @return bool [description]
+	 */
+	public function is_true( $value ) {
+		if ( $value === false || $value === null || $value === '' ) {
+			return false;
+		} elseif ( $value === true ) {
+			return true;
+		} elseif ( is_numeric( $value ) ) {
+			$value = intval( $value );
+			return $value != 0;
+		} elseif ( is_string( $value ) ) {
+			$value = strtolower( trim( $value ) );
+			return in_array(
+				$value,
+				array( 'true', 'yes', 'on', '1' )
+			);
+		}
+		return false;
+	}
+
+	/**
+	 * Checks if the specified URL is publicly reachable.
+	 *
+	 * @since  1.1.0
+	 * @param  string $url The URL to check.
+	 * @return bool If URL is online or not.
+	 */
+	public function is_online( $url ) {
+		static $Checked = array();
+
+		if ( ! isset( $Checked[$url] ) ) {
+			$check = 'http://www.isup.me/' . $url;
+			$res = wp_remote_get( $check );
+
+			if ( is_wp_error( $res ) ) {
+				$state = false;
+			} else {
+				$state = ( false === stripos( $res['body'], 'not just you' ) );
+			}
+
+			$Checked[$url] = $state;
+		}
+
+		return $Checked[$url];
+	}
+
+	/**
 	 * Displays a debug message at the current position on the page.
 	 *
 	 * @since  1.0.14
@@ -797,9 +795,9 @@ class TheLib_1_0_17 {
 			?>
 			<style>
 			.wdev-debug {
-				break: both;
+				clear: both;
 				border: 1px solid #C00;
-				background: rgba(255, 200, 200, 0.8);
+				background: rgba(255, 200, 200, 1);
 				padding: 10px;
 				margin: 10px;
 				position: relative;
@@ -817,13 +815,23 @@ class TheLib_1_0_17 {
 				background-color: #D88;
 				padding: 2px 8px;
 			}
-			.wdev-debug .wdev-debug-wrap {
-				box-shadow: 0 1px 5px rgba(0,0,0,0.18);
-			}
 			.wdev-debug pre {
 				font-size: 12px !important;
 				margin: 1px 0 !important;
 				background: rgba(255, 200, 200, 0.8);
+			}
+			.wdev-debug .wdev-param {
+				background: rgba( 0,0,0,0.1 );
+				padding: 0 3px;
+				font-size: 11px;
+			}
+			.wdev-debug table td {
+				padding: 1px 2px !important;
+				font-size: 12px;
+			}
+			.wdev-debug table {
+				margin: 4px 0 0 0;
+				background: #EBB;
 			}
 			</style>
 			<?php
@@ -832,18 +840,197 @@ class TheLib_1_0_17 {
 
 		echo '<div class="wdev-debug"><div class="wdev-debug-wrap">';
 		foreach ( func_get_args() as $param ) {
-			var_dump( $param );
+			$this->dump( $param );
 		}
-		echo '<table class="wdev-trace" cellspacing="0" cellpadding="2" border="1">';
-		foreach ( debug_backtrace() as $id => $item ) {
+		echo '<table class="wdev-trace" cellspacing="0" cellpadding="3" border="1">';
+
+		// Display the backtrace.
+		$trace = debug_backtrace();
+		$trace_num = count( $trace );
+		for ( $i = 0; $i < $trace_num; $i += 1 ) {
+			$item = $trace[$i];
+			$line_item = $item;
+			$j = $i;
+			while ( empty( $line_item['line'] ) && $j < $trace_num ) {
+				$line_item = $trace[$j];
+				$j += 1;
+			}
+
+			$args = '';
+			$arg_num = '';
+			$this->load_fields( $item, 'args' );
+
+			if ( $i > 0 && is_array( $item['args'] ) ) {
+				$argnum = count( $item['args'] );
+
+				if ( $argnum > 0 ) {
+					if ( is_scalar( $item['args'][0] ) ) {
+						$first = '"' . strval( $item['args'][0] ) . '"';
+					} else {
+						$first = '...';
+					}
+
+					if ( $argnum > 1 ) {
+						$dummy = array_fill( 0, $argnum - 1, '...' );
+					} else {
+						$dummy = array();
+					}
+
+					array_unshift( $dummy, $first );
+					$args = implode( '</span>, <span class="wdev-param">', $dummy );
+					$args = '<span class="wdev-param">' . $args . '</span>';
+				}
+			}
+
 			printf(
-				'<tr><td>%1$s</td><td>%2$s : %3$s</td></tr>',
-				$id,
-				@$item['file'],
-				@$item['line']
+				'<tr><td>%1$s</td><td>%2$s</td><td>%3$s</td></tr>',
+				$i,
+				@$line_item['file'] . ': ' . @$line_item['line'],
+				@$item['class'] . @$item['type'] . @$item['function'] . '(' . $args . ')'
 			);
 		}
 		echo '</table>';
 		echo '</div></div>';
+	}
+
+	/**
+	 * Outputs an advanced var dump.
+	 *
+	 * @since  1.1.0
+	 * @param  any $input The variable/object/value to dump.
+	 * @param  int $default_depth Deeper items will be collapsed
+	 * @param  int $level Do not change this value!
+	 */
+	public function dump( $data, $default_depth = 2, $level = 0 ) {
+		if ( $level === 0 && ! defined( 'DUMP_DEBUG_SCRIPT' ) ) {
+			define( 'DUMP_DEBUG_SCRIPT', true );
+
+			echo '<script>function toggleDisplay(id,display) {';
+			echo 'var data = document.getElementById("container"+id);';
+			echo 'var plus = document.getElementById("plus"+id);';
+			echo 'var state = data.style.display;';
+			echo 'data.style.display = state == display ? "none" : display;';
+			echo 'if (plus) plus.style.display = state == "inline" ? "inline" : "none";';
+			echo '}</script>';
+		}
+
+		if ( ! is_string( $data ) && is_callable( $data ) ) {
+			$type = 'Callable';
+		} else {
+			$type = ucfirst( gettype( $data ) );
+		}
+
+		$collapsed = $level >= $default_depth;
+
+		$type_data = null;
+		$type_color = null;
+		$type_length = null;
+		$full_dump = false;
+
+		switch ( $type ) {
+			case 'String':
+				$type_color = 'green';
+				$type_length = strlen( $data );
+				$type_data = '"' . htmlentities( $data ) . '"';
+				break;
+
+			case 'Double':
+			case 'Float':
+				$type = 'Float';
+				$type_color = '#0099c5';
+				$type_length = strlen( $data );
+				$type_data = htmlentities( $data );
+				break;
+
+			case 'Integer':
+				$type_color = 'red';
+				$type_length = strlen( $data );
+				$type_data = htmlentities( $data );
+				break;
+
+			case 'Boolean':
+				$type_color = '#92008d';
+				$type_length = strlen( $data );
+				$type_data = $data ? 'TRUE' : 'FALSE';
+				break;
+
+			case 'NULL':
+				$type_length = 0;
+				$type_color = '#AAA';
+				$type_data = 'NULL';
+				break;
+
+			case 'Array':
+				$type_length = count( $data );
+				break;
+
+			case 'Object':
+				$full_dump = true;
+				break;
+		}
+
+		$type_label = $type . ( $type_length !== null ? '(' . $type_length . ')' : '' );
+
+		if ( in_array( $type, array( 'Object', 'Array' ) ) ) {
+			$populated = false;
+
+			foreach ( $data as $key => $value ) {
+				if ( ! $populated ) {
+					$populated = true;
+
+					$id = substr( md5( rand() . ':' . $key . ':' . $level ), 0, 8 );
+
+					echo '<a href="javascript:toggleDisplay(\''. $id . '\',\'inline\');" style="text-decoration:none">';
+					echo '<span style="color:#666666">' . $type_label . '</span>';
+					echo '</a>';
+
+					echo '<span id="plus' . $id . '" style="display: ' . ( $collapsed ? 'inline' : 'none' ) . ';">&nbsp;&#10549;</span>';
+					echo '<div id="container' . $id . '" style="display: ' . ( $collapsed ? 'none' : 'inline' ) . ';">';
+					echo '<br />';
+
+					for ( $i = 0; $i <= $level; $i++ ) {
+						echo '&nbsp;&nbsp;<span style="color:black">|</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+					}
+					if ( $full_dump ) {
+						echo '<a href="javascript:toggleDisplay(\''. $id . '-dump\',\'block\');" style="text-decoration:none;color:#66A">';
+						echo '( full dump )';
+						echo '</a>';
+						echo '<div id="container' . $id . '-dump" style="display: none;">';
+						var_dump( $data );
+						echo '</div>';
+					}
+
+					echo '<br />';
+				}
+
+
+				for ( $i = 0; $i <= $level; $i++ ) {
+					echo '&nbsp;&nbsp;<span style="color:black">|</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+				}
+
+				echo '<span style="color:black">[' . $key . ']&nbsp;=>&nbsp;</span>';
+
+				$this->dump( $value, $default_depth, $level + 1 );
+			}
+
+			if ( $populated ) {
+				for ( $i = 0; $i <= $level; $i++ ) {
+					echo '&nbsp;&nbsp;<span style="color:black">|</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+				}
+
+				echo '</div>';
+
+			} else {
+				echo '<span style="color:#666666">' . $type_label . '</span>&nbsp;&nbsp;';
+			}
+		} else {
+			echo '<span style="color:#666666">' . $type_label . '</span>&nbsp;&nbsp;';
+
+			if ( $type_data != null ) {
+				echo '<span style="color:' . $type_color . '">' . $type_data . '</span>';
+			}
+		}
+
+		echo '<br />';
 	}
 };

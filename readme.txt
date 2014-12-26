@@ -72,6 +72,11 @@ For network wide control - add the line define('PO_GLOBAL', true); to your wp-co
 
 == Changelog ==
 
+= 4.7.0.3 =
+* Fix several small bugs
+* Fix URL rules that check for https:// protocol
+* Improve "Full URL rule" to check all protocols
+
 = 4.7.0.2 =
 * Fix incompatibility with Custom Sidebars plugin
 

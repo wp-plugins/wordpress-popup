@@ -1,4 +1,4 @@
-/*! WPMU Dev code library - v1.0.17
+/*! WPMU Dev code library - v1.1.1
  * http://premium.wpmudev.org/
  * Copyright (c) 2014; * Licensed GPLv2+ */
 /*!
@@ -69,7 +69,7 @@
 	 */
 	wpmUi.popup = function popup() {
 		_init();
-		return new WpmUiWindow();
+		return new wpmUi.WpmUiWindow();
 	};
 
 	/**
@@ -84,7 +84,7 @@
 	 */
 	wpmUi.ajax = function ajax( ajaxurl, default_action ) {
 		_init();
-		return new WpmUiAjaxData( ajaxurl, default_action );
+		return new wpmUi.WpmUiAjaxData( ajaxurl, default_action );
 	};
 
 	/**
@@ -609,8 +609,23 @@
 			wpmUi.upgrade_tooltips();
 		}
 
-		wpmUi.binary = new WpmUiBinary();
+		wpmUi.binary = new wpmUi.WpmUiBinary();
 	}
+
+	/**
+	 * Returns the modal overlay object
+	 *
+	 * @since  1.1.0
+	 * @private
+	 */
+	wpmUi._modal_overlay = function() {
+		if ( null === _modal_overlay ) {
+			_modal_overlay = jQuery( '<div></div>' )
+				.addClass( 'wpmui-overlay' )
+				.appendTo( _body );
+		}
+		return _modal_overlay;
+	};
 
 	/**
 	 * Shows a modal background layer
@@ -618,15 +633,11 @@
 	 * @since  1.0.0
 	 * @private
 	 */
-	function _make_modal() {
-		if ( null === _modal_overlay ) {
-			_modal_overlay = jQuery( '<div></div>' )
-				.addClass( 'wpmui-overlay' )
-				.appendTo( _body );
-		}
+	wpmUi._make_modal = function() {
+		wpmUi._modal_overlay();
 		_body.addClass( 'wpmui-has-overlay' );
 		_html.addClass( 'wpmui-no-scroll' );
-	}
+	};
 
 	/**
 	 * Closes the modal background layer again.
@@ -634,10 +645,10 @@
 	 * @since  1.0.0
 	 * @private
 	 */
-	function _close_modal() {
+	wpmUi._close_modal = function() {
 		_body.removeClass( 'wpmui-has-overlay' );
 		_html.removeClass( 'wpmui-no-scroll' );
-	}
+	};
 
 	/**
 	 * Initialize the WordPress-ish accordeon boxes:
@@ -702,13 +713,26 @@
 		_init();
 	});
 
+}( window.wpmUi = window.wpmUi || {} ));
 
 
+/*!
+ * WPMU Dev UI library
+ * (Philipp Stracker for WPMU Dev)
+ *
+ * This module provides the WpmUiWindow object which is a smart and easy to use
+ * Pop-up.
+ *
+ * @version  1.0.0
+ * @author   Philipp Stracker for WPMU Dev
+ * @requires jQuery
+ */
+/*global jQuery:false */
+/*global window:false */
+/*global document:false */
+/*global XMLHttpRequest:false */
 
-
-
-
-
+(function( wpmUi ) {
 
 	/*============================*\
 	================================
@@ -718,7 +742,36 @@
 	================================
 	\*============================*/
 
+	/**
+	 * The next popup ID to use
+	 *
+	 * @type int
+	 * @since  1.1.0
+	 * @private
+	 */
+	var _next_id = 1;
 
+	/**
+	 * A list of all popups
+	 *
+	 * @type array
+	 * @since  1.1.0
+	 * @private
+	 */
+	var _all_popups = {};
+
+	/**
+	 * Returns a list with all currently open popups.
+	 *
+	 * When a popup is created it is added to the list.
+	 * When it is closed (not hidden!) it is removed.
+	 *
+	 * @since  1.1.0
+	 * @return WpmUiWindow[]
+	 */
+	wpmUi.popups = function() {
+		return _all_popups;
+	};
 
 	/**
 	 * Popup window.
@@ -726,7 +779,7 @@
 	 * @type   WpmUiWindow
 	 * @since  1.0.0
 	 */
-	var WpmUiWindow = function() {
+	wpmUi.WpmUiWindow = function() {
 
 		/**
 		 * Backreference to the WpmUiWindow object.
@@ -889,6 +942,13 @@
 		// ==============================
 		// == Public functions ==========
 
+		/**
+		 * The official popup ID
+		 *
+		 * @since 1.1.0
+		 * @type  int
+		 */
+		this.id = 0;
 
 		/**
 		 * Sets the modal property.
@@ -1076,6 +1136,8 @@
 			_unhook();
 			_wnd.remove();
 			_wnd = null;
+
+			delete _all_popups[_me.id];
 		};
 
 		/**
@@ -1099,6 +1161,10 @@
 		 * @private
 		 */
 		function _init() {
+			_me.id = _next_id;
+			_next_id += 1;
+			_all_popups[_me.id] = _me;
+
 			// Create the DOM elements.
 			_wnd = jQuery( '<div class="wpmui-wnd"></div>' );
 			_el_title = jQuery( '<div class="wpmui-wnd-title"><span class="the-title"></span></div>' );
@@ -1109,7 +1175,7 @@
 			_el_title.appendTo( _wnd );
 			_el_content.appendTo( _wnd );
 			_btn_close.appendTo( _el_title );
-			_wnd.appendTo( _body ).hide();
+			_wnd.appendTo( jQuery( 'body' ) ).hide();
 
 			// Add event handlers.
 			_hook();
@@ -1128,6 +1194,7 @@
 		function _hook() {
 			if ( _wnd ) {
 				_wnd.on( 'click', '.wpmui-wnd-close', _me.close );
+				_wnd.on( 'click', '.close', _me.close );
 				_wnd.on( 'click', 'thead .check-column :checkbox', _toggle_checkboxes );
 				_wnd.on( 'click', 'tfoot .check-column :checkbox', _toggle_checkboxes );
 				_wnd.on( 'click', 'tbody .check-column :checkbox', _check_checkboxes );
@@ -1144,6 +1211,7 @@
 		function _unhook() {
 			if ( _wnd ) {
 				_wnd.off( 'click', '.wpmui-wnd-close', _me.close );
+				_wnd.off( 'click', '.close', _me.close );
 				_wnd.off( 'click', '.check-column :checkbox', _toggle_checkboxes );
 				jQuery( window ).off( 'resize', _check_size );
 			}
@@ -1167,6 +1235,7 @@
 				'margin-left': -1 * (width / 2),
 				'margin-top': -1 * (height / 2)
 			};
+			var _overlay = wpmUi._modal_overlay();
 
 			// Window title.
 			_el_title.find( '.the-title' ).text( _title );
@@ -1205,15 +1274,15 @@
 				_wnd.css(styles);
 			}
 
-			if ( _modal_overlay instanceof jQuery ) {
-				_modal_overlay.off( 'click', _modal_close );
+			if ( _overlay instanceof jQuery ) {
+				_overlay.off( 'click', _modal_close );
 			}
 
 			// Show or hide the window and modal background.
 			if ( _visible ) {
 				_wnd.show();
-				if ( _modal ) { _make_modal(); }
-				_modal_overlay.on( 'click', _modal_close );
+				if ( _modal ) { wpmUi._make_modal(); }
+				_overlay.on( 'click', _modal_close );
 
 				if ( _need_check_size ) {
 					_need_check_size = false;
@@ -1221,7 +1290,7 @@
 				}
 			} else {
 				_wnd.hide();
-				_close_modal();
+				wpmUi._close_modal();
 			}
 		}
 
@@ -1232,10 +1301,11 @@
 		 * @private
 		 */
 		function _modal_close() {
+			var _overlay = wpmUi._modal_overlay();
 			if ( ! _wnd ) { return false; }
-			if ( ! _modal_overlay instanceof jQuery ) { return false; }
+			if ( ! _overlay instanceof jQuery ) { return false; }
 
-			_modal_overlay.off( 'click', _modal_close );
+			_overlay.off( 'click', _modal_close );
 			_me.close();
 		}
 
@@ -1316,13 +1386,25 @@
 
 	}; /* ** End: WpmUiWindow ** */
 
+}( window.wpmUi = window.wpmUi || {} ));
+/*!
+ * WPMU Dev UI library
+ * (Philipp Stracker for WPMU Dev)
+ *
+ * This module provides the WpmUiAjaxData object that is used to serialize whole
+ * forms and submit then via Ajax. Even file uploads are possibly with this
+ * object.
+ *
+ * @version  1.0.0
+ * @author   Philipp Stracker for WPMU Dev
+ * @requires jQuery
+ */
+/*global jQuery:false */
+/*global window:false */
+/*global document:false */
+/*global XMLHttpRequest:false */
 
-
-
-
-
-
-
+(function( wpmUi ) {
 
 	/*===============================*\
 	===================================
@@ -1333,16 +1415,13 @@
 	\*===============================*/
 
 
-
-
-
 	/**
 	 * Form Data object that is used to load or submit data via ajax.
 	 *
 	 * @type   WpmUiAjaxData
 	 * @since  1.0.0
 	 */
-	var WpmUiAjaxData = function( _ajaxurl, _default_action ) {
+	wpmUi.WpmUiAjaxData = function( _ajaxurl, _default_action ) {
 
 		/**
 		 * Backreference to the WpmUiAjaxData object.
@@ -1552,7 +1631,7 @@
 			}
 
 			// Initialize an invisible iframe for file downloads.
-			_void_frame = _body.find( '#wpmui_void' );
+			_void_frame = jQuery( 'body' ).find( '#wpmui_void' );
 
 			if ( ! _void_frame.length ) {
 				/**
@@ -1572,7 +1651,7 @@
 						'top': -1000
 					})
 					.hide()
-					.appendTo( _body );
+					.appendTo( jQuery( 'body' ) );
 			}
 
 			// Find out what HTML5 feature we can use.
@@ -1925,7 +2004,7 @@
 				.attr( 'enctype', 'multipart/form-data' )
 				.attr( 'target', target )
 				.hide()
-				.appendTo( _body );
+				.appendTo( jQuery( 'body' ) );
 
 			// Submit the form.
 			form.submit();
@@ -1938,13 +2017,24 @@
 
 	}; /* ** End: WpmUiAjaxData ** */
 
+}( window.wpmUi = window.wpmUi || {} ));
+/*!
+ * WPMU Dev UI library
+ * (Philipp Stracker for WPMU Dev)
+ *
+ * This module provides the WpmUiBinary object that is used to
+ * serialize/deserialize data in base64.
+ *
+ * @version  1.0.0
+ * @author   Philipp Stracker for WPMU Dev
+ * @requires jQuery
+ */
+/*global jQuery:false */
+/*global window:false */
+/*global document:false */
+/*global XMLHttpRequest:false */
 
-
-
-
-
-
-
+(function( wpmUi ) {
 
 	/*===============================*\
 	===================================
@@ -1957,17 +2047,16 @@
 
 
 
-
 	/**
 	 * Handles conversions of binary <-> text.
 	 *
 	 * @type   WpmUiBinary
 	 * @since  1.0.0
 	 */
-	var WpmUiBinary = function() {
+	wpmUi.WpmUiBinary = function() {
 		var map = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
 
-		WpmUiBinary.utf8_encode = function utf8_encode( string ) {
+		wpmUi.WpmUiBinary.utf8_encode = function utf8_encode( string ) {
 			if ( typeof string !== 'string' ) {
 				return string;
 			} else {
@@ -1993,7 +2082,7 @@
 			return output;
 		};
 
-		WpmUiBinary.utf8_decode = function utf8_decode( string ) {
+		wpmUi.WpmUiBinary.utf8_decode = function utf8_decode( string ) {
 			if ( typeof string !== 'string' ) {
 				return string;
 			}
@@ -2025,12 +2114,11 @@
 		 * @param  string input A string with any encoding.
 		 * @return string
 		 */
-		WpmUiBinary.base64_encode = function base64_encode( input ) {
+		wpmUi.WpmUiBinary.base64_encode = function base64_encode( input ) {
 			if ( typeof input !== 'string' ) {
 				return input;
-			}
-			else {
-				input = WpmUiBinary.utf8_encode( input );
+			} else {
+				input = wpmUi.WpmUiBinary.utf8_encode( input );
 			}
 			var output = '', a, b, c, d, e, f, g, i = 0;
 
@@ -2062,7 +2150,7 @@
 		 * @param  string input Base 64 encoded text
 		 * @return string
 		 */
-		WpmUiBinary.base64_decode = function base64_decode( input ) {
+		wpmUi.WpmUiBinary.base64_decode = function base64_decode( input ) {
 			if ( typeof input !== 'string' ) {
 				return input;
 			} else {
@@ -2089,10 +2177,9 @@
 				}
 			}
 
-			return WpmUiBinary.utf8_decode( output );
+			return wpmUi.WpmUiBinary.utf8_decode( output );
 		};
 
 	}; /* ** End: WpmUiBinary ** */
 
 }( window.wpmUi = window.wpmUi || {} ));
-

@@ -4,6 +4,19 @@ Author:      Philipp Stracker
 Change Log:
 ----------------------------------------------------------------------
 
+1.1.1
+----------------------------------------------------------------------
+- Fix a PHP warning in html plugin_list
+- Improve the way javascripts and script-data is loaded in pages
+- Integrate new UI collections: 'fontawesome', 'jquery-ui'
+
+1.1.0
+----------------------------------------------------------------------
+- Add new HTML helper component: WDev()->html
+- Add new HTML function: WDev()->html->plugin_list()
+- Add new function to download files: WDev()->file_download()
+- Internal improvements
+
 1.0.17
 ----------------------------------------------------------------------
 - Fix issue where scripts were not loaded in some cases

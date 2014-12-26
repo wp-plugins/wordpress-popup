@@ -1,4 +1,4 @@
-/*! PopUp Free - v4.7.02
+/*! PopUp Free - v4.7.03
  * https://wordpress.org/plugins/wordpress-popup/
  * Copyright (c) 2014; * Licensed GPLv2+ */
 /*global window:false */

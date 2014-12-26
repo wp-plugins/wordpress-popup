@@ -9,6 +9,7 @@
 $styles = apply_filters( 'popup-styles', array() );
 
 $animations_in = array(
+	// Do not add "No Animation" item!
 	__( 'Attention Seekers', PO_LANG ) => array(
 		'bounce' => __( 'Bounce', PO_LANG ),
 		'flash' => __( 'Flash', PO_LANG ),
@@ -65,6 +66,7 @@ $animations_in = array(
 );
 
 $animations_out = array(
+	// Do not add "No Animation" item!
 	__( 'Bouncing Exits', PO_LANG ) => array(
 		'bounceOut' => __( 'Bounce Out', PO_LANG ),
 		'bounceOutDown' => __( 'Bounce Out Down', PO_LANG ),
