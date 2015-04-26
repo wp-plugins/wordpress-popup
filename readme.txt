@@ -72,6 +72,16 @@ For network wide control - add the line define('PO_GLOBAL', true); to your wp-co
 
 == Changelog ==
 
+= 4.7.0.7 =
+* Add a link target option for CTA Button (use _blank to open CTA in new tab)
+* Add JS hook 'popup-submit-process' to allow manual updating of popup contents after form submit
+* Simplify PopUp template structure to encourage creation of custom templates
+* Fix XSS vulnerability (add_query_arg/remove_query_arg)
+* Fix several small issues with different rules
+
+= 4.7.0.5 =
+* Fix incompatibility with Custom Sidebars plugin
+
 = 4.7.0.3 =
 * Fix several small bugs
 * Fix URL rules that check for https:// protocol
