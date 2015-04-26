@@ -1,6 +1,6 @@
-/*! WPMU Dev code library - v1.1.1
+/*! WPMU Dev code library - v2.0.1
  * http://premium.wpmudev.org/
- * Copyright (c) 2014; * Licensed GPLv2+ */
+ * Copyright (c) 2015; * Licensed GPLv2+ */
 /*!
  * WPMU Dev UI library
  * (Philipp Stracker for WPMU Dev)
@@ -122,6 +122,7 @@
 				};
 
 			if ( el.data( 'wpmui-select' ) === '1' ) { return; }
+			if ( el.closest( '.no-auto-init' ).length ) { return; }
 			el.data( 'wpmui-select', '1' );
 			clean_ghosts( el );
 
@@ -185,6 +186,7 @@
 				};
 
 			if ( el.data( 'wpmui-select' ) === '1' ) { return; }
+			if ( el.closest( '.no-auto-init' ).length ) { return; }
 			el.data( 'wpmui-select', '1' );
 			clean_ghosts( el );
 
@@ -357,7 +359,13 @@
 			var me = jQuery( this ),
 				key = parseInt( me.data( 'key' ) );
 
-			modal.remove();
+			if ( args['modal'] ) {
+				if ( args['layout'] === 'fixed' ) {
+					wpmUi._close_modal();
+				} else {
+					modal.remove();
+				}
+			}
 			container.remove();
 
 			if ( 'function' === typeof args['callback'] ) {
@@ -366,9 +374,13 @@
 		}
 
 		if ( args['modal'] ) {
-			modal = jQuery( '<div class="wmui-confirm-modal"></div>' )
-				.css( { 'position': args['layout'] } )
-				.appendTo( parent );
+			if ( args['layout'] === 'fixed' ) {
+				wpmUi._make_modal( 'wpmui-confirm-modal' );
+			} else {
+				modal = jQuery( '<div class="wpmui-confirm-modal"></div>' )
+					.css( { 'position': args['layout'] } )
+					.appendTo( parent );
+			}
 		}
 
 		container = jQuery( '<div class="wpmui-confirm-box"></div>' )
@@ -391,7 +403,9 @@
 		}
 
 		el_msg.appendTo( container );
-		el_btn.appendTo( container );
+		el_btn.appendTo( container )
+			.find( '.button-primary' )
+			.focus();
 
 		return true;
 	};
@@ -525,12 +539,12 @@
 	 * @since  1.0.8
 	 */
 	wpmUi.upgrade_tooltips = function upgrade_tooltips() {
-		var el = jQuery( '[data-tooltip]' );
+		var el = jQuery( '[data-wpmui-tooltip]' );
 
 		el.each(function() {
 			var me = jQuery( this ),
 				args = {
-					'content': me.attr( 'data-tooltip' ),
+					'content': me.attr( 'data-wpmui-tooltip' ),
 					'pos': me.attr( 'data-pos' ),
 					'trigger': me.attr( 'data-trigger' ),
 					'class': me.attr( 'data-class' ),
@@ -633,10 +647,18 @@
 	 * @since  1.0.0
 	 * @private
 	 */
-	wpmUi._make_modal = function() {
-		wpmUi._modal_overlay();
+	wpmUi._make_modal = function( the_class ) {
+		var overlay = wpmUi._modal_overlay();
+
+		overlay.removeClass().addClass( 'wpmui-overlay' );
+		if ( undefined !== the_class ) {
+			overlay.addClass( the_class );
+		}
+
 		_body.addClass( 'wpmui-has-overlay' );
 		_html.addClass( 'wpmui-no-scroll' );
+
+		return overlay;
 	};
 
 	/**
@@ -807,6 +829,22 @@
 		var _modal = false;
 
 		/**
+		 * Defines if the dialog title should contain a close button.
+		 *
+		 * @since  1.1.2
+		 * @private
+		 */
+		var _title_close = true;
+
+		/**
+		 * Defines if clicking in the modal background closes the dialog.
+		 *
+		 * @since  1.1.2
+		 * @private
+		 */
+		var _background_close = true;
+
+		/**
 		 * Size of the window.
 		 *
 		 * @since  1.0.0
@@ -955,11 +993,25 @@
 		 *
 		 * @since  1.0.0
 		 */
-		this.modal = function modal( state ) {
+		this.modal = function modal( state, background_close ) {
+			if ( undefined === background_close ) {
+				background_close = true;
+			}
+
 			_modal = ( state ? true : false );
+			_background_close = ( background_close ? true : false );
 
 			_update_window();
 			return _me;
+		};
+
+		/**
+		 * Returns the modal property.
+		 *
+		 * @since  2.0.0
+		 */
+		this.is_modal = function is_modal() {
+			return _modal;
 		};
 
 		/**
@@ -984,8 +1036,13 @@
 		 *
 		 * @since  1.0.0
 		 */
-		this.title = function title( new_title ) {
+		this.title = function title( new_title, can_close ) {
+			if ( undefined === can_close ) {
+				can_close = true;
+			}
+
 			_title = new_title;
+			_title_close = ( can_close ? true : false );
 
 			_update_window();
 			return _me;
@@ -1141,6 +1198,26 @@
 		};
 
 		/**
+		 * Adds an event handler to the dialog.
+		 *
+		 * @since  2.0.1
+		 */
+		this.on = function on( event, selector, callback ) {
+			_wnd.on( event, selector, callback );
+			return _me;
+		};
+
+		/**
+		 * Removes an event handler from the dialog.
+		 *
+		 * @since  2.0.1
+		 */
+		this.off = function off( event, selector, callback ) {
+			_wnd.off( event, selector, callback );
+			return _me;
+		};
+
+		/**
 		 * Returns the jQuery object of the window
 		 *
 		 * @since  1.0.0
@@ -1199,6 +1276,14 @@
 				_wnd.on( 'click', 'tfoot .check-column :checkbox', _toggle_checkboxes );
 				_wnd.on( 'click', 'tbody .check-column :checkbox', _check_checkboxes );
 				jQuery( window ).on( 'resize', _check_size );
+
+				if ( jQuery().draggable !== undefined ) {
+					_wnd.draggable({
+						containment: jQuery( 'body' ),
+						scroll: false,
+						handle: '.wpmui-wnd-title'
+					});
+				}
 			}
 		}
 
@@ -1238,7 +1323,14 @@
 			var _overlay = wpmUi._modal_overlay();
 
 			// Window title.
-			_el_title.find( '.the-title' ).text( _title );
+			_el_title.find( '.the-title' ).html( _title );
+			_el_content.css({ top: _el_title.height() + 1 });
+
+			if ( _title_close ) {
+				_wnd.removeClass( 'no-close' );
+			} else {
+				_wnd.addClass( 'no-close' );
+			}
 
 			// Display a copy of the specified content.
 			if ( _content_changed ) {
@@ -1281,8 +1373,14 @@
 			// Show or hide the window and modal background.
 			if ( _visible ) {
 				_wnd.show();
-				if ( _modal ) { wpmUi._make_modal(); }
-				_overlay.on( 'click', _modal_close );
+
+				if ( _modal ) {
+					wpmUi._make_modal();
+				}
+
+				if ( _background_close ) {
+					_overlay.on( 'click', _modal_close );
+				}
 
 				if ( _need_check_size ) {
 					_need_check_size = false;
@@ -1290,7 +1388,19 @@
 				}
 			} else {
 				_wnd.hide();
-				wpmUi._close_modal();
+
+				var wnd, remove_modal = true;
+				for ( wnd in _all_popups ) {
+					if ( _all_popups[wnd] === _me ) { continue; }
+					if ( _all_popups[wnd].is_modal() ) {
+						remove_modal = false;
+						break;
+					}
+				}
+
+				if ( remove_modal ) {
+					wpmUi._close_modal();
+				}
 			}
 		}
 

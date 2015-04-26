@@ -4,11 +4,12 @@
  *
  * @since 1.1.0
  */
-class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
+class TheLib_2_0_1_Html extends TheLib_2_0_1  {
 
 	/* Constants for default HTML input elements. */
 	const INPUT_TYPE_HIDDEN = 'hidden';
 	const INPUT_TYPE_TEXT = 'text';
+	const INPUT_TYPE_SEARCH = 'search';
 	const INPUT_TYPE_PASSWORD = 'password';
 	const INPUT_TYPE_TEXT_AREA = 'textarea';
 	const INPUT_TYPE_SELECT = 'select';
@@ -56,13 +57,16 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 	 * Displays a WordPress like message to the user. The message is generated
 	 * via Javascript after the page is fully loaded.
 	 *
+	 * Should only be used in the Admin-Side
+	 *
 	 * @since  1.1.0
+	 * @api
 	 *
 	 * @param  string $text Contents of the message.
 	 * @return Reference to $this for chaining.
 	 */
 	public function message( $text, $type = 'ok', $id = 'msg_ok', $close = true ) {
-		WDev()->add_ui( 'core' );
+		self::$core->ui->add( 'core' );
 
 		$data = array(
 			'message' => $text,
@@ -92,23 +96,51 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 	 * Displays a WordPress pointer on the current admin screen.
 	 *
 	 * @since  1.1.0
+	 * @api
 	 *
-	 * @param  string $pointer_id Internal ID of the pointer, make sure it is unique!
+	 * @param  array|string $pointer_id Internal ID of the pointer, make sure it is unique!
+	 *                Optionally this param can contain all params in array notation.
 	 * @param  string $html_el HTML element to point to (e.g. '#menu-appearance')
 	 * @param  string $title The title of the pointer.
 	 * @param  string $body Text of the pointer.
-	 * @return Reference to $this for chaining.
+	 *
+	 * @return TheLib_Html Reference to $this for chaining.
 	 */
-	public function pointer( $pointer_id, $html_el, $title, $body ) {
+	public function pointer( $args, $html_el = '', $title = false, $body = '' ) {
 		if ( ! is_admin() ) {
 			return;
 		}
 
-		$this->_have( 'init_pointer' ) || add_action(
-			'init',
-			array( $this, '_init_pointer' )
-		);
-		$this->_add( 'init_pointer', compact( 'pointer_id', 'html_el', 'title', 'body' ) );
+		if ( is_array( $args ) ) {
+			if ( isset( $args['target'] ) && ! isset( $args['html_el'] ) ) {
+				$args['html_el'] = $args['target'];
+			}
+			if ( isset( $args['id'] ) && ! isset( $args['pointer_id'] ) ) {
+				$args['pointer_id'] = $args['id'];
+			}
+			if ( isset( $args['modal'] ) && ! isset( $args['blur'] ) ) {
+				$args['blur'] = $args['modal'];
+			}
+			if ( ! isset( $args['once'] ) ) {
+				$args['once'] = true;
+			}
+
+			self::$core->array->equip( $args, 'pointer_id', 'html_el', 'title', 'body', 'once', 'modal', 'blur' );
+
+			extract( $args );
+		} else {
+			$pointer_id = $args;
+			$once = true;
+			$modal = true;
+			$blur = true;
+		}
+
+		$once = self::$core->is_true( $once );
+		$modal = self::$core->is_true( $modal );
+		$blur = self::$core->is_true( $blur );
+
+		$this->_add( 'init_pointer', compact( 'pointer_id', 'html_el', 'title', 'body', 'once', 'modal', 'blur' ) );
+		$this->add_action( 'init', '_init_pointer' );
 
 		return $this;
 	}
@@ -117,43 +149,42 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 	 * Action handler for plugins_loaded. This decides if the pointer will be displayed.
 	 *
 	 * @since  1.0.2
-	 *
-	 * @private
+	 * @internal
 	 */
 	public function _init_pointer() {
 		$items = $this->_get( 'init_pointer' );
 		foreach ( $items as $item ) {
-			extract( $item );
+			extract( $item ); // pointer_id, html_el, title, body, once, modal, blur
+			$show = true;
 
-			// Find out which pointer IDs this user has already seen.
-			$seen = (string) get_user_meta(
-				get_current_user_id(),
-				'dismissed_wp_pointers',
-				true
-			);
-			$seen_list = explode( ',', $seen );
+			if ( $once ) {
+				// Find out which pointer IDs this user has already seen.
+				$seen = (string) get_user_meta(
+					get_current_user_id(),
+					'dismissed_wp_pointers',
+					true
+				);
+				$seen_list = explode( ',', $seen );
+				$show = ! in_array( $pointer_id, $seen_list );
+			} else {
+				$show = true;
+			}
 
-			// Handle our first pointer announcing the plugin's new settings screen.
-			if ( ! in_array( $pointer_id, $seen_list ) ) {
-				$this->_have( 'pointer' ) || add_action(
-					'admin_print_footer_scripts',
-					array( $this, '_pointer_print_scripts' )
-				);
-				$this->_have( 'pointer' ) || add_action(
-					'admin_enqueue_scripts',
-					array( $this, '_enqueue_pointer' )
-				);
+			// Include all scripts and code to display the pointer!
+			if ( $show ) {
+				$this->add_action( 'admin_print_footer_scripts', '_pointer_print_scripts' );
+				$this->add_action( 'admin_enqueue_scripts', '_enqueue_pointer' );
+
 				$this->_add( 'pointer', $item );
 			}
 		}
 	}
 
 	/**
-	 * Enqueue wp-pointer (for PHP <5.3 only)
+	 * Enqueue wp-pointer
 	 *
 	 * @since  1.0.1
-	 *
-	 * @private
+	 * @internal
 	 */
 	public function _enqueue_pointer() {
 		// Load the JS/CSS for WP Pointers
@@ -162,17 +193,105 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 	}
 
 	/**
-	 * Action hook for admin footer scripts (for PHP <5.3 only)
+	 * Action hook for admin footer scripts
 	 *
 	 * @since  1.0.1
-	 *
-	 * @private
+	 * @internal
 	 */
 	public function _pointer_print_scripts() {
 		$items = $this->_get( 'pointer' );
 		foreach ( $items as $item ) {
-			extract( $item ); // pointer_id, html_el, title, body
+			extract( $item ); // pointer_id, html_el, title, body, once, modal, blur
 			include $this->_view_path( 'pointer.php' );
+		}
+	}
+
+
+	/*===========================*\
+	===============================
+	==                           ==
+	==           POPUP           ==
+	==                           ==
+	===============================
+	\*===========================*/
+
+
+	/**
+	 * Display a wpmUi popup on page load.
+	 *
+	 * @since  1.1.0
+	 * @api
+	 *
+	 * @param  array $args Popup options.
+	 * @return Reference to $this for chaining.
+	 */
+	public function popup( $args = array() ) {
+		// Determine which hook should print the data.
+		$hook = ( is_admin() ? 'admin_footer' : 'wp_footer' );
+
+		self::$core->array->equip( $args, 'title', 'body', 'screen', 'modal', 'width', 'height', 'class' );
+
+		// Don't add empty popups
+		if ( empty( $args['title'] ) && empty( $args['body'] ) ) {
+			return;
+		}
+		if ( ! isset( $args['close'] ) ) {
+			$args['close'] = true;
+		}
+		if ( ! isset( $args['sticky'] ) ) {
+			$args['sticky'] = false;
+		}
+
+		$args['width'] = absint( $args['width'] );
+		$args['height'] = absint( $args['height'] );
+
+		if ( $args['width'] < 20 ) {
+			$args['width'] = '';
+		}
+		if ( $args['height'] < 20 ) {
+			$args['height'] = '';
+		}
+
+		$args['modal'] = $args['modal'] ? 'true' : 'false';
+		$args['persist'] = $args['sticky'] ? 'false' : 'true';
+		$args['close'] = $args['close'] ? 'true' : 'false';
+
+		self::_add( 'popup', $args );
+		$this->add_action( $hook, '_popup_callback' );
+		self::$core->ui->add( 'core' );
+
+		return $this;
+	}
+
+	/**
+	 * Add popup code to the page footer
+	 *
+	 * @since  1.1.3
+	 * @internal
+	 */
+	public function _popup_callback() {
+		$items = self::_get( 'popup' );
+		self::_clear( 'popup' );
+		$screen_info = get_current_screen();
+		$screen_id = $screen_info->id;
+
+		foreach ( $items as $item ) {
+			extract( $item ); // title, body, modal, close, modal, persist, width, height, class
+
+			if ( empty( $title ) ) {
+				$close = false;
+			}
+
+			if ( empty( $screen ) || $screen_id == $screen ) {
+				$body = '<div>' . $body . '</div>';
+				echo '<script>jQuery(function(){wpmUi.popup()';
+				printf( '.title( %1$s, %2$s )', json_encode( $title ), $close );
+				printf( '.modal( %1$s, %2$s )', $modal, $persist );
+				printf( '.size( %1$s, %2$s )', json_encode( $width ), json_encode( $height ) );
+				printf( '.set_class( %1$s )', json_encode( $class ) );
+				printf( '.content( %1$s )', json_encode( $body ) );
+				echo '.show();})</script>';
+			}
 		}
 	}
 
@@ -194,6 +313,7 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 	 * javascript.
 	 *
 	 * @since  1.1
+	 * @api
 	 *
 	 * @param  array $items {
 	 *     List of all items to include. Each item has these properties:
@@ -216,10 +336,11 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 	 *     @var string $key
 	 *     @var string $label
 	 * }
+	 *
 	 * @return Reference to $this for chaining.
 	 */
 	public function plugin_list( $items, $lang, $filters ) {
-		WDev()->add_ui( 'card_list' );
+		self::$core->ui->add( 'card_list' );
 		include $this->_view_path( 'list.php' );
 		return $this;
 	}
@@ -241,12 +362,33 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 	 * Use constants to specify field type. e.g. self::INPUT_TYPE_TEXT
 	 *
 	 * @since 1.1.0
+	 * @api
+	 *
+	 * @param  array|string $field_args {
+	 *                If this param is a string then the string is output.
+	 *                Otherwise an array is expected that defines the output
+	 *                field.
+	 *
+	 *                $type  string  Field type. {@see const definitions}
+	 *                $id    string  Field ID (html attribute)
+	 *                $class string  Field class (html attribute)
+	 *                $value string  Field value (html attribute)
+	 *
+	 *                $title  string  Field label/caption to display.
+	 *                $desc   string  Description.
+	 *                $before string  Text before the input element.
+	 *                $after  string  Text after the input element.
+	 *
+	 *                (more attributes available)
+	 * }
+	 * @param  bool $return Optional. If true the element is returned by
+	 *                      function. Default: false (direct echo the HTML)
 	 *
 	 * @return void|string If $return param is false the HTML will be echo'ed,
-	 *           otherwise returned as string
+	 *                     otherwise returned as string (default is echo)
 	 */
 	public function element( $field_args, $return = false ) {
-		WDev()->add_ui( 'html_element' );
+		self::$core->ui->add( 'html_element' );
 
 		if ( is_string( $field_args ) ) {
 			if ( $return ) {
@@ -269,6 +411,7 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 			'value'          => '',
 			'type'           => 'text',
 			'class'          => '',
+			'label_class'    => '',
 			'maxlength'      => '',
 			'equalTo'        => '',
 			'field_options'  => array(),
@@ -280,7 +423,10 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 			'data_placeholder' => '',
 			'ajax_data'      => '',
 			'data_ms'        => '', // alias for "ajax_data"
+			'data'           => array(),
 			'label_type'     => 'label',
+			'sticky'         => false, // populate $value from $_REQUEST struct
+			'config'         => array(), // other, element-specific configurations
 			// Specific for type 'button', 'submit':
 			'button_value'   => '',
 			'button_type'    => '',  // for display [empty/'submit'/'button']
@@ -323,7 +469,11 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 		}
 
 		if ( ! empty( $ajax_data ) ) {
-			if ( empty( $ajax_data['_wpnonce'] ) && ! empty( $ajax_data['action'] ) ) {
+			if ( ! empty( $ajax_data['action'] )
+				&& ( empty( $ajax_data['_wpnonce'] )
+					|| true === $ajax_data['_wpnonce']
+				)
+			) {
 				$ajax_data['_wpnonce'] = wp_create_nonce( $ajax_data['action'] );
 			}
 
@@ -334,9 +484,29 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 		$read_only = empty( $read_only ) ? '' : 'readonly="readonly" ';
 		$multiple = empty( $multiple ) ? '' : 'multiple="multiple" ';
 
+		$data_attr = '';
+		foreach ( $data as $data_key => $data_value ) {
+			$data_attr .= 'data-' . $data_key . '=' . json_encode( $data_value ) . ' ';
+		}
+
 		if ( ! empty( $ajax_data ) ) {
 			$class .= ' wpmui-ajax-update';
 		}
+
+		if ( $sticky ) {
+			$sticky_key = $name;
+			if ( '[]' == substr( $sticky_key, -2 ) ) {
+				$sticky_key = substr( $sticky_key, 0, -2 );
+			}
+
+			if ( isset( $_POST[$sticky_key] ) ) {
+				$value = $_POST[$sticky_key];
+			} elseif ( isset( $_GET[$sticky_key] ) ) {
+				$value = $_GET[$sticky_key];
+			}
+		}
+
+		$field_options = self::$core->array->get( $field_options );
 
 		$labels = (object) array(
 			'title' => $title,
@@ -346,10 +516,9 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 			'tooltip' => $tooltip,
 			'tooltip_code' => $this->tooltip( $tooltip, true ),
 			'id' => $id,
-			'class' => '',
+			'class' => $label_class,
 			'label_type' => $label_type,
 		);
-
 
 		// Capture to output buffer
 		if ( $return ) { ob_start(); }
@@ -365,6 +534,7 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 
 			case self::INPUT_TYPE_TEXT:
 			case self::INPUT_TYPE_PASSWORD:
+			case self::INPUT_TYPE_SEARCH:
 			case self::INPUT_TYPE_FILE:
 				$this->element_input(
 					$labels,
@@ -373,7 +543,7 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 					$id,
 					$name,
 					$value,
-					$read_only . $max_attr . $attr_placeholder . $ajax_data
+					$read_only . $max_attr . $attr_placeholder . $ajax_data . $data_attr
 				);
 				break;
 
@@ -384,7 +554,7 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 					$id,
 					$name,
 					$value,
-					$max_attr . $attr_placeholder . $ajax_data
+					$max_attr . $attr_placeholder . $ajax_data . $data_attr
 				);
 				break;
 
@@ -395,7 +565,7 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 					$id,
 					$name,
 					$value,
-					$read_only . $attr_placeholder . $ajax_data
+					$read_only . $attr_placeholder . $ajax_data . $data_attr
 				);
 				break;
 
@@ -406,7 +576,7 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 					$id,
 					$name,
 					$value,
-					$multiple . $read_only . $attr_data_placeholder . $ajax_data,
+					$multiple . $read_only . $attr_data_placeholder . $ajax_data . $data_attr,
 					$field_options
 				);
 				break;
@@ -430,8 +600,9 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 					$id,
 					$name,
 					$value,
-					$ajax_data,
-					$field_options
+					$ajax_data . $data_attr,
+					$field_options,
+					$config
 				);
 				break;
 
@@ -454,7 +625,6 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 					$class .= ' wpmui-submit button-primary';
 				}
 
-
 				$this->element_button(
 					$labels,
 					$type,
@@ -463,7 +633,7 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 					$name,
 					$value,
 					$button_value,
-					$ajax_data
+					$ajax_data . $data_attr
 				);
 				break;
 
@@ -475,7 +645,7 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 					$name,
 					$value,
 					$alt,
-					$ajax_data
+					$ajax_data . $data_attr
 				);
 				break;
 
@@ -488,7 +658,7 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 					$value,
 					$url,
 					$read_only,
-					$ajax_data,
+					$ajax_data . $data_attr,
 					$field_options
 				);
 				break;
@@ -501,7 +671,7 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 					$name,
 					$value,
 					$field_options,
-					$multiple . $read_only . $attr_data_placeholder,
+					$multiple . $read_only . $attr_data_placeholder . $data_attr,
 					$ajax_data,
 					$empty_text,
 					$button_text,
@@ -516,7 +686,7 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 					$id,
 					$name,
 					$value,
-					$multiple . $read_only . $attr_data_placeholder . $ajax_data,
+					$multiple . $read_only . $attr_data_placeholder . $ajax_data . $data_attr,
 					$field_options
 				);
 				break;
@@ -528,7 +698,7 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 					$id,
 					$value,
 					$url,
-					$ajax_data,
+					$ajax_data . $data_attr,
 					$target
 				);
 				break;
@@ -545,7 +715,7 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 					$class,
 					$id,
 					$value,
-					$wrapper
+					'span'
 				);
 				break;
 
@@ -569,6 +739,7 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 	 * Helper function used by `html_element`
 	 *
 	 * @since  1.1.0
+	 * @internal
 	 */
 	private function element_hidden( $id, $name, $value ) {
 		printf(
@@ -583,9 +754,10 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 	 * Helper function used by `html_element`
 	 *
 	 * @since  1.1.0
+	 * @internal
 	 */
 	private function element_input( $labels, $type, $class, $id, $name, $value, $attr ) {
-		echo '<span class="wpmui-input-wrapper">';
+		$this->wrap_open( 'input', $class );
 		$this->element_label( $labels );
 
 		printf(
@@ -599,19 +771,27 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 		);
 
 		$this->element_hint( $labels );
-		echo '</span>';
+		$this->wrap_close();
 	}
 
 	/**
 	 * Helper function used by `html_element`
 	 *
 	 * @since  1.1.0
+	 * @internal
 	 */
 	private function element_datepicker( $labels, $class, $id, $name, $value, $attr ) {
+		$this->wrap_open( 'datepicker', $class );
 		$this->element_label( $labels );
 
+		if ( ! empty( $value ) ) {
+			if ( ! preg_match( '/\d\d\d\d-\d\d-\d\d/', $value ) ) {
+				$value = date( 'Y-m-d', strtotime( $value ) );
+			}
+		}
+
 		printf(
-			'<span class="wpmui-datepicker-wrapper wpmui-field-input"><input class="wpmui-datepicker %1$s" type="text" id="%2$s" name="%3$s" value="%4$s" %5$s /><i class="wpmui-icon wpmui-fa wpmui-fa-calendar"></i></span>',
+			'<span class="wpmui-field-input"><input class="wpmui-datepicker %1$s" type="text" id="%2$s" name="%3$s" value="%4$s" %5$s /><i class="wpmui-icon wpmui-fa wpmui-fa-calendar"></i></span>',
 			esc_attr( $class ),
 			esc_attr( $id ),
 			esc_attr( $name ),
@@ -620,14 +800,17 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 		);
 
 		$this->element_hint( $labels );
+		$this->wrap_close();
 	}
 
 	/**
 	 * Helper function used by `html_element`
 	 *
 	 * @since  1.1.0
+	 * @internal
 	 */
 	private function element_textarea( $labels, $class, $id, $name, $value, $attr ) {
+		$this->wrap_open( 'textarea', $class );
 		$this->element_label( $labels );
 
 		printf(
@@ -640,17 +823,19 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 		);
 
 		$this->element_hint( $labels );
+		$this->wrap_close();
 	}
 
 	/**
 	 * Helper function used by `html_element`
 	 *
 	 * @since  1.1.0
+	 * @internal
 	 */
 	private function element_select( $labels, $class, $id, $name, $value, $attr, $field_options ) {
 		$options = $this->select_options( $field_options, $value );
 
-		echo '<span class="wpmui-select-wrapper">';
+		$this->wrap_open( 'select', $class );
 		$this->element_label( $labels );
 
 		printf(
@@ -663,33 +848,38 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 		);
 
 		$this->element_hint( $labels );
-		echo '</span>';
+		$this->wrap_close();
 	}
 
 	/**
 	 * Helper function used by `html_element`
 	 *
 	 * @since  1.1.0
+	 * @internal
 	 */
 	private function element_radio( $labels, $class, $id, $name, $value, $attr, $field_options ) {
-		printf(
-			'<span class="wpmui-radio-wrapper wrapper-%1$s">',
-			esc_attr( $id )
-		);
-
+		$this->wrap_open( 'radio', $class );
 		$this->element_label( $labels );
 
 		foreach ( $field_options as $key => $option ) {
 			if ( is_array( $option ) ) {
+				self::$core->array->equip( $option, 'text', 'desc', 'disabled' );
 				$item_text = $option['text'];
 				$item_desc = $option['desc'];
-			}
-			else {
+				$item_disabled = self::$core->is_true( $option['disabled'] );
+			} else {
 				$item_text = $option;
 				$item_desc = '';
+				$item_disabled = false;
 			}
 
 			$checked = checked( $value, $key, false );
+			$item_attr = $attr;
+			$item_class = $class;
+			if ( $item_disabled ) {
+				$item_attr .= ' disabled="disabled"';
+				$item_class .= ' disabled';
+			}
 			$radio_desc = '';
 
 			if ( ! empty( $item_desc ) ) {
@@ -698,61 +888,157 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 
 			printf(
 				'<div class="wpmui-radio-input-wrapper %1$s wpmui-%2$s"><label class="wpmui-field-label" for="%4$s_%2$s"><input class="wpmui-field-input wpmui-radio %1$s" type="radio" name="%3$s" id="%4$s_%2$s" value="%2$s" %5$s /><span class="wpmui-radio-caption">%6$s</span>%7$s</label></div>',
-				esc_attr( $class ),
+				esc_attr( $item_class ),
 				esc_attr( $key ),
 				esc_attr( $name ),
 				esc_attr( $id ),
-				$attr . $checked,
+				$item_attr . $checked,
 				$item_text,
 				$radio_desc
 			);
 		}
 
 		$this->element_hint( $labels );
-		echo '</span>';
+		$this->wrap_close();
 	}
 
 	/**
 	 * Helper function used by `html_element`
 	 *
 	 * @since  1.1.0
+	 * @internal
 	 */
-	private function element_checkbox( $labels, $class, $id, $name, $value, $attr, $options ) {
-		$checked = checked( $value, true, false );
-
+	private function element_checkbox( $labels, $class, $id, $name, $value, $attr, $itemlist, $options ) {
 		$item_desc = '';
 		if ( ! empty( $labels->desc ) ) {
 			$item_desc = sprintf( '<div class="wpmui-field-description"><p>%1$s</p></div>', $labels->desc );
 		}
+		$listitems = array();
 
-		$item_label = '';
-		if ( empty( $options['checkbox_position'] )
-			|| 'left' === $options['checkbox_position']
-		) {
-			$item_label = sprintf(
-				'<div class="wpmui-checkbox-caption">%1$s %2$s</div>',
+		if ( ! empty( $itemlist ) ) {
+			// Multiple items in the checkbox list.
+			printf(
+				'<div class="wpmui-checkbox-title">%1$s %2$s</div><div class="wpmui-checkbox-list wpmui-field-input">%3$s',
 				$labels->title,
-				$labels->tooltip
+				$labels->tooltip,
+				$item_desc
+			);
+			$item_desc = '';
+
+			if ( ! is_array( $value ) ) {
+				$value = array( $value );
+			}
+
+			foreach ( $itemlist as $key => $item ) {
+				$tmp_items = array();
+				if ( is_array( $item ) ) {
+					$tmp_items[] = array(
+						'name' => false,
+						'label' => $key,
+						'value' => false,
+						'parent' => true,
+					);
+					foreach ( $item as $sub_key => $sub_item ) {
+						$tmp_items[] = array(
+							'name' => $name . '[]',
+							'label' => $sub_item,
+							'value' => $sub_key,
+							'child' => true,
+						);
+					}
+				} else {
+					$tmp_items[] = array(
+						'name' => $name . '[]',
+						'label' => $item,
+						'value' => $key,
+					);
+				}
+
+				foreach ( $tmp_items as $tmp_item ) {
+					$item_label = sprintf(
+						'<div class="wpmui-checkbox-caption">%1$s</div>',
+						$tmp_item['label']
+					);
+
+					$tmp_item['label'] = $item_label;
+					$tmp_item['checked'] = checked( in_array( $tmp_item['value'], $value ), true, false );
+					$tmp_item['child'] = empty( $tmp_item['child'] ) ? false : true;
+					$tmp_item['parent'] = empty( $tmp_item['parent'] ) ? false : true;
+
+					$listitems[] = $tmp_item;
+				}
+			}
+		} else {
+			// Single checkbox item.
+			$item_label = '';
+			if ( empty( $options['checkbox_position'] )
+				|| 'left' === $options['checkbox_position']
+			) {
+				$item_label = sprintf(
+					'<div class="wpmui-checkbox-caption">%1$s %2$s</div>',
+					$labels->title,
+					$labels->tooltip
+				);
+			}
+
+			$listitems[] = array(
+				'name' => $name,
+				'label' => $item_label,
+				'checked' => checked( $value, true, false ),
+				'value' => 1,
+				'child' => false,
+				'parent' => false,
 			);
 		}
 
-		printf(
-			'<label class="wpmui-checkbox-wrapper wpmui-field-label %2$s"><input id="%1$s" class="wpmui-field-input wpmui-field-checkbox" type="checkbox" name="%3$s" value="1" %4$s />%5$s %6$s</label>',
-			esc_attr( $id ),
-			esc_attr( $class ),
-			esc_attr( $name ),
-			$attr . $checked,
-			$item_label,
-			$item_desc
-		);
+		$is_group = false;
+		foreach ( $listitems as $item ) {
+			$item_class = $class;
+			if ( $item['parent'] ) {
+				$is_group = true;
+				echo '<div class="wpmui-group">';
+				$item_class .= ' wpmui-parent';
+			} elseif ( $item['child'] ) {
+				$is_group = true;
+				$item_class .= ' wpmui-child';
+			} elseif ( $is_group ) {
+				echo '</div>';
+				$is_group = false;
+			}
+
+			if ( empty( $item['name'] ) ) {
+				printf(
+					'<label class="wpmui-checkbox-wrapper wpmui-field-label wpmui-no-checkbox %1$s">%2$s %3$s</label>',
+					esc_attr( $item_class ),
+					$item['label'],
+					$item_desc
+				);
+			} else {
+				printf(
+					'<label class="wpmui-checkbox-wrapper wpmui-field-label %2$s"><input id="%1$s" class="wpmui-field-input wpmui-field-checkbox" type="checkbox" name="%3$s" value="%7$s" %4$s />%5$s %6$s</label>',
+					esc_attr( $id ),
+					esc_attr( $item_class ),
+					esc_attr( $item['name'] ),
+					$attr . $item['checked'],
+					$item['label'],
+					$item_desc,
+					$item['value']
+				);
+			}
+		}
 
 		$this->element_hint( $labels );
+
+		if ( ! empty( $itemlist ) ) {
+			echo '</div>';
+		}
 	}
 
 	/**
 	 * Helper function used by `html_element`
 	 *
 	 * @since  1.1.0
+	 * @internal
 	 */
 	private function element_wp_editor( $labels, $id, $value, $options ) {
 		$this->element_label( $labels );
@@ -766,6 +1052,7 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 	 * Helper function used by `html_element`
 	 *
 	 * @since  1.1.0
+	 * @internal
 	 */
 	private function element_button( $labels, $type, $class, $id, $name, $label, $value, $attr ) {
 		$this->element_label( $labels );
@@ -788,6 +1075,7 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 	 * Helper function used by `html_element`
 	 *
 	 * @since  1.1.0
+	 * @internal
 	 */
 	private function element_image( $labels, $class, $id, $name, $value, $alt, $attr ) {
 		$this->element_label( $labels );
@@ -809,9 +1097,10 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 	 * Helper function used by `html_element`
 	 *
 	 * @since  1.1.0
+	 * @internal
 	 */
 	private function element_radioslider( $labels, $class, $id, $name, $state, $url, $read_only, $attr, $options ) {
-		$options = Wdev()->get_array( $options );
+		$options = self::$core->array->get( $options );
 		if ( ! isset( $options['active'] ) ) { $options['active'] = true; }
 		if ( ! isset( $options['inactive'] ) ) { $options['inactive'] = false; }
 
@@ -820,11 +1109,7 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 
 		$turned = ( $value ) ? 'on' : '';
 
-		printf(
-			'<span class="wpmui-radio-slider-wrapper %s">',
-			$turned
-		);
-
+		$this->wrap_open( 'radio-slider', $class . ' ' . $turned );
 		$this->element_label( $labels );
 
 		$attr .= ' data-states="' . esc_attr( json_encode( $options ) ) . '" ';
@@ -841,29 +1126,32 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 		}
 
 		printf(
-			'<div class="wpmui-radio-slider %1$s wpmui-slider-%5$s %7$s" %6$s><div class="wpmui-toggle" %2$s>%3$s</div>%4$s</div>',
+			'<div class="wpmui-radio-slider %1$s wpmui-slider-%5$s %7$s" %6$s>%8$s<div class="wpmui-toggle" %2$s>%3$s</div>%4$s%9$s</div>',
 			esc_attr( $turned ),
 			$attr,
 			$link_url,
 			$attr_input,
 			esc_attr( $id ),
 			$read_only,
-			esc_attr( $class )
+			esc_attr( $class ),
+			'<span class="before"></span>',
+			'<span class="after"></span>'
 		);
 
 		$this->element_hint( $labels );
-		echo '</span>';
+		$this->wrap_close();
 	}
 
 	/**
 	 * Helper function used by `html_element`
 	 *
 	 * @since  1.1.0
+	 * @internal
 	 */
 	private function element_tagselect( $labels, $class, $id, $name, $value, $field_options, $attr, $ajax_data, $empty_text, $button_text, $title_selected ) {
 		$labels->id = '_src_' . $id;
 
-		echo '<span class="wpmui-tag-selector-wrapper">';
+		$this->wrap_open( 'tag-selector', $class );
 		$this->element_label( $labels );
 
 		$options_selected = '';
@@ -911,7 +1199,7 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 			$label_tag->id = $id;
 			$label_tag->tooltip = '';
 			$label_tag->tooltip_code = '';
-			$label_tag->class = 'wpmui-tag-label';
+			$label_tag->class .= ' wpmui-tag-label';
 			$this->element_label( $label_tag );
 
 			// Second Select: The actual tag-list
@@ -926,13 +1214,14 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 		}
 
 		$this->element_hint( $labels );
-		echo '</span>';
+		$this->wrap_close();
 	}
 
 	/**
 	 * Helper function used by `html_element`
 	 *
 	 * @since  1.1.0
+	 * @internal
 	 */
 	private function element_wp_pages( $labels, $class, $id, $name, $value, $attr, $field_options ) {
 		$defaults = array(
@@ -988,11 +1277,11 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 		);
 	}
 
-
 	/**
 	 * Helper function used by `html_element`
 	 *
 	 * @since  1.1.0
+	 * @internal
 	 */
 	private function element_separator( $type = 'horizontal' ) {
 		if ( 'v' === $type[0] ) {
@@ -1006,6 +1295,7 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 	 * Helper function used by `html_element`
 	 *
 	 * @since  1.1.0
+	 * @internal
 	 */
 	private function element_link( $labels, $class, $id, $label, $url, $attr, $target ) {
 		$this->element_desc( $labels );
@@ -1034,11 +1324,12 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 	 * Helper function used by `html_element`
 	 *
 	 * @since  1.1.0
+	 * @internal
 	 */
 	private function element_wrapper( $labels, $class, $id, $code, $wrap ) {
 		if ( empty( $wrap ) ) { $wrap = 'span'; }
 
-		echo '<span class="wpmui-html-text-wrapper">';
+		$this->wrap_open( 'html-text', $class );
 		$this->element_label( $labels );
 
 		printf(
@@ -1049,25 +1340,26 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 		);
 
 		$this->element_hint( $labels );
-		echo '</span>';
+		$this->wrap_close();
 	}
 
 	/**
 	 * Helper function used by `html_element`
 	 *
 	 * @since  1.1.0
+	 * @internal
 	 */
 	private function element_table( $labels, $class, $id, $rows, $args ) {
-		WDev()->load_fields( $args, 'head_row', 'head_col', 'col_class' );
+		self::$core->array->equip( $args, 'head_row', 'head_col', 'col_class' );
 
-		echo '<span class="wpmui-table-wrapper">';
+		$this->wrap_open( 'table', $class );
 		$this->element_label( $labels );
 
 		$code_body = '';
 		$code_head = '';
 
 		if ( is_array( $rows ) ) {
-			$args['col_class'] = WDev()->get_array( $args['col_class'] );
+			$args['col_class'] = self::$core->array->get( $args['col_class'] );
 
 			foreach ( $rows as $row_num => $row ) {
 				$code_row = '';
@@ -1120,13 +1412,15 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 		}
 
 		$this->element_hint( $labels );
-		echo '</span>';
+		$this->wrap_close();
 	}
 
 	/**
 	 * Returns HTML code containing options used to build a select tag.
 	 *
 	 * @since  1.1.0
+	 * @internal
+	 *
 	 * @param  array $list List items as 'key => value' pairs.
 	 * @param  array|string $value The selected value.
 	 * @param  string $type Either 'default' or 'taglist'.
@@ -1135,6 +1429,7 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 	 */
 	private function select_options( $list, $value = '', $type = 'default' ) {
 		$options = '';
+		$list = self::$core->array->get( $list );
 
 		foreach ( $list as $key => $option ) {
 			if ( is_array( $option ) ) {
@@ -1145,16 +1440,22 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 					$this->select_options( $option, $value, $type )
 				);
 			} else {
-				if ( is_array( $value ) ) {
-					$is_selected = ( array_key_exists( $key, $value ) );
+				$attr = '';
+				if ( is_object( $option ) ) {
+					if ( isset( $option->attr ) ) { $attr = $option->attr; }
+					if ( isset( $option->label ) ) { $option = $option->label; }
 				}
-				else {
+				if ( empty( $option ) ) { continue; }
+
+				if ( is_array( $value ) ) {
+					$is_selected = ( in_array( $key, $value ) );
+				} else {
 					$is_selected = $key == $value;
 				}
 
 				switch ( $type ) {
 					case 'default':
-						$attr = selected( $is_selected, true, false );
+						$attr .= selected( $is_selected, true, false );
 						$options .= sprintf(
 							'<option value="%1$s" %2$s>%3$s</option>',
 							esc_attr( $key ),
@@ -1164,7 +1465,7 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 						break;
 
 					case 'taglist':
-						$attr = ($is_selected ? 'disabled="disabled"' : '');
+						$attr .= ($is_selected ? 'disabled="disabled"' : '');
 						$options .= sprintf(
 							'<option value="%1$s" %2$s>%3$s</option>',
 							esc_attr( $key ),
@@ -1180,9 +1481,52 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 	}
 
 	/**
+	 * Output the opening tag of an input wrapper.
+	 *
+	 * @since  2.0.0
+	 * @internal
+	 *
+	 * @param  string $type Wrapper type, class is set to 'wpmui-$type-wrapper'.
+	 * @param  string $classes String or array containing additional classes.
+	 *                         All classes are extended with '-wrapper'
+	 * @param  string $tag Optional. The tag name, default 'span'
+	 */
+	private function wrap_open( $type, $classes = '', $tag = 'span' ) {
+		$classes = explode( ' ', $classes );
+		if ( count( $classes ) ) {
+			$classes = array_filter( array_map( 'trim', $classes ) );
+			$classes = array_map( 'strtolower', $classes );
+			$extra_classes = implode( '-wrapper ', $classes );
+			if ( ! empty( $extra_classes ) ) { $extra_classes .= '-wrapper'; }
+		} else {
+			$extra_classes = '';
+		}
+
+		printf(
+			'<%1$s class="wpmui-wrapper wpmui-%2$s-wrapper %3$s">',
+			$tag,
+			$type,
+			$extra_classes
+		);
+	}
+
+	/**
+	 * Output the closing tag of an input wrapper.
+	 *
+	 * @since  2.0.0
+	 * @internal
+	 *
+	 * @param  string $tag Optional. The tag name, default 'span'
+	 */
+	private function wrap_close( $tag = 'span' ) {
+		printf( '</%1$s>', $tag );
+	}
+
+	/**
 	 * Helper function used by `html_element`
 	 *
 	 * @since  1.1.0
+	 * @internal
 	 */
 	private function element_label( $labels ) {
 		if ( ! empty( $labels->title ) ) {
@@ -1203,13 +1547,15 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 	 * Helper function used by `html_element`
 	 *
 	 * @since  1.1.0
+	 * @internal
 	 */
 	private function element_desc( $labels ) {
 		if ( ! empty( $labels->desc ) ) {
 			printf(
-				'<span class="wpmui-field-description %2$s">%1$s</span>',
+				'<label class="wpmui-field-description %2$s" for="%3$s">%1$s</label >',
 				$labels->desc,
-				esc_attr( 'wpmui-description-' . $labels->id )
+				esc_attr( 'wpmui-description-' . $labels->id . ' ' . $labels->class ),
+				esc_attr( $labels->id )
 			);
 		}
 
@@ -1225,6 +1571,7 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 	 * Helper function used by `html_element`
 	 *
 	 * @since  1.1.0
+	 * @internal
 	 */
 	private function element_hint( $labels ) {
 		if ( ! empty( $labels->after ) ) {
@@ -1243,26 +1590,32 @@ class TheLib_1_1_1_Html extends TheLib_1_1_1_Base  {
 	 * Method for outputting tooltips.
 	 *
 	 * @since 1.1.0
+	 * @api
 	 *
-	 * @return string But does output HTML.
+	 * @param  string $tip The tooltip to display.
+	 * @param  bool $return Optional. If true then the HTML code is returned as
+	 *                      function return value. Otherwise echo'ed.
+	 *
+	 * @return string|void Depending on param $return either nothing or HTML code.
 	 */
 	public function tooltip( $tip = '', $return = false ) {
-		if ( empty( $tip ) ) {
-			return;
-		}
+		if ( empty( $tip ) ) { return; }
 
 		if ( $return ) { ob_start(); }
+
+		$this->wrap_open( 'tooltip', '', 'div' );
 		?>
 		<div class="wpmui-tooltip-wrapper">
 		<div class="wpmui-tooltip-info"><i class="wpmui-fa wpmui-fa-info-circle"></i></div>
 		<div class="wpmui-tooltip">
 			<div class="wpmui-tooltip-button">&times;</div>
 			<div class="wpmui-tooltip-content">
-			<?php printf( $tip ); ?>
+			<?php echo '' . $tip; ?>
 			</div>
 		</div>
-		</div>
 		<?php
+		$this->wrap_close( 'div' );
+
 		if ( $return ) { return ob_get_clean(); }
 	}
 

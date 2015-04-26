@@ -54,6 +54,9 @@ class IncPopupItem {
 	// Link for the CTA button.
 	public $cta_link = '';
 
+	// Link target for the CTA button.
+	public $cta_target = '';
+
 	// Image dispalyed in the popup.
 	public $image = '';
 
@@ -92,13 +95,16 @@ class IncPopupItem {
 	// CSS code to customize this PopUp
 	public $custom_css = '';
 
+	// CSS classes to add to this PopUp
+	public $class = array();
+
 	// -- "Never show again" options
 
 	// Add button "Never show popup again".
 	public $can_hide = false;
 
 	// "Close button acts as 'Never show popup again'".
-	public $close_is_hide = false;
+	public $close_hides = false;
 
 	// Expiration of "Never show popup again" (in days).
 	public $hide_expire = 365;
@@ -124,6 +130,13 @@ class IncPopupItem {
 
 	// Hiding animation
 	public $animation_out = '';
+
+	// If true, then the PopUp will be displayed instantly and with inline class.
+	public $inline = false;
+
+	// Set to true by Upfront. This means that the PopUp is not stored as
+	// custom post type but inside upfront layout.
+	public $is_upfront = false;
 
 	// -- Conditions
 
@@ -188,6 +201,7 @@ class IncPopupItem {
 		$this->subtitle = '';
 		$this->cta_label = '';
 		$this->cta_link = '';
+		$this->cta_target = '';
 		$this->image = '';
 		$this->image_pos = 'right';
 		$this->image_mobile = true;
@@ -203,6 +217,7 @@ class IncPopupItem {
 		);
 		$this->style = 'minimal';
 		$this->custom_css = '';
+		$this->class = array();
 		$this->deprecated_style = false;
 		$this->round_corners = true;
 		$this->scroll_body = false;
@@ -221,6 +236,7 @@ class IncPopupItem {
 		);
 		$this->animation_in = '';
 		$this->animation_out = '';
+		$this->inline = false;
 		$this->rule = array();
 		$this->rule_files = array();
 		$this->rule_data = array();
@@ -264,10 +280,14 @@ class IncPopupItem {
 		isset( $data['subtitle'] ) && $this->subtitle = $data['subtitle'];
 		isset( $data['cta_label'] ) && $this->cta_label = $data['cta_label'];
 		isset( $data['cta_link'] ) && $this->cta_link = $data['cta_link'];
+		isset( $data['cta_target'] ) && $this->cta_target = $data['cta_target'];
 		isset( $data['custom_size'] ) && $this->custom_size = $data['custom_size'];
 		isset( $data['custom_css'] ) && $this->custom_css = $data['custom_css'];
+		isset( $data['class'] ) && $this->class = $data['class'];
 		isset( $data['animation_in'] ) && $this->animation_in = $data['animation_in'];
 		isset( $data['animation_out'] ) && $this->animation_out = $data['animation_out'];
+		isset( $data['inline'] ) && $this->inline = $data['inline'];
+		isset( $data['is_upfront'] ) && $this->is_upfront = $data['is_upfront'];
 
 		isset( $data['size']['width'] ) && $this->size['width'] = $data['size']['width'];
 		isset( $data['size']['height'] ) && $this->size['height'] = $data['size']['height'];
@@ -328,14 +348,15 @@ class IncPopupItem {
 		$this->deprecated_style = @$styles[ $this->style ]->deprecated;
 
 		// Boolean types.
-		$this->custom_size = (true == @$this->custom_size);
-		$this->custom_colors = (true == @$this->custom_colors);
-		$this->deprecated_style = (true == @$this->deprecated_style);
-		$this->round_corners = (true == @$this->round_corners);
-		$this->scroll_body = (true == @$this->scroll_body);
-		$this->can_hide = (true == @$this->can_hide);
-		$this->close_hides = (true == @$this->close_hides);
-		$this->overlay_close = (true == @$this->overlay_close);
+		$this->custom_size = (true == $this->custom_size);
+		$this->custom_colors = (true == $this->custom_colors);
+		$this->deprecated_style = (true == $this->deprecated_style);
+		$this->round_corners = (true == $this->round_corners);
+		$this->scroll_body = (true == $this->scroll_body);
+		$this->can_hide = (true == $this->can_hide);
+		$this->close_hides = (true == $this->close_hides);
+		$this->overlay_close = (true == $this->overlay_close);
+		$this->inline = (true == $this->inline);
 
 		// Numeric types.
 		$this->hide_expire = absint( $this->hide_expire );
@@ -368,7 +389,9 @@ class IncPopupItem {
 		}
 
 		// Generate unique ID.
+		$this->code = (object) array();
 		$this->code->id = 'a' . md5( $this->id . date( 'dis' ) );
+		$this->code->cls = 'wdpu-' . $this->id;
 
 		// Display data (legacy code for old styles).
 		if ( $this->custom_colors ) {
@@ -392,6 +415,7 @@ class IncPopupItem {
 		// Very rough validation that makes sure that the field does not close
 		// the <style> tag manually.
 		$this->custom_css = str_replace( '</s', 's', $this->custom_css );
+		$this->class = lib2()->array->get( $this->class );
 
 		$this->script_data['html_id'] = $this->code->id;
 		$this->script_data['popup_id'] = $this->id;
@@ -407,9 +431,10 @@ class IncPopupItem {
 		$this->script_data['form_submit'] = $this->form_submit;
 		$this->script_data['animation_in'] = $this->animation_in;
 		$this->script_data['animation_out'] = $this->animation_out;
+		$this->script_data['inline'] = $this->inline;
 
 		// Validation only done when editing popups.
-		if ( is_admin() ) {
+		if ( ! $this->is_upfront && is_admin() && $this->id >= 0 ) {
 			// Name.
 			if ( empty( $this->name ) ) {
 				$this->name = __( 'New PopUp', PO_LANG );
@@ -482,14 +507,17 @@ class IncPopupItem {
 		$this->subtitle = get_post_meta( $this->id, 'po_subtitle', true );
 		$this->cta_label = get_post_meta( $this->id, 'po_cta_label', true );
 		$this->cta_link = get_post_meta( $this->id, 'po_cta_link', true );
+		$this->cta_target = get_post_meta( $this->id, 'po_cta_target', true );
 		$this->custom_size = get_post_meta( $this->id, 'po_custom_size', true );
 		$this->size = get_post_meta( $this->id, 'po_size', true );
 		$this->color = get_post_meta( $this->id, 'po_color', true );
 		$this->custom_colors = get_post_meta( $this->id, 'po_custom_colors', true );
 		$this->style = get_post_meta( $this->id, 'po_style', true );
 		$this->custom_css = get_post_meta( $this->id, 'po_custom_css', true );
+		$this->class = get_post_meta( $this->id, 'po_class', true );
 		$this->animation_in = get_post_meta( $this->id, 'po_animation_in', true );
 		$this->animation_out = get_post_meta( $this->id, 'po_animation_out', true );
+		$this->inline = get_post_meta( $this->id, 'po_inline', true );
 		$this->round_corners = get_post_meta( $this->id, 'po_round_corners', true );
 		$this->scroll_body = get_post_meta( $this->id, 'po_scroll_body', true );
 		$this->can_hide = get_post_meta( $this->id, 'po_can_hide', true );
@@ -535,7 +563,7 @@ class IncPopupItem {
 			if ( 0 != IncPopupDatabase::count_active( $this->id ) ) {
 				IncPopupDatabase::deactivate_all();
 
-				WDev()->message(
+				lib2()->ui->admin_message(
 					sprintf(
 						__(
 							'In the free version you can activate 1 PopUp. ' .
@@ -583,14 +611,17 @@ class IncPopupItem {
 			update_post_meta( $this->id, 'po_subtitle', $this->subtitle );
 			update_post_meta( $this->id, 'po_cta_label', $this->cta_label );
 			update_post_meta( $this->id, 'po_cta_link', $this->cta_link );
+			update_post_meta( $this->id, 'po_cta_target', $this->cta_target );
 			update_post_meta( $this->id, 'po_custom_size', $this->custom_size );
 			update_post_meta( $this->id, 'po_size', $this->size );
 			update_post_meta( $this->id, 'po_color', $this->color );
 			update_post_meta( $this->id, 'po_custom_colors', $this->custom_colors );
 			update_post_meta( $this->id, 'po_style', $this->style );
 			update_post_meta( $this->id, 'po_custom_css', $this->custom_css );
+			update_post_meta( $this->id, 'po_class', $this->class );
 			update_post_meta( $this->id, 'po_animation_in', $this->animation_in );
 			update_post_meta( $this->id, 'po_animation_out', $this->animation_out );
+			update_post_meta( $this->id, 'po_inline', $this->inline );
 			update_post_meta( $this->id, 'po_round_corners', $this->round_corners );
 			update_post_meta( $this->id, 'po_scroll_body', $this->scroll_body );
 			update_post_meta( $this->id, 'po_can_hide', $this->can_hide );
@@ -628,9 +659,9 @@ class IncPopupItem {
 							break;
 					}
 				}
-				WDev()->message( sprintf( $msg, $this->name ) );
+				lib2()->ui->admin_message( sprintf( $msg, $this->name ) );
 			} else {
-				WDev()->message( __( 'Could not save PopUp.', PO_LANG ), 'err' );
+				lib2()->ui->admin_message( __( 'Could not save PopUp.', PO_LANG ), 'err' );
 			}
 		}
 
@@ -654,10 +685,10 @@ class IncPopupItem {
 
 		// Check for specific/frequently used shortcodes.
 
-		if ( $method !== 'footer'
+		if ( 'footer' !== $method
 			&& preg_match( '#\[gravityforms?(\s.*?\]|\])#', $content )
 		) {
-			WDev()->message(
+			lib2()->ui->admin_message(
 				sprintf(
 					__( 'You are using Gravity Forms inside this PopUp. It is best to switch to the <a href="%s">loading method</a> "Page Footer" to ensure the form works as expected.', PO_LANG ),
 					'edit.php?post_type=' . IncPopupItem::POST_TYPE . '&page=settings'
@@ -677,7 +708,7 @@ class IncPopupItem {
 				foreach ( $check->shortcodes as $code ) {
 					$match = array();
 					if ( preg_match( '#\[' . $code . '(\s.*?\]|\])#', $content, $match ) ) {
-						WDev()->message(
+						lib2()->ui->admin_message(
 							sprintf(
 								__( 'Shortcode <code>%s</code> requires a different <a href="%s">loading method</a> to work.<br />Try "Page Footer", though sometimes the method "Custom AJAX" also works (please test the result)', PO_LANG ),
 								$match[0],
@@ -695,7 +726,7 @@ class IncPopupItem {
 				break;
 
 			default:
-				//WDev()->message( 'Shortcode-Check not defined for: ' . $method );
+				//lib2()->ui->admin_message( 'Shortcode-Check not defined for: ' . $method );
 		}
 	}
 
@@ -720,6 +751,200 @@ class IncPopupItem {
 	}
 
 	/**
+	 * Prepares the variables that are available in popup template files.
+	 *
+	 * This function is used by the function `load_html()` and exports a list of
+	 * variables that make it easier to style/modify popup templates.
+	 *
+	 * @since  4.8.0.0
+	 * @return array List of variables
+	 */
+	protected function prepare_template_vars() {
+		$has_title = ! empty( $this->title );
+		$has_subtitle = ! empty( $this->subtitle );
+		$has_cta = ! empty( $this->cta_label ) && ! empty( $this->cta_link );
+		$cta_target = empty( $this->cta_target ) ? '_self' : $this->cta_target;
+		$has_img = ! empty( $this->image );
+		$has_buttons = $has_cta || $this->can_hide;
+
+		if ( ! $this->image_mobile && wp_is_mobile() ) { $has_img = false; }
+
+		if ( $has_cta ) {
+			$cta_button_tag = sprintf(
+				'<a href="%1$s" class="wdpu-cta" target="%2$s">%3$s</a>',
+				esc_url( $this->cta_link ),
+				esc_attr( $cta_target ),
+				esc_html( $this->cta_label )
+			);
+		} else {
+			$cta_button_tag = '';
+		}
+
+		if ( $this->can_hide ) {
+			$hide_forever_tag = sprintf(
+				'<a href="#" class="wdpu-hide-forever">%s</a>',
+				__( 'Never see this message again.', PO_LANG )
+			);
+		} else {
+			$hide_forever_tag = '';
+		}
+
+		$outer_class = $this->class;
+		$inner_class = array();
+		$img_left = false;
+
+		$outer_class[] = 'wdpu-container';
+		$outer_class[] = 'wdpu-background';
+		$inner_class[] = 'wdpu-msg';
+		$inner_class[] = 'move';
+
+		if ( $has_img ) {
+			$img_left = ($this->image_pos == 'left');
+			$outer_class[] = 'img-' . $this->image_pos;
+		} else {
+			$outer_class[] = 'no-img';
+		}
+
+		$img_is_left = $has_img && $img_left;
+		$img_is_right = $has_img && ! $img_left;
+
+		if ( $this->is_preview ) {
+			$outer_class[] = 'preview';
+			if ( ! $this->image_mobile ) {
+				$outer_class[] = 'mobile-no-img';
+			}
+		}
+
+		if ( $has_buttons ) {
+			$outer_class[] = 'buttons';
+		}
+
+		$outer_class[] = 'style-' . $this->style;
+		if ( $this->round_corners ) { $outer_class[] = 'rounded'; }
+		if ( $this->custom_size ) { $outer_class[] = 'custom-size'; }
+		$outer_class[] = 'wdpu-' . $this->id;
+
+		$content = apply_filters( 'the_content', $this->content );
+
+		/**
+		 * Allow users to manually position a Pop-up.
+		 * Return value should be an array that defines either left/right/top/bottom.
+		 * Important: Filter is only used when PopUp uses a custom size!
+		 *
+		 * Example:
+		 * return array( 'left' => '20%', 'top' => '50px' );
+		 *
+		 * @var   false|array
+		 * @since 4.6.1.2
+		 */
+		$pos = false;
+		$pos_style = '';
+		if ( $this->custom_size ) {
+			$pos = apply_filters( 'popup-template-position', $pos, $this->id, $this );
+
+			if ( is_array( $pos ) ) {
+				$pos_style .= 'position:absolute;';
+				$outer_class[] = 'custom-pos';
+
+				if ( isset( $pos['left'] ) || isset( $pos['right'] ) ) {
+					isset( $pos['left'] ) && $pos_style .= 'left:' . $pos['left'] . ';';
+					isset( $pos['right'] ) && $pos_style .= 'right:' . $pos['right'] . ';';
+					$inner_class[] = 'no-move-x';
+					$pos_style .= 'margin-left:0;margin-right:0;';
+				}
+				if ( isset( $pos['top'] ) || isset( $pos['bottom'] ) ) {
+					isset( $pos['top'] ) && $pos_style .= 'top:' . $pos['top'] . ';';
+					isset( $pos['bottom'] ) && $pos_style .= 'bottom:' . $pos['bottom'] . ';';
+					$inner_class[] = 'no-move-y';
+					$pos_style .= 'margin-top:0;margin-bottom:0;';
+				}
+			} else {
+				$inner_class[] = 'no-move-x';
+			}
+		} else {
+			$inner_class[] = 'no-move-x';
+		}
+
+		/**
+		 * Allow users to add a custom CSS class to the Pop-up.
+		 *
+		 * @var   string
+		 * @since 4.6.1.2
+		 */
+		if ( $this->inline ) { $outer_class[] = 'inline'; }
+		if ( $has_title ) { $outer_class[] = 'with-title'; }
+		else { $outer_class[] = 'no-title'; }
+		if ( $has_subtitle ) { $outer_class[] = 'with-subtitle'; }
+		else { $outer_class[] = 'no-subtitle'; }
+
+		$outer_class = implode(
+			' ',
+			apply_filters(
+				'popup-template-class',
+				$outer_class,
+				$this->id,
+				$this
+			)
+		);
+
+		$inner_class = implode(
+			' ',
+			apply_filters(
+				'popup-template-move-class',
+				$inner_class,
+				$this->id,
+				$this
+			)
+		);
+
+		/**
+		 * This determines if the PopUp is initially hidden on the page.
+		 *
+		 * @var   bool
+		 * @since 4.8.0.0
+		 */
+		$layer_style = 'display:none;';
+		if ( $this->inline ) {
+			$layer_style = '';
+		}
+
+		$layer_style = apply_filters(
+			'popup-layer-style',
+			$layer_style,
+			$this->id,
+			$this
+		);
+
+		/**
+		 * Prepare the variable collection that can be used in templates.
+		 *
+		 * This list of variables is available in the template.php file.
+		 * Add new variables by using the filter 'popup-template-vars' below.
+		 */
+		$vars = array(
+			'has_title' => $has_title,
+			'has_subtitle' => $has_subtitle,
+			'has_cta' => $has_cta,
+			'cta_target' => $cta_target,
+			'has_img' => $has_img,
+			'has_buttons' => $has_buttons,
+			'outer_class' => $outer_class,
+			'img_left' => $img_left,
+			'img_is_left' => $img_is_left,
+			'img_is_right' => $img_is_right,
+			'inner_class' => $inner_class,
+			'pos' => $pos,
+			'pos_style' => $pos_style,
+			'layer_style' => $layer_style,
+			'content' => $content,
+			'cta_button_tag' => $cta_button_tag,
+			'hide_forever_tag' => $hide_forever_tag,
+		);
+
+		return apply_filters( 'popup-template-vars', $vars );
+	}
+
+	/**
 	 * Load the PopUp HTML code from the popup.php template.
 	 *
 	 * @since  4.6
@@ -732,6 +957,9 @@ class IncPopupItem {
 			$styles = apply_filters( 'popup-styles', array() );
 			$details = $styles[$this->style];
 
+			$vars = $this->prepare_template_vars();
+			extract( $vars );
+
 			$Html[ $this->id ] = '';
 			$tpl_file = $details->dir . 'template.php';
 
@@ -743,8 +971,41 @@ class IncPopupItem {
 
 				$Html[ $this->id ] = str_replace( array( "\t", "\r", "\n", '     ' ), ' ', $Html[ $this->id ] );
 				$Html[ $this->id ] = str_replace( array( '    ', '   ', '  ' ), ' ', $Html[ $this->id ] );
-				$Html[ $this->id ] = str_replace( '#000001', $this->code->color1, $Html[ $this->id ] );
-				$Html[ $this->id ] = str_replace( '#000002', $this->code->color2, $Html[ $this->id ] );
+
+				// Replace variables in the template.
+				$Html[ $this->id ] = str_replace(
+					array(
+						'%color1%',
+						'%color2%',
+						'%id%',
+						'%title%',
+						'%subtitle%',
+						'%img_url%',
+						'%content%',
+						'%cta_button%',
+						'%hide_forever%',
+						'%outer_class%',
+						'%inner_class%',
+						'%outer_style%',
+						'%inner_style%',
+					),
+					array(
+						esc_attr( $this->code->color1 ),
+						esc_attr( $this->code->color2 ),
+						esc_attr( $this->code->id ),
+						esc_html( $this->title ),
+						esc_html( $this->subtitle ),
+						esc_url( $this->image ),
+						$content,
+						$cta_button_tag,
+						$hide_forever_tag,
+						esc_attr( $outer_class ),
+						esc_attr( $inner_class ),
+						esc_attr( $layer_style ),
+						esc_attr( $pos_style ),
+					),
+					$Html[ $this->id ]
+				);
 			}
 		}
 
@@ -773,14 +1034,14 @@ class IncPopupItem {
 				$Code[ $this->id ] = ob_get_contents();
 				ob_end_clean();
 
-				$Code[ $this->id ] = str_replace( '#messagebox', '#' . $this->code->id, $Code[ $this->id ] );
+				$Code[ $this->id ] = str_replace( '#messagebox', '.' . $this->code->cls, $Code[ $this->id ] );
 				$Code[ $this->id ] = str_replace( '%styleurl%', $details->url, $Code[ $this->id ] );
 				$Code[ $this->id ] = str_replace( '#000001', $this->code->color1, $Code[ $this->id ] );
 				$Code[ $this->id ] = str_replace( '#000002', $this->code->color2, $Code[ $this->id ] );
 			}
 			$custom_css = $this->custom_css;
 			$custom_css = str_replace( '#popup', '#' . $this->code->id, $custom_css );
-			$custom_css = str_replace( '#messagebox', '#' . $this->code->id, $custom_css );
+			$custom_css = str_replace( '#messagebox', '.' . $this->code->cls, $custom_css );
 			$custom_css = str_replace( '%styleurl%', $details->url, $custom_css );
 			$Code[ $this->id ] .= $custom_css;
 		}

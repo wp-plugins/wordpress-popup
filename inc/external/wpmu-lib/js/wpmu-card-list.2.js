@@ -1,6 +1,6 @@
-/*! WPMU Dev code library - v1.1.1
+/*! WPMU Dev code library - v2.0.1
  * http://premium.wpmudev.org/
- * Copyright (c) 2014; * Licensed GPLv2+ */
+ * Copyright (c) 2015; * Licensed GPLv2+ */
 /*!
  * WPMU Dev Card List
  * (Philipp Stracker for WPMU Dev)

@@ -23,6 +23,14 @@
   box-sizing: border-box;
   opacity: .8;
 }
+.wpmui-list-wrapper .list-card .badge-container {
+  overflow: hidden;
+  width: 100px;
+  height: 100px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+}
 .wpmui-list-wrapper .list-card .badge-active {
   display: none;
 }
@@ -48,6 +56,9 @@
   padding: 3px 40px;
   z-index: 20;
   border: 1px solid #FFF;
+}
+.wpmui-list-wrapper .list-card.active .item-icon {
+  color: #3b8b08;
 }
 .wpmui-list-wrapper .list-card .item-icon {
   position: absolute;
@@ -138,6 +149,7 @@
 .wpmui-list-wrapper .is-no-detail {
   display: inline;
 }
+.wpmui-list-wrapper .details .wpmui-html-text-wrapper,
 .wpmui-list-wrapper .details .wpmui-input-wrapper,
 .wpmui-list-wrapper .details .wpmui-select-wrapper,
 .wpmui-list-wrapper .details .wpmui-radio-wrapper,
@@ -149,6 +161,7 @@
   background-color: #FFF;
   border: 1px solid #dedede;
 }
+.wpmui-list-wrapper .details .wpmui-html-text-wrapper .wpmui-radio-slider,
 .wpmui-list-wrapper .details .wpmui-input-wrapper .wpmui-radio-slider,
 .wpmui-list-wrapper .details .wpmui-select-wrapper .wpmui-radio-slider,
 .wpmui-list-wrapper .details .wpmui-radio-wrapper .wpmui-radio-slider,
@@ -188,10 +201,12 @@
   height: auto;
   left: 0;
   right: 0;
+  overflow: visible;
 }
 .wpmui-list-wrapper .wpmui-list-table.has-details .detail-mode .details {
   display: block;
   position: absolute;
+  overflow: auto;
   top: 135px;
   left: 0;
   right: 0;
@@ -237,4 +252,29 @@
 .wpmui-list-wrapper .filter-links > li a {
   padding-top: 0;
   padding-bottom: 0;
+}
+.wpmui-list-wrapper .close-button {
+  position: absolute;
+  top: -30px;
+  right: -30px;
+  border-radius: 15px;
+  background: #FFF;
+}
+.wpmui-list-wrapper .close-button:after {
+  content: "\f335";
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  font-size: 26px;
+  line-height: 30px;
+  font-family: dashicons;
+  text-decoration: inherit;
+  font-weight: 400;
+  font-style: normal;
+  vertical-align: top;
+  text-align: center;
+  -webkit-transition: color .1s ease-in 0;
+  transition: color .1s ease-in 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }

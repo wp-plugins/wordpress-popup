@@ -4,6 +4,27 @@ Author:      Philipp Stracker
 Change Log:
 ----------------------------------------------------------------------
 
+2.0.1
+----------------------------------------------------------------------
+- Fix errors when running side by side with older version
+- Add new function handlers to the JS popup: wpmUi.popup().on() and .off()
+
+2.0.0
+----------------------------------------------------------------------
+- Massive refactoring of the file and code structure
+- Added new functions
+- Much better documentation of the library
+- Great improvements in the debugger output
+
+1.1.3
+----------------------------------------------------------------------
+- Improve the wpmUi.popup() object
+
+1.1.2
+----------------------------------------------------------------------
+- Fix issue where js/css files were not loaded in front-end
+- Several small code improvements
+
 1.1.1
 ----------------------------------------------------------------------
 - Fix a PHP warning in html plugin_list

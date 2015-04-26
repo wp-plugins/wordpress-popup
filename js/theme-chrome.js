@@ -1,6 +1,6 @@
-/*! PopUp Free - v4.7.03
+/*! PopUp Free - v4.7.07
  * https://wordpress.org/plugins/wordpress-popup/
- * Copyright (c) 2014; * Licensed GPLv2+ */
+ * Copyright (c) 2015; * Licensed GPLv2+ */
 ace.define("ace/theme/chrome", ["require", "exports", "module", "ace/lib/dom"], function(require, exports, module) {
 
     exports.isDark = false;

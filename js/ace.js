@@ -1,6 +1,6 @@
-/*! PopUp Free - v4.7.03
+/*! PopUp Free - v4.7.07
  * https://wordpress.org/plugins/wordpress-popup/
- * Copyright (c) 2014; * Licensed GPLv2+ */
+ * Copyright (c) 2015; * Licensed GPLv2+ */
 /**
  * Define a module along with a payload
  * @param module a name for the payload

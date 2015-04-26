@@ -131,6 +131,7 @@ html[dir="rtl"] .select2-container .select2-choice > .select2-chosen {
 
 .select2-drop {
   width: 100%;
+  max-width: 80%;
   margin-top: -1px;
   position: absolute;
   z-index: 9999;

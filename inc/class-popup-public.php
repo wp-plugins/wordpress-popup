@@ -144,8 +144,8 @@ class IncPopup extends IncPopupBase {
 
 		$popup_data = apply_filters( 'popup-ajax-data', $this->script_data );
 
-		WDev()->add_data( '_popup_data', $popup_data, 'front' );
-		WDev()->add_ui( PO_JS_URL . 'public.min.js', 'front' );
+		lib2()->ui->data( '_popup_data', $popup_data, 'front' );
+		lib2()->ui->add( PO_JS_URL . 'public.min.js', 'front' );
 	}
 
 	/**
@@ -216,7 +216,7 @@ class IncPopup extends IncPopupBase {
 		 * In an ajax request they would already be defined by the ajax url.
 		 */
 		$_REQUEST['thereferrer'] = isset( $_SERVER['HTTP_REFERER'] ) ? $_SERVER['HTTP_REFERER'] : '';
-		$_REQUEST['thefrom'] = WDev()->current_url();
+		$_REQUEST['thefrom'] = lib2()->net->current_url();
 
 		// Populates $this->popups
 		$this->select_popup();
@@ -258,7 +258,7 @@ class IncPopup extends IncPopupBase {
 		 * In an ajax request they would already be defined by the ajax url.
 		 */
 		$_REQUEST['thereferrer'] = isset( $_SERVER['HTTP_REFERER'] ) ? $_SERVER['HTTP_REFERER'] : '';
-		$_REQUEST['thefrom'] = WDev()->current_url();
+		$_REQUEST['thefrom'] = lib2()->net->current_url();
 
 		// Populates $this->popups
 		$this->select_popup();

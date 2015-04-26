@@ -85,24 +85,24 @@ class IncPopup extends IncPopupBase {
 	 * @since  4.6.0
 	 */
 	static public function setup_module_specific( $hook ) {
-		WDev()->load_fields( $hook, 'post_type', 'base' );
-		WDev()->load_request_fields( 'post_status' );
+		lib2()->array->equip( $hook, 'post_type', 'base' );
+		lib2()->array->equip_request( 'post_status' );
 
 		if ( IncPopupItem::POST_TYPE === $hook->post_type ) {
 			// WordPress core scripts
-			WDev()->add_js( 'jquery-ui-slider' );
-			WDev()->add_js( 'jquery-ui-sortable' );
+			lib2()->ui->js( 'jquery-ui-slider' );
+			lib2()->ui->js( 'jquery-ui-sortable' );
 
-			WDev()->add_ui( 'core' );
-			WDev()->add_ui( 'select' );
+			lib2()->ui->add( 'core' );
+			lib2()->ui->add( 'select' );
 
-			WDev()->add_ui( PO_CSS_URL . 'popup-admin.min.css' );
-			WDev()->add_ui( PO_JS_URL . 'popup-admin.min.js' );
-			WDev()->add_ui( PO_JS_URL . 'ace.js' ); // CSS editor.
-			WDev()->add_ui( PO_JS_URL . 'public.min.js' ); // For Preview.
+			lib2()->ui->add( PO_CSS_URL . 'popup-admin.min.css' );
+			lib2()->ui->add( PO_JS_URL . 'popup-admin.min.js' );
+			lib2()->ui->add( PO_JS_URL . 'ace.js' ); // CSS editor.
+			lib2()->ui->add( PO_JS_URL . 'public.min.js' ); // For Preview.
 
-			if ( $_REQUEST['post_status'] !== 'trash' ) {
-				WDev()->add_data(
+			if ( 'trash' != $_REQUEST['post_status'] ) {
+				lib2()->ui->data(
 					'po_bulk',
 					array(
 						'activate' => __( 'Activate', PO_LANG ),
@@ -113,7 +113,7 @@ class IncPopup extends IncPopupBase {
 			}
 
 			// For Preview
-			WDev()->add_data(
+			lib2()->ui->data(
 				'_popup_data',
 				array(
 					'ajaxurl' => admin_url( 'admin-ajax.php' ),
@@ -123,7 +123,6 @@ class IncPopup extends IncPopupBase {
 					'preview' => true,
 				)
 			);
-
 
 			// -- PopUp LIST -----------------------
 
@@ -190,8 +189,8 @@ class IncPopup extends IncPopupBase {
 			// -- PopUp EDITOR -----------------
 
 			if ( 'post' === $hook->base ) {
-				WDev()->add_css( 'wp-color-picker' ); // WordPress core script
-				WDev()->add_js( 'wp-color-picker' ); // WordPress core script
+				lib2()->ui->css( 'wp-color-picker' ); // WordPress core script
+				lib2()->ui->js( 'wp-color-picker' ); // WordPress core script
 
 				// See if a custom action should be executed (e.g. duplicate)
 				self::form_check_actions();
@@ -242,7 +241,7 @@ class IncPopup extends IncPopupBase {
 		if ( ! self::correct_level() ) { return; }
 
 		if ( is_network_admin() ) {
-			WDev()->load_request_fields( 'popup_network' );
+			lib2()->array->equip_request( 'popup_network' );
 			if ( 'hide' === $_REQUEST['popup_network'] ) {
 				IncPopupDatabase::set_flag( 'network_dismiss', true );
 				wp_safe_redirect( admin_url( 'network' ) );
@@ -312,7 +311,7 @@ class IncPopup extends IncPopupBase {
 	 * @since  4.6.0
 	 */
 	static public function handle_ajax() {
-		WDev()->load_post_fields( 'do', 'order' );
+		lib2()->array->equip_post( 'do', 'order' );
 
 		$action = $_POST['do'];
 
@@ -360,9 +359,9 @@ class IncPopup extends IncPopupBase {
 	 * @since  4.6.0
 	 */
 	static public function handle_settings_update() {
-		WDev()->load_post_fields( 'action', 'po_option' );
+		lib2()->array->equip_post( 'action', 'po_option' );
 
-		if ( $_POST['action'] == 'updatesettings' ) {
+		if ( 'updatesettings' == $_POST['action'] ) {
 			check_admin_referer( 'update-popup-settings' );
 
 			$old_settings = IncPopupDatabase::get_settings();
@@ -378,8 +377,10 @@ class IncPopup extends IncPopupBase {
 
 			IncPopupDatabase::set_settings( $settings );
 
-			WDev()->message( __( 'Your settings have been updated.', PO_LANG ) );
-			$redirect_url = remove_query_arg( array( 'message', 'count' ), wp_get_referer() );
+			lib2()->ui->admin_message( __( 'Your settings have been updated.', PO_LANG ) );
+			$redirect_url = esc_url_raw(
+				remove_query_arg( array( 'message', 'count' ), wp_get_referer() )
+			);
 			wp_safe_redirect( $redirect_url );
 			die();
 		}
@@ -403,7 +404,7 @@ class IncPopup extends IncPopupBase {
 	 * @return array
 	 */
 	static public function post_columns( $post_columns ) {
-		WDev()->load_request_fields( 'post_status' );
+		lib2()->array->equip_request( 'post_status' );
 
 		$new_columns = array();
 
@@ -678,7 +679,7 @@ class IncPopup extends IncPopupBase {
 		$wp_list_table = _get_list_table( 'WP_Posts_List_Table' );
 		$action = $wp_list_table->current_action();
 
-		WDev()->load_request_fields( 'mode' );
+		lib2()->array->equip_request( 'mode' );
 
 		if ( $action ) {
 			if ( 'list' === $_REQUEST['mode'] ) {
@@ -739,11 +740,11 @@ class IncPopup extends IncPopupBase {
 				}
 
 				if ( $count > 0 && ! empty( $msg ) ) {
-					WDev()->message( sprintf( $msg, $count ) );
+					lib2()->ui->admin_message( sprintf( $msg, $count ) );
 				}
 			}
 			else {
-				WDev()->load_request_fields( '_wpnonce', 'post_id' );
+				lib2()->array->equip_request( '_wpnonce', 'post_id' );
 
 				// ----- Custom row-action.
 				$nonce = $_REQUEST['_wpnonce'];
@@ -765,7 +766,9 @@ class IncPopup extends IncPopupBase {
 						break;
 				}
 
-				$back_url = remove_query_arg( array( 'action', 'post_id', '_wpnonce' ) );
+				$back_url = esc_url_raw(
+					remove_query_arg( array( 'action', 'post_id', '_wpnonce' ) )
+				);
 				wp_safe_redirect( $back_url );
 				die();
 			}
@@ -891,7 +894,7 @@ class IncPopup extends IncPopupBase {
 	 * @since  4.6.0
 	 */
 	static protected function form_check_actions() {
-		WDev()->load_request_fields( 'post', 'do' );
+		lib2()->array->equip_request( 'post', 'do' );
 
 		$popup_id = absint( $_REQUEST['post'] );
 		$action = $_REQUEST['do'];
@@ -906,8 +909,12 @@ class IncPopup extends IncPopupBase {
 				$item->save();
 
 				// Show the new item in the editor.
-				$new_url = remove_query_arg( array( 'post', 'do' ) );
-				$new_url = add_query_arg( array( 'post' => $item->id, 'post_type' => IncPopupItem::POST_TYPE ), $new_url );
+				$new_url = esc_url_raw(
+					add_query_arg(
+						array( 'post' => $item->id, 'post_type' => IncPopupItem::POST_TYPE ),
+						remove_query_arg( array( 'post', 'do' ) )
+					)
+				);
 				wp_safe_redirect( $new_url );
 				die();
 
@@ -1090,7 +1097,7 @@ class IncPopup extends IncPopupBase {
 		$popup = IncPopupDatabase::get( $post_id );
 
 		// Make sure the POST collection contains all required fields.
-		if ( 0 !== WDev()->load_post_fields( 'popup-nonce', 'post_type', 'po-action' ) ) { return; }
+		if ( 0 !== lib2()->array->equip_post( 'popup-nonce', 'post_type', 'po-action' ) ) { return; }
 
 		// Autosave is not processed.
 		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) { return; }
@@ -1170,7 +1177,7 @@ class IncPopup extends IncPopupBase {
 	 * @return string The modified redirect URL.
 	 */
 	static public function form_redirect( $url, $post_id ) {
-		return remove_query_arg( 'message', $url );
+		return esc_url_raw( remove_query_arg( 'message', $url ) );
 	}
 
 };

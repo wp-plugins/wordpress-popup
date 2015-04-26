@@ -8,7 +8,9 @@ $loading_methods = IncPopupDatabase::get_loading_methods();
 
 $settings = IncPopupDatabase::get_settings();
 $cur_method = $settings['loadingmethod'];
-$form_url = remove_query_arg( array( 'message', 'action', '_wpnonce' ) );
+$form_url = esc_url_raw(
+	remove_query_arg( array( 'message', 'action', '_wpnonce' ) )
+);
 
 
 // Theme compatibility.
@@ -43,9 +45,11 @@ $ordered_rules = array();
 			</h3>
 
 			<div class="inside">
-				<p><?php _e(
+				<p><?php
+				_e(
 					'Select how you would like to load PopUp.', PO_LANG
-				); ?></p>
+				);
+				?></p>
 
 				<table class="form-table">
 				<tbody>
@@ -95,10 +99,12 @@ $ordered_rules = array();
 			</h3>
 
 			<div class="inside">
-				<?php _e(
+				<?php
+				_e(
 					'Here you can see if your theme is compatible with the ' .
 					'"Page Footer" loading method.', PO_LANG
-				); ?>
+				);
+				?>
 				<div class="<?php echo esc_attr( $theme_class ); ?>">
 					<?php foreach ( $theme_compat->msg as $row ) {
 						echo '<p>' . $row . '</p>';
@@ -164,7 +170,7 @@ $ordered_rules = array();
 				$ordered_rules[ $name ]['active'] = $is_active;
 				$ordered_rules[ $name ]['desc'] = __( trim( $data['desc'] ), PO_LANG );
 
-				if ( PO_VERSION != 'pro' && in_array( 'pro', $data['limit'] ) ) {
+				if ( 'pro' != PO_VERSION && in_array( 'pro', $data['limit'] ) ) {
 					$ordered_rules[ $name ]['disabled'] = sprintf(
 						__( 'Available in the <a href="%s" target="_blank">PRO version</a>', PO_LANG ),
 						'http://premium.wpmudev.org/project/the-pop-over-plugin/'

@@ -11,6 +11,7 @@
  ***/
 #wpwrap,
 body {
+  /* Styles used to display input elements inside Widget Admin */
   /* horizontal separator */
   /* vertical separator */
 }
@@ -74,6 +75,26 @@ body .wpmui-label-after .wpmui-field-button {
 body .wpmui-label-before {
   margin-left: 0;
 }
+#wpwrap .widget-content .wpmui-wrapper,
+body .widget-content .wpmui-wrapper {
+  display: block;
+  margin: 1em 0;
+}
+#wpwrap .widget-content .wpmui-wrapper .wpmui-field-label,
+body .widget-content .wpmui-wrapper .wpmui-field-label {
+  margin: 0;
+}
+#wpwrap .widget-content .wpmui-wrapper .wpmui-field-description,
+body .widget-content .wpmui-wrapper .wpmui-field-description {
+  margin: 0;
+}
+#wpwrap .widget-content .wpmui-wrapper .wpmui-field-input,
+#wpwrap .widget-content .wpmui-wrapper .wpmui-field-button,
+body .widget-content .wpmui-wrapper .wpmui-field-input,
+body .widget-content .wpmui-wrapper .wpmui-field-button {
+  margin-top: 4px;
+  margin-bottom: 0;
+}
 #wpwrap .wpmui-separator,
 body .wpmui-separator {
   border-bottom: 1px solid #E5E5E5;
@@ -95,6 +116,10 @@ body .wpmui-hidden {
 #wpwrap .wpmui-fa,
 body .wpmui-fa {
   font-family: Fontawesome420 !important;
+}
+#wpwrap .no-click,
+body .no-click {
+  cursor: default;
 }
 
 /***
@@ -118,6 +143,34 @@ body .wpmui-checkbox-wrapper {
 body .wpmui-checkbox-wrapper .wpmui-checkbox-caption {
   padding-left: 24px;
   font-weight: 500;
+}
+#wpwrap .wpmui-checkbox-list,
+body .wpmui-checkbox-list {
+  border: 1px solid #e5e5e5;
+  padding: 0 5px;
+  background: #FFFFFF;
+  max-height: 320px;
+  overflow: auto;
+}
+#wpwrap .wpmui-checkbox-list .wpmui-checkbox-wrapper,
+body .wpmui-checkbox-list .wpmui-checkbox-wrapper {
+  margin: 0;
+}
+#wpwrap .wpmui-checkbox-list .wpmui-no-checkbox .wpmui-checkbox-caption,
+body .wpmui-checkbox-list .wpmui-no-checkbox .wpmui-checkbox-caption {
+  padding: 0;
+}
+#wpwrap .wpmui-checkbox-list .wpmui-group,
+body .wpmui-checkbox-list .wpmui-group {
+  margin-bottom: 10px;
+}
+#wpwrap .wpmui-checkbox-list .wpmui-group .wpmui-parent .wpmui-checkbox-caption,
+body .wpmui-checkbox-list .wpmui-group .wpmui-parent .wpmui-checkbox-caption {
+  font-weight: 600;
+}
+#wpwrap .wpmui-checkbox-list .wpmui-group .wpmui-child,
+body .wpmui-checkbox-list .wpmui-group .wpmui-child {
+  margin-left: 24px;
 }
 
 /***
@@ -150,6 +203,21 @@ body .wpmui-radio-slider-wrapper.on .wpmui-label-before {
 body .wpmui-radio-slider-wrapper.on .wpmui-label-after {
   font-weight: bold;
   color: #000;
+}
+#wpwrap .wpmui-radio-slider-wrapper.inp-before-wrapper,
+body .wpmui-radio-slider-wrapper.inp-before-wrapper {
+  position: relative;
+  display: block;
+}
+#wpwrap .wpmui-radio-slider-wrapper.inp-before-wrapper .wpmui-field-label,
+body .wpmui-radio-slider-wrapper.inp-before-wrapper .wpmui-field-label {
+  margin-left: 50px;
+}
+#wpwrap .wpmui-radio-slider-wrapper.inp-before-wrapper .wpmui-radio-slider,
+body .wpmui-radio-slider-wrapper.inp-before-wrapper .wpmui-radio-slider {
+  position: absolute;
+  left: 0;
+  top: 0;
 }
 
 /***

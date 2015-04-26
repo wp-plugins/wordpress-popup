@@ -1,7 +1,7 @@
 <?php
 /**
  * Code-snippet for WordPress plugin list.
- * Used in function WDev()->html->plugin_list()
+ * Used in function lib2()->html->plugin_list()
  *
  * @since  1.1.0
  *
@@ -46,17 +46,19 @@ $current = 'current';
 <div class="wp-list-table widefat wpmui-list-table">
 <div class="the-list wpmui-list">
 	<?php foreach ( $items as $item ) :
-		WDev()->load_fields( $item, $item_fields );
-		$item->action = WDev()->get_array( $item->action );
-		$item->details = WDev()->get_array( $item->details );
+		self::$core->array->equip( $item, $item_fields );
+		$item->action = self::$core->array->get( $item->action );
+		$item->details = self::$core->array->get( $item->details );
 
 		$item_class = $item->active ? 'active' : '';
 		$item_class .= ' ' . $item->class;
 		?>
 		<div class="list-card <?php echo esc_attr( $item_class ); ?>">
 			<div class="list-card-top">
-				<span class="badge-active">
-					<?php echo esc_html( $lang->active_badge ); ?>
+				<span class="badge-container">
+					<span class="badge-active">
+						<?php echo esc_html( $lang->active_badge ); ?>
+					</span>
 				</span>
 				<div class="item-icon"><?php echo '' . $item->icon; ?></div>
 				<div class="name">
@@ -71,13 +73,11 @@ $current = 'current';
 					<?php echo '' . $item->description; ?>
 				</div>
 				<div class="action-links">
-					<span class="toggle-details toggle-link is-detail">
-						<div><?php echo esc_html( $lang->close_details ); ?></div>
-						<div class="space"></div>
+					<span class="toggle-details toggle-link is-detail close-button">
 					</span>
 					<?php
 					foreach ( $item->action as $action ) {
-						WDev()->html->element( $action );
+						self::$core->html->element( $action );
 					}
 					?>
 				</div>
@@ -91,7 +91,7 @@ $current = 'current';
 								$detail['ajax_data']['_is_detail'] = true;
 							}
 						}
-						WDev()->html->element( $detail );
+						self::$core->html->element( $detail );
 					}
 					?>
 				</div>

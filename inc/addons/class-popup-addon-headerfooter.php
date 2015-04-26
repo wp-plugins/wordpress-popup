@@ -96,9 +96,11 @@ class IncPopupAddon_HeaderFooter {
 			);
 
 			// Build the url to call, NOTE: uses home_url and thus requires WordPress 3.0
-			$url = add_query_arg(
-				array( 'popup-headerfooter-check' => '1' ),
-				home_url()
+			$url = esc_url_raw(
+				add_query_arg(
+					array( 'popup-headerfooter-check' => '1' ),
+					home_url()
+				)
 			);
 
 			// Perform the HTTP GET ignoring SSL errors
@@ -115,7 +117,7 @@ class IncPopupAddon_HeaderFooter {
 			// Grab the response code and make sure the request was sucessful
 			$code = (int) wp_remote_retrieve_response_code( $response );
 			if ( is_wp_error( $response ) ) {
-				WDev()->message( $response->get_error_message() );
+				lib2()->ui->admin_message( $response->get_error_message() );
 				return $Resp;
 			}
 

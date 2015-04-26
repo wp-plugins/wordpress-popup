@@ -51,20 +51,48 @@
   z-index: 9999;
   display: none;
 }
+.wpmui-overlay.light {
+  opacity: .25;
+}
 
 .wpmui-has-overlay .wpmui-overlay {
   display: block;
 }
-
 .wpmui-has-overlay #wpwrap {
   -webkit-filter: grayscale(75%);
   -moz-filter: grayscale(75%);
   filter: gray;
   filter: grayscale(75%);
 }
+.wpmui-has-overlay #wpbody {
+  -webkit-filter: blur(3px);
+  -moz-filter: blur(3px);
+  filter: blur(3px);
+}
+.wpmui-has-overlay.no-blur #wpbody {
+  -webkit-filter: blur(0);
+  -moz-filter: blur(0);
+  filter: blur(0);
+}
 
 .wpmui-no-scroll {
   overflow: hidden;
+}
+
+.wpmui-blur {
+  -webkit-filter: blur(3px) grayscale(75%);
+  -moz-filter: blur(3px) grayscale(75%);
+  filter: blur(3px) grayscale(75%);
+  position: relative;
+}
+.wpmui-blur:before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
 }
 
 /**
@@ -83,8 +111,7 @@
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
-
-.wpmui-wnd-title {
+.wpmui-wnd .wpmui-wnd-title {
   line-height: 50px;
   white-space: nowrap;
   overflow: hidden;
@@ -92,14 +119,13 @@
   padding: 0 70px 0 20px;
   border-bottom: 1px solid #E5E5E5;
   background: #F8F8F8;
-  height: 50px;
+  min-height: 50px;
   display: block;
   font-size: 23px;
   font-weight: 100;
   z-index: 5;
 }
-
-.wpmui-wnd-close {
+.wpmui-wnd .wpmui-wnd-close {
   position: absolute;
   top: 0;
   right: 0;
@@ -113,21 +139,15 @@
   cursor: pointer;
   z-index: 10;
 }
-
-.wpmui-wnd-close .dashicons {
-  line-height: 50px;
-}
-
-.wpmui-wnd-close:hover,
-.wpmui-wnd-close:focus,
-.wpmui-wnd-close:active {
+.wpmui-wnd .wpmui-wnd-close:hover, .wpmui-wnd .wpmui-wnd-close:focus, .wpmui-wnd .wpmui-wnd-close:active {
   background: #FCFCFC;
   color: #333;
 }
-
-.wpmui-wnd-content {
+.wpmui-wnd .wpmui-wnd-close .dashicons {
+  line-height: 50px;
+}
+.wpmui-wnd .wpmui-wnd-content {
   position: absolute;
-  top: 51px;
   left: 0;
   right: 0;
   bottom: 0;
@@ -135,24 +155,26 @@
   padding: 20px 20px 20px 20px;
   z-index: 1;
 }
-
-.wpmui-wnd-content:after {
+.wpmui-wnd .wpmui-wnd-content:after {
   content: '';
   display: block;
   clear: both;
   padding: 50px 0 0 0;
 }
-
 .wpmui-wnd.no-buttons .wpmui-wnd-content:after {
   padding-top: 0;
 }
-
+.wpmui-wnd.no-close .wpmui-wnd-title {
+  padding: 0 20px;
+}
+.wpmui-wnd.no-close .wpmui-wnd-close {
+  display: none;
+}
 .wpmui-wnd hr {
   margin: 15px -20px;
   border: 0;
   border-top: 1px solid #E5E5E5;
 }
-
 .wpmui-wnd .buttons {
   text-align: right;
   position: absolute;
@@ -267,62 +289,88 @@
  * == 05. WORDPRESS POINTERS
  * =============================================================================
  */
-.wpmui-pointer {
+.wpmui-pointer.wp-pointer-left {
   margin-top: 30px;
 }
-.wpmui-pointer h3 {
+.wpmui-pointer.wp-pointer-left h3 {
   background: transparent;
   color: #333;
   border: 0;
   margin: 0;
-  padding: 8px 15px 5px;
+  padding: 13px 20px 5px;
+  font-size: 13px;
 }
-.wpmui-pointer h3:before {
+.wpmui-pointer.wp-pointer-left h3:before {
   content: '';
   display: none;
 }
-.wpmui-pointer p {
-  padding: 0 15px;
+.wpmui-pointer.wp-pointer-left p {
+  padding: 0 20px;
   margin: 2px 0;
+  font-size: 12px;
 }
-.wpmui-pointer .wp-pointer-content {
-  border-left: 2px solid #0074A2;
+.wpmui-pointer.wp-pointer-left .wp-pointer-content {
   background: #FAFDFF;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  box-shadow: 0px 1px 8px -2px rgba(0, 0, 0, 0.35);
+  padding: 0 0 15px;
 }
-.wpmui-pointer .wp-pointer-buttons {
+.wpmui-pointer.wp-pointer-left.no-title {
+  margin-top: 13px;
+}
+.wpmui-pointer.wp-pointer-left.no-title .wp-pointer-content {
+  padding-top: 17px;
+}
+.wpmui-pointer.wp-pointer-left .wp-pointer-buttons {
   position: absolute;
   top: 0;
   right: 0;
   white-space: nowrap;
+  padding: 5px 10px;
 }
-.wpmui-pointer .wp-pointer-buttons a.close:before {
+.wpmui-pointer.wp-pointer-left .wp-pointer-buttons a.close {
+  font-size: 1px;
+  color: transparent;
+  width: 10px;
+  padding: 0;
+}
+.wpmui-pointer.wp-pointer-left .wp-pointer-buttons a.close:before {
   position: static;
   float: right;
   line-height: 14px;
   margin: 3px 0 1px 5px;
 }
-.wpmui-pointer .wp-pointer-arrow {
+.wpmui-pointer.wp-pointer-left .wp-pointer-arrow {
   border: 0;
   position: absolute;
   top: 50%;
   left: 0;
-  margin: -5px 0 0;
+  margin: -6px 0 0;
 }
-.wpmui-pointer .wp-pointer-arrow:before {
-  border: 5px solid transparent;
-  border-right-color: #0074A2;
+.wpmui-pointer.wp-pointer-left .wp-pointer-arrow:before, .wpmui-pointer.wp-pointer-left .wp-pointer-arrow:after {
+  content: '';
+  border: 6px solid transparent;
   margin: 0;
   left: -10px;
   position: absolute;
   top: 0;
 }
-.wpmui-pointer .wp-pointer-arrow-inner {
+.wpmui-pointer.wp-pointer-left .wp-pointer-arrow:before {
+  border-right-color: #CCC;
+  left: -11px;
+}
+.wpmui-pointer.wp-pointer-left .wp-pointer-arrow:after {
+  border-right-color: #FAFDFF;
+}
+.wpmui-pointer.wp-pointer-left .wp-pointer-arrow-inner {
   display: none;
 }
-.wpmui-pointer.wp-pointer-left {
+.wpmui-pointer.wp-pointer-left.wp-pointer-left {
   padding-left: 8px;
+  margin-left: -12px;
 }
-.wpmui-pointer.wp-pointer-left .wp-pointer-arrow {
+.wpmui-pointer.wp-pointer-left.wp-pointer-left .wp-pointer-arrow {
   left: 8px;
 }
 
@@ -355,6 +403,7 @@
   font-size: 12px;
 }
 
+#wpwrap .button-link,
 .wpmui-form .button-link,
 .wpmui-wnd .button-link {
   display: inline-block;
@@ -362,7 +411,6 @@
   font-size: 13px;
   line-height: 26px;
   height: 28px;
-  margin: 0;
   padding: 0 10px 1px;
   cursor: pointer;
   white-space: nowrap;
@@ -372,6 +420,9 @@
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
+  -webkit-box-shadow: 0 0 0 transparent;
+  -moz-box-shadow: 0 0 0 transparent;
+  box-shadow: 0 0 0 transparent;
   -webkit-transition-property: border, background, color;
   transition-property: border, background, color;
   -webkit-transition-duration: .05s;
@@ -379,10 +430,13 @@
   -webkit-transition-timing-function: ease-in-out;
   transition-timing-function: ease-in-out;
 }
-
+#wpwrap .button-link:hover, #wpwrap .button-link:active, #wpwrap .button-link:focus,
 .wpmui-form .button-link:hover,
 .wpmui-form .button-link:active,
-.wpmui-form .button-link:focus {
+.wpmui-form .button-link:focus,
+.wpmui-wnd .button-link:hover,
+.wpmui-wnd .button-link:active,
+.wpmui-wnd .button-link:focus {
   color: #2EA2CC;
 }
 
@@ -813,7 +867,7 @@
  * == 12. CONFIRMATION
  * =============================================================================
  */
-.wmui-confirm-modal {
+.wpmui-confirm-modal {
   left: 0;
   top: 0;
   right: 0;

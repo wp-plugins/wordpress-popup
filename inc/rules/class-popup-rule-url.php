@@ -98,7 +98,9 @@ class IncPopupRule_Url extends IncPopupRule {
 	 * @return mixed Data collection of this rule.
 	 */
 	protected function save_url() {
-		return $this->sanitize_values( $_POST['po_rule_data']['url'] );
+		$data = lib2()->array->get( $_POST['po_rule_data'] );
+		lib2()->array->equip( $data, 'url' );
+		return $this->sanitize_values( $data['url'] );
 	}
 
 
@@ -156,7 +158,9 @@ class IncPopupRule_Url extends IncPopupRule {
 	 * @return mixed Data collection of this rule.
 	 */
 	protected function save_no_url() {
-		return $this->sanitize_values( $_POST['po_rule_data']['no_url'] );
+		$data = lib2()->array->get( $_POST['po_rule_data'] );
+		lib2()->array->equip( $data, 'no_url' );
+		return $this->sanitize_values( $data['no_url'] );
 	}
 
 
@@ -203,7 +207,7 @@ class IncPopupRule_Url extends IncPopupRule {
 		$current_url = '';
 
 		if ( empty( $_REQUEST['thefrom'] ) ) {
-			$current_url = WDev()->current_url();
+			$current_url = lib2()->net->current_url();
 		} else {
 			$current_url = strtok( $_REQUEST['thefrom'], '#' );
 		}

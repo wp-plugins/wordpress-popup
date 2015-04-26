@@ -301,7 +301,7 @@ class IncPopupDatabase {
 		dbDelta( $sql );
 
 		if ( $count > 0 ) {
-			WDev()->message(
+			lib2()->ui->admin_message(
 				sprintf(
 					__(
 					'<strong>WordPress PopUp</strong><br />' .
@@ -393,7 +393,7 @@ class IncPopupDatabase {
 		if ( $clear ) {
 			$popup = false;
 		} else {
-		$popup = wp_cache_get( $post_id, IncPopupItem::POST_TYPE );
+			$popup = wp_cache_get( $post_id, IncPopupItem::POST_TYPE );
 		}
 
 		if ( false === $popup ) {
