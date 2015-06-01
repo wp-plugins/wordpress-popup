@@ -2,7 +2,7 @@
 Contributors: WPMUDEV
 Tags: Popup, Pop-up, Pop Over, popover, Responsive Popup, Advertise, Promotion, Marketing, Lightbox, Mailing list pop-up
 Requires at least: 3.1
-Tested up to: 4.1
+Tested up to: 4.2.2
 Stable tag: trunk
 
 WordPress PopUp is the smart, responsive, customizable and beautifully coded pop-up and pop-over plugin for WordPress and Multisite.
