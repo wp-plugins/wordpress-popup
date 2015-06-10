@@ -98,17 +98,15 @@
 	</div>
 	<?php do_action( 'popup-display-behavior', $popup ); ?>
 	<div class="pro-note">
-		<div style="padding:30px 0 0;">
-			<i class="pro-icon"></i>
-			<span class="text">
-			<?php
-			printf(
-				__( 'Pro feature. <a href="%1$s" target="_blank">Find out more &raquo;</a>', PO_LANG ),
-				'http://premium.wpmudev.org/project/the-pop-over-plugin/'
-			);
-			?>
-			</span>
-		</div>
+		<i class="pro-icon"></i>
+		<span class="text">
+		<?php
+		printf(
+			__( 'Pro feature. <a href="%1$s" target="_blank">Find out more &raquo;</a>', PO_LANG ),
+			'http://premium.wpmudev.org/project/the-pop-over-plugin/'
+		);
+		?>
+		</span>
 	</div>
 	</div>
 </div>
@@ -159,17 +157,15 @@
 		</label>
 	</div>
 	<div class="pro-note">
-		<div style="padding:30px 0 0;">
-			<i class="pro-icon"></i>
-			<span class="text">
-			<?php
-			printf(
-				__( 'Pro feature. <a href="%1$s" target="_blank">Find out more &raquo;</a>', PO_LANG ),
-				'http://premium.wpmudev.org/project/the-pop-over-plugin/'
-			);
-			?>
-			</span>
-		</div>
+		<i class="pro-icon"></i>
+		<span class="text">
+		<?php
+		printf(
+			__( 'Pro feature. <a href="%1$s" target="_blank">Find out more &raquo;</a>', PO_LANG ),
+			'http://premium.wpmudev.org/project/the-pop-over-plugin/'
+		);
+		?>
+		</span>
 	</div>
 	</div>
 </div>
