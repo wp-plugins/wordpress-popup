@@ -5,6 +5,7 @@
  * This library provides a Javascript API via the global wpmuUI object.
  *
  * Content:
+ *   00. Settings
  *   01. Modal overlays
  *   02. Popup Windows
  *   03. Messages
@@ -17,7 +18,13 @@
  *   10. Select2
  *   11. On Off Switch
  *   12. Confirmation
+ *   13. Progress Bar
  *   99. General Styles
+ */
+/**
+ * =============================================================================
+ * == 00. SETTINGS
+ * =============================================================================
  */
 /**
  * =============================================================================
@@ -27,17 +34,27 @@
 .wpmui-loading {
   position: relative;
 }
-
 .wpmui-loading:after {
   content: '';
   position: absolute;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
+  left: -1px;
+  top: -1px;
+  right: -1px;
+  bottom: -1px;
   background: rgba(255, 255, 255, 0.8) url(../img/spinner.gif) center no-repeat;
   z-index: 1000;
   cursor: default;
+  min-width: 20px;
+  min-height: 20px;
+}
+
+.wpmui-loading-icon {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+  vertical-align: middle;
+  background: transparent url(../img/spinner.gif) center no-repeat;
 }
 
 .wpmui-overlay {
@@ -897,6 +914,60 @@
 }
 .wpmui-confirm-box .wpmui-confirm-btn button {
   margin-left: 10px;
+}
+
+/**
+ * =============================================================================
+ * == 13. PROGRESS BAR
+ * =============================================================================
+ */
+.wpmui-progress-wrap {
+  position: relative;
+  width: 100%;
+}
+.wpmui-progress-wrap .wpmui-progress-full {
+  background: rgba(255, 255, 255, 0.7);
+  width: 100%;
+  border-radius: 2px;
+  box-shadow: 1px 1px 2px 0px rgba(0, 0, 0, 0.1);
+}
+.wpmui-progress-wrap .wpmui-progress {
+  background: #369;
+  border-radius: 2px;
+  height: 28px;
+  transition: width .25s;
+}
+.wpmui-progress-wrap .wpmui-progress-percent {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  line-height: 28px;
+  font-size: 13px;
+  text-align: center;
+  color: #FFF;
+  text-shadow: 0 0 5px #264c73;
+}
+.wpmui-progress-wrap .wpmui-progress-percent:before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  width: 30px;
+  height: 10px;
+  top: 50%;
+  border-radius: 5px;
+  margin-top: -5px;
+  margin-left: -15px;
+  box-shadow: 0 0 8px 4px #264c73;
+  background: #264c73;
+  z-index: -1;
+  opacity: .5;
+}
+.wpmui-progress-wrap .wpmui-progress-label {
+  font-size: 12px;
+  margin-top: 6px;
+  color: #888;
+  text-align: right;
 }
 
 /**

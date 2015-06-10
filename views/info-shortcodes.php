@@ -93,6 +93,11 @@ endif;
 				<?php _e( 'Cust AJAX', PO_LANG ); ?>
 				</div>
 			</th>
+			<th class="flag load-anonymous">
+				<div data-tooltip="<?php _e( 'Loading method \'Anonymous Script\'', PO_LANG ); ?>">
+				<?php _e( 'Script', PO_LANG ); ?>
+				</div>
+			</th>
 			<th class="flag">
 				<div data-tooltip="<?php _e( 'When opening a PopUp-Preview in the Editor', PO_LANG ); ?>">
 				<?php _e( 'Preview', PO_LANG ); ?>
@@ -107,6 +112,7 @@ endif;
 				<td class="flag sc-front load-footer"><i class="icon dashicons"></i></td>
 				<td class="flag sc-admin load-ajax"><i class="icon dashicons"></i></td>
 				<td class="flag sc-front load-front"><i class="icon dashicons"></i></td>
+				<td class="flag sc-admin load-anonymous"><i class="icon dashicons"></i></td>
 				<td class="flag sc-admin"><i class="icon dashicons"></i></td>
 			</tr>
 		<?php endforeach; ?>

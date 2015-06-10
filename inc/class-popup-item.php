@@ -558,22 +558,26 @@ class IncPopupItem {
 			default:         $status = 'draft'; break;
 		}
 
-		if ( $status == 'publish' ) {
+		if ( 'publish' == $status ) {
 			// Limit the number of active PopUps.
-			if ( 0 != IncPopupDatabase::count_active( $this->id ) ) {
-				IncPopupDatabase::deactivate_all();
+			if ( 3 <= IncPopupDatabase::count_active( $this->id ) ) {
+				$status = 'draft';
+				$show_message = false;
 
 				lib2()->ui->admin_message(
 					sprintf(
 						__(
-							'In the free version you can activate 1 PopUp. ' .
+							'In the free version you can activate 3 PopUps. ' .
+							'You can activate this PopUp when you first ' .
+							'deactivate another PopUp.<br>' .
 							'The PRO Version allows you to have unlimited ' .
 							'active PopUps! ' .
 							'<a href="%1$s" target="_blank">Find out more &raquo;</a>',
 							PO_LANG
 						),
 						'http://premium.wpmudev.org/project/the-pop-over-plugin/'
-					)
+					),
+					'err'
 				);
 			}
 		}

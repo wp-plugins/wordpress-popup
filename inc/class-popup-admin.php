@@ -100,6 +100,7 @@ class IncPopup extends IncPopupBase {
 			lib2()->ui->add( PO_JS_URL . 'popup-admin.min.js' );
 			lib2()->ui->add( PO_JS_URL . 'ace.js' ); // CSS editor.
 			lib2()->ui->add( PO_JS_URL . 'public.min.js' ); // For Preview.
+			lib2()->ui->add( PO_CSS_URL . 'animate.min.css' ); // For Preview.
 
 			if ( 'trash' != $_REQUEST['post_status'] ) {
 				lib2()->ui->data(

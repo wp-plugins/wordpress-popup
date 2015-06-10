@@ -4,7 +4,7 @@
  *
  * @since 1.1.4
  */
-class TheLib_2_0_1_Debug extends TheLib_2_0_1  {
+class TheLib_2_0_3_Debug extends TheLib_2_0_3  {
 
 	/**
 	 * If set to true or false it will override the WP_DEBUG value
@@ -333,7 +333,7 @@ class TheLib_2_0_1_Debug extends TheLib_2_0_1  {
 					<b>Back-Trace</b>
 				</span>
 				<div class="%1$s-trace" style="display:none">
-				<table class="wdev-trace" width="100%" cellspacing="0" cellpadding="3" border="1">
+				<table class="wdev-trace" width="100%%" cellspacing="0" cellpadding="3" border="1">
 				',
 				esc_attr( $block_id )
 			);
@@ -404,7 +404,7 @@ class TheLib_2_0_1_Debug extends TheLib_2_0_1  {
 			} else {
 				$trace_str .= sprintf(
 					"<tr onclick='_m(this)'><td class='trc-num'>%s</td><td class='trc-loc'>%s</td><td class='trc-arg'>%s</td></tr>\r\n",
-					$i,
+					$line,
 					$line_item['file'] . ': ' . $line_item['line'],
 					$item['class'] . $item['type'] . $item['function'] . '(' . $args . ')'
 				);
@@ -712,6 +712,10 @@ class TheLib_2_0_1_Debug extends TheLib_2_0_1  {
 		if ( defined( '__DEBUG_SCRIPT' ) ) { return; }
 		define( '__DEBUG_SCRIPT', true );
 
+		if ( ! headers_sent() ) {
+			header( 'Content-type: text/html; charset=utf-8' );
+		}
+
 		?>
 		<style>
 		.wdev-debug {
@@ -797,13 +801,15 @@ class TheLib_2_0_1_Debug extends TheLib_2_0_1  {
 			margin: 1px 0 !important;
 			background: rgba(255, 200, 200, 0.8);
 		}
-		.wdev-trace table td {
+		.wdev-trace td {
 			padding: 1px 2px !important;
 			font-size: 12px;
+			vertical-align: top;
 		}
-		.wdev-trace table {
+		.wdev-trace {
 			margin: 4px 0 0 0;
 			background: #EBB;
+			border-collapse: collapse;
 		}
 		.wdev-trace tr.mark td {
 			background: #EC9;

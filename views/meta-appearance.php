@@ -71,57 +71,49 @@ $animations = IncPopup::get_animations();
 	?>
 	<div class="wpmui-grid-12">
 		<div class="col-12">
-			<p style="margin-top:0"><em><?php _e(
+			<p style="margin-top:0"><em><?php
+			_e(
 				'*) This style is outdated and does not support all options '.
 				'on this page. ' .
 				'Once you save your PopUp with a new style you cannot ' .
 				'revert to this style!<br />' .
 				'Tipp: Use the Preview function to test this PopUp with one ' .
 				'of the new styles before saving it.', PO_LANG
-			); ?></em></p>
+			);
+			?></em></p>
 		</div>
 	</div>
 	<?php
 endif; ?>
 
-<div class="pro-only">
-	<div class="wpmui-grid-12">
-		<div class="col-12 inp-row">
-			<label>
-				<input type="checkbox"
-					readonly="readonly"
-					id="po-custom-colors"
-					data-toggle=".chk-custom-colors"
-					/>
-				<?php _e( 'Use custom colors', PO_LANG ); ?>
-			</label>
-		</div>
+<div class="wpmui-grid-12">
+	<div class="col-12 inp-row">
+		<label>
+			<input type="checkbox"
+				name="po_custom_colors"
+				id="po-custom-colors"
+				data-toggle=".chk-custom-colors"
+				<?php checked( $popup->custom_colors ); ?> />
+			<?php _e( 'Use custom colors', PO_LANG ); ?>
+		</label>
 	</div>
-	<div class="wpmui-grid-12 chk-custom-colors">
-		<div class="col-colorpicker inp-row">
-			<input type="text"
-				class="colorpicker inp-small"
-					readonly="readonly"
-				value="<?php echo esc_attr( $popup->color['col1'] ); ?>" />
-			<br />
-			<?php _e( 'Links, button background, heading and subheading', PO_LANG ); ?>
-		</div>
-		<div class="col-colorpicker inp-row">
-			<input type="text"
-				class="colorpicker inp-small"
-					readonly="readonly"
-				value="<?php echo esc_attr( $popup->color['col2'] ); ?>" />
-			<br />
-			<?php _e( 'Button text', PO_LANG ); ?>
-		</div>
+</div>
+<div class="wpmui-grid-12 chk-custom-colors">
+	<div class="col-colorpicker inp-row">
+		<input type="text"
+			class="colorpicker inp-small"
+			name="po_color[col1]"
+			value="<?php echo esc_attr( $popup->color['col1'] ); ?>" />
+		<br />
+		<?php _e( 'Links, button background, heading and subheading', PO_LANG ); ?>
 	</div>
-	<div class="pro-note">
-		<div style="padding:50px 0 0;">
-		<?php printf(
-			__( 'Pro feature only. <a href="%1$s" target="_blank">Find out more &raquo;</a>', PO_LANG ),
-			'http://premium.wpmudev.org/project/the-pop-over-plugin/'
-		); ?>
-		</div>
+	<div class="col-colorpicker inp-row">
+		<input type="text"
+			class="colorpicker inp-small"
+			name="po_color[col2]"
+			value="<?php echo esc_attr( $popup->color['col2'] ); ?>" />
+		<br />
+		<?php _e( 'Button text', PO_LANG ); ?>
 	</div>
 </div>
 
@@ -186,22 +178,24 @@ endif; ?>
 	</div>
 	<div class="col-6 inp-row">
 		<select id="po-animation-in" name="po_animation_in">
+			<?php $pro_only = ' - ' . __( 'PRO Version', PO_LANG ); ?>
 			<?php foreach ( $animations->in as $group => $items ) : ?>
 				<?php if ( ! empty( $group ) ) : ?>
 				<optgroup label="<?php echo esc_attr( $group ); ?>">
 				<?php endif; ?>
 
 				<?php foreach ( $items as $key => $label ) {
-					if ( empty( $key ) ) {
+					if ( strpos( $label, $pro_only ) ) {
 						printf(
-							'<option>%s</option>',
+							'<option disabled>%1$s</option>',
 							esc_attr( $label )
 						);
 					} else {
 						printf(
-							'<option disabled="disabled">%s - %s</option>',
+							'<option value="%2$s" %3$s>%1$s</option>',
 							esc_attr( $label ),
-							__( 'PRO Version only', PO_LANG )
+							esc_attr( $key ),
+							selected( $key, $popup->animation_in, false )
 						);
 					}
 				} ?>
@@ -220,20 +214,21 @@ endif; ?>
 				<optgroup label="<?php echo esc_attr( $group ); ?>">
 				<?php endif; ?>
 
-				<?php foreach ( $items as $key => $label ) :
-					if ( empty( $key ) ) {
+				<?php foreach ( $items as $key => $label ) {
+					if ( strpos( $label, $pro_only ) ) {
 						printf(
-							'<option>%s</option>',
+							'<option disabled>%1$s</option>',
 							esc_attr( $label )
 						);
 					} else {
 						printf(
-							'<option disabled="disabled">%s - %s</option>',
+							'<option value="%2$s" %3$s>%1$s</option>',
 							esc_attr( $label ),
-							__( 'PRO Version only', PO_LANG )
+							esc_attr( $key ),
+							selected( $key, $popup->animation_out, false )
 						);
 					}
-				endforeach; ?>
+				} ?>
 
 				<?php if ( ! empty( $group ) ) : ?>
 				</optgroup>

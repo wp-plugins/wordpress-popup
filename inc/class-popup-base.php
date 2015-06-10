@@ -103,6 +103,12 @@ abstract class IncPopupBase {
 		);
 
 		// Compatibility with plugins
+		add_filter(
+			'popup-output-data',
+			array( $this, 'compat_init' ),
+			999, 2
+		);
+
 		if ( function_exists( 'get_rocket_option' ) && get_rocket_option( 'minify_js' ) ) {
 			foreach ( array( 'edit-inc_popup', 'inc_popup', 'inc_popup_page_settings' ) as $screen ) {
 				lib2()->ui->admin_message(
@@ -434,6 +440,8 @@ abstract class IncPopupBase {
 	 * }
 	 */
 	public static function get_animations() {
+		$pro_only = ' - ' . __( 'PRO Version', PO_LANG );
+
 		$animations_in = array(
 			'' => array(
 				'' => __( '(No Animation)', PO_LANG ),
@@ -449,47 +457,47 @@ abstract class IncPopupBase {
 				'wobble' => __( 'Wobble', PO_LANG ),
 			),
 			__( 'Bouncing Entrances', PO_LANG ) => array(
-				'bounceIn' => __( 'Bounce In', PO_LANG ),
-				'bounceInDown' => __( 'Bounce In Down', PO_LANG ),
-				'bounceInLeft' => __( 'Bounce In Left', PO_LANG ),
-				'bounceInRight' => __( 'Bounce In Right', PO_LANG ),
-				'bounceInUp' => __( 'Bounce In Up', PO_LANG ),
+				'bounceIn' => __( 'Bounce In', PO_LANG ) . $pro_only,
+				'bounceInDown' => __( 'Bounce In Down', PO_LANG ) . $pro_only,
+				'bounceInLeft' => __( 'Bounce In Left', PO_LANG ) . $pro_only,
+				'bounceInRight' => __( 'Bounce In Right', PO_LANG ) . $pro_only,
+				'bounceInUp' => __( 'Bounce In Up', PO_LANG ) . $pro_only,
 			),
 			__( 'Fading Entrances', PO_LANG ) => array(
-				'fadeIn' => __( 'Fade In', PO_LANG ),
-				'fadeInDown' => __( 'Fade In Down', PO_LANG ),
-				'fadeInDownBig' => __( 'Fade In Down Big', PO_LANG ),
-				'fadeInLeft' => __( 'Fade In Left', PO_LANG ),
-				'fadeInLeftBig' => __( 'Fade In Left Big', PO_LANG ),
-				'fadeInRight' => __( 'Fade In Right', PO_LANG ),
-				'fadeInRightBig' => __( 'Fade In Right Big', PO_LANG ),
-				'fadeInUp' => __( 'Fade In Up', PO_LANG ),
-				'fadeInUpBig' => __( 'Fade In Up Big', PO_LANG ),
+				'fadeIn' => __( 'Fade In', PO_LANG ) . $pro_only,
+				'fadeInDown' => __( 'Fade In Down', PO_LANG ) . $pro_only,
+				'fadeInDownBig' => __( 'Fade In Down Big', PO_LANG ) . $pro_only,
+				'fadeInLeft' => __( 'Fade In Left', PO_LANG ) . $pro_only,
+				'fadeInLeftBig' => __( 'Fade In Left Big', PO_LANG ) . $pro_only,
+				'fadeInRight' => __( 'Fade In Right', PO_LANG ) . $pro_only,
+				'fadeInRightBig' => __( 'Fade In Right Big', PO_LANG ) . $pro_only,
+				'fadeInUp' => __( 'Fade In Up', PO_LANG ) . $pro_only,
+				'fadeInUpBig' => __( 'Fade In Up Big', PO_LANG ) . $pro_only,
 			),
 			__( 'Flippers', PO_LANG ) => array(
-				'flip' => __( 'Flip', PO_LANG ),
-				'flipInX' => __( 'Flip In X', PO_LANG ),
-				'flipInY' => __( 'Flip In Y', PO_LANG ),
+				'flip' => __( 'Flip', PO_LANG ) . $pro_only,
+				'flipInX' => __( 'Flip In X', PO_LANG ) . $pro_only,
+				'flipInY' => __( 'Flip In Y', PO_LANG ) . $pro_only,
 			),
 			__( 'Lightspeed', PO_LANG ) => array(
-				'lightSpeedIn' => __( 'Light Speed In', PO_LANG ),
+				'lightSpeedIn' => __( 'Light Speed In', PO_LANG ) . $pro_only,
 			),
 			__( 'Rotating Entrances', PO_LANG ) => array(
-				'rotateIn' => __( 'Rotate In', PO_LANG ),
-				'rotateInDownLeft' => __( 'Rotate In Down Left', PO_LANG ),
-				'rotateInDownRight' => __( 'Rotate In Down Right', PO_LANG ),
-				'rotateInUpLeft' => __( 'Rotate In Up Left', PO_LANG ),
-				'rotateInUpRight' => __( 'Rotate In Up Right', PO_LANG ),
+				'rotateIn' => __( 'Rotate In', PO_LANG ) . $pro_only,
+				'rotateInDownLeft' => __( 'Rotate In Down Left', PO_LANG ) . $pro_only,
+				'rotateInDownRight' => __( 'Rotate In Down Right', PO_LANG ) . $pro_only,
+				'rotateInUpLeft' => __( 'Rotate In Up Left', PO_LANG ) . $pro_only,
+				'rotateInUpRight' => __( 'Rotate In Up Right', PO_LANG ) . $pro_only,
 			),
 			__( 'Specials', PO_LANG ) => array(
-				'rollIn' => __( 'Roll In', PO_LANG ),
+				'rollIn' => __( 'Roll In', PO_LANG ) . $pro_only,
 			),
 			__( 'Zoom Entrances', PO_LANG ) => array(
-				'zoomIn' => __( 'Zoom In', PO_LANG ),
-				'zoomInDown' => __( 'Zoom In Down', PO_LANG ),
-				'zoomInLeft' => __( 'Zoom In Left', PO_LANG ),
-				'zoomInRight' => __( 'Zoom In Right', PO_LANG ),
-				'zoomInUp' => __( 'Zoom In Up', PO_LANG ),
+				'zoomIn' => __( 'Zoom In', PO_LANG ) . $pro_only,
+				'zoomInDown' => __( 'Zoom In Down', PO_LANG ) . $pro_only,
+				'zoomInLeft' => __( 'Zoom In Left', PO_LANG ) . $pro_only,
+				'zoomInRight' => __( 'Zoom In Right', PO_LANG ) . $pro_only,
+				'zoomInUp' => __( 'Zoom In Up', PO_LANG ) . $pro_only,
 			),
 		);
 
@@ -516,29 +524,29 @@ abstract class IncPopupBase {
 				'fadeOutUpBig' => __( 'Fade Out Up Big', PO_LANG ),
 			),
 			__( 'Flippers', PO_LANG ) => array(
-				'flipOutX' => __( 'Flip Out X', PO_LANG ),
-				'flipOutY' => __( 'Flip Out Y', PO_LANG ),
+				'flipOutX' => __( 'Flip Out X', PO_LANG ) . $pro_only,
+				'flipOutY' => __( 'Flip Out Y', PO_LANG ) . $pro_only,
 			),
 			__( 'Lightspeed', PO_LANG ) => array(
-				'lightSpeedOut' => __( 'Light Speed Out', PO_LANG ),
+				'lightSpeedOut' => __( 'Light Speed Out', PO_LANG ) . $pro_only,
 			),
 			__( 'Rotating Exits', PO_LANG ) => array(
-				'rotateOut' => __( 'Rotate Out', PO_LANG ),
-				'rotateOutDownLeft' => __( 'Rotate Out Down Left', PO_LANG ),
-				'rotateOutDownRight' => __( 'Rotate Out Down Right', PO_LANG ),
-				'rotateOutUpLeft' => __( 'Rotate Out Up Left', PO_LANG ),
-				'rotateOutUpRight' => __( 'Rotate Out Up Right', PO_LANG ),
+				'rotateOut' => __( 'Rotate Out', PO_LANG ) . $pro_only,
+				'rotateOutDownLeft' => __( 'Rotate Out Down Left', PO_LANG ) . $pro_only,
+				'rotateOutDownRight' => __( 'Rotate Out Down Right', PO_LANG ) . $pro_only,
+				'rotateOutUpLeft' => __( 'Rotate Out Up Left', PO_LANG ) . $pro_only,
+				'rotateOutUpRight' => __( 'Rotate Out Up Right', PO_LANG ) . $pro_only,
 			),
 			__( 'Specials', PO_LANG ) => array(
-				'hinge' => __( 'Hinge', PO_LANG ),
-				'rollOut' => __( 'Roll Out', PO_LANG ),
+				'hinge' => __( 'Hinge', PO_LANG ) . $pro_only,
+				'rollOut' => __( 'Roll Out', PO_LANG ) . $pro_only,
 			),
 			__( 'Zoom Exits', PO_LANG ) => array(
-				'zoomOut' => __( 'Zoom Out', PO_LANG ),
-				'zoomOutDown' => __( 'Zoom Out Down', PO_LANG ),
-				'zoomOutLeft' => __( 'Zoom Out Left', PO_LANG ),
-				'zoomOutRight' => __( 'Zoom Out Right', PO_LANG ),
-				'zoomOutUp' => __( 'Zoom Out Up', PO_LANG ),
+				'zoomOut' => __( 'Zoom Out', PO_LANG ) . $pro_only,
+				'zoomOutDown' => __( 'Zoom Out Down', PO_LANG ) . $pro_only,
+				'zoomOutLeft' => __( 'Zoom Out Left', PO_LANG ) . $pro_only,
+				'zoomOutRight' => __( 'Zoom Out Right', PO_LANG ) . $pro_only,
+				'zoomOutUp' => __( 'Zoom Out Up', PO_LANG ) . $pro_only,
 			),
 		);
 
@@ -677,6 +685,78 @@ abstract class IncPopupBase {
 
 
 	/**
+	 * Adds compatibility code for other plugins/shortcodes.
+	 * Currently these plugins are aupported:
+	 *   - Appointments+ (WPMU DEV)
+	 *
+	 * @since  4.6.1.1
+	 * @param  array $data Data collection that is printed to javascript.
+	 * @param  IncPopupItem $popup The original popup object.
+	 * @return array Modified data collection.
+	 */
+	public function compat_init( $script_data, $popup ) {
+		if ( class_exists( 'Appointments' ) ) {
+			$this->compat_appointments_trigger();
+
+			if ( ! isset( $script_data['script'] ) ) {
+				$script_data['script'] = '';
+			}
+
+			$script_data['script'] .= $this->compat_data['script'];
+		}
+
+		return $script_data;
+	}
+
+	/**
+	 * Triggers the WP_footer action.
+	 *
+	 * This is required so the Appointments+ plugin generates Javascript for the
+	 * shortcodes. We will then intercept the javascript via the
+	 * `compat_appointments_footer()` function below.
+	 *
+	 * @since  4.6.1.1
+	 */
+	public function compat_appointments_trigger() {
+		global $appointments;
+
+		add_filter(
+			'app_footer_scripts',
+			array( $this, 'compat_appointments_footer' ),
+			999
+		);
+
+		$appointments->load_scripts_styles();
+		$appointments->wp_footer();
+	}
+
+	/**
+	 * Integration of Appointments+
+	 * Inject the javascript used by Appointments plugin into the plugin.
+	 *
+	 * @since  4.6.1.1
+	 * @param  string $script
+	 * @return string
+	 */
+	public function compat_appointments_footer( $script ) {
+		global $wp_scripts;
+		if ( ! isset( $this->compat_data['script'] ) ) {
+			$this->compat_data['script'] = '';
+		}
+
+		// 1. get the localized script data.
+		if ( ! empty( $wp_scripts->registered['app-js-check']->extra['data'] ) ) {
+			$this->compat_data['script'] .= $wp_scripts->registered['app-js-check']->extra['data'];
+			$wp_scripts->registered['app-js-check']->extra['data'] = '';
+		}
+
+		// 2. get the footer script.
+		$this->compat_data['script'] .= '(function($) {' . $script . '})(jQuery);';
+
+		return '';
+	}
+
+	/**
 	 * Change the Request-URI, so other plugins use the correct form action, etc.
 	 *
 	 * Example:
@@ -710,6 +790,23 @@ abstract class IncPopupBase {
 		$_SERVER['REQUEST_URI'] = $this->orig_url;
 	}
 
+	/**
+	 * Add extra translations from the free plugin version so poedit will
+	 * recognize the translations and we do not need to keep separate
+	 * translation files for pro/free version.
+	 *
+	 * @since  4.6.1.3
+	 */
+	private function other_translations() {
+		return;
+
+		// These functions will never be called, but poedit recognizes the text.
+		__( 'PRO Version', PO_LANG );
+		__( 'Pro feature. <a href="%1$s" target="_blank">Find out more &raquo;</a>', PO_LANG );
+		__( '<strong>WordPress PopUp</strong><br />Your installation was successfully updated to use the latest version of the plugin!<br /><em>Note: Some PopUp options changed or were replaced. You should have a look at your <a href="%s">PopUps</a> to see if they still look as intended.</em>', PO_LANG );
+		__( 'In the free version you can activate 1 PopUp. When you activate this PopUp then all other PopUps will be deactivated ', PO_LANG );
+		__( 'In the free version you can activate 1 PopUp. The PRO Version allows you to have unlimited active PopUps! <a href=\"%1$s\" target=\"_blank\">Find out more &raquo;</a>', PO_LANG );
+	}
 
 
 };

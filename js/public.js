@@ -1,4 +1,4 @@
-/*! PopUp Free - v4.7.07
+/*! PopUp Free - v4.7.09
  * https://wordpress.org/plugins/wordpress-popup/
  * Copyright (c) 2015; * Licensed GPLv2+ */
 /*global window:false */
@@ -66,7 +66,16 @@
 				$doc.trigger( 'popover-closed' );
 			}
 
-			close_it();
+			if ( me.data.animation_out ) {
+				$po_msg.addClass( me.data.animation_out + ' animated' );
+				$po_msg.one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function() {
+					$po_msg.removeClass( 'animated' );
+					$po_msg.removeClass( me.data.animation_out );
+					close_it();
+				});
+			} else {
+				close_it();
+			}
 
 			popup_close( me );
 			return false;
@@ -340,7 +349,40 @@
 			me.move_popup(me.data);
 			me.setup_popup();
 
+			// Disables the CSS animation is browser does not support them.
+			me.prepare_animation();
+
+			if ( me.data.animation_in ) {
+				$po_msg.addClass( me.data.animation_in + ' animated' );
+				$po_msg.one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function() {
+					$po_msg.removeClass( 'animated' );
+					$po_msg.removeClass( me.data.animation_in );
+				});
+			}
+
 			return true;
+		};
+
+		this.prepare_animation = function prepare_animation() {
+			var can_animate = false,
+				domPrefixes = 'Webkit Moz O ms Khtml'.split(' ');
+
+			if ( $po_msg[0].style.animationName !== undefined ) { can_animate = true; }
+
+			if ( can_animate === false ) {
+				for ( var i = 0; i < domPrefixes.length; i++ ) {
+					if ( $po_msg[0].style[ domPrefixes[i] + 'AnimationName' ] !== undefined ) {
+						can_animate = true;
+						break;
+					}
+				}
+			}
+
+			if ( ! can_animate ) {
+				// Sorry guys, CSS animations are not supported...
+				me.data.animation_in = '';
+				me.data.animation_out = '';
+			}
 		};
 
 		/**

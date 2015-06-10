@@ -51,7 +51,9 @@
 				id="po-display-scroll"
 				value="scroll"
 				data-toggle=".opt-display-scroll"
-				readonly="readonly" />
+				readonly="readonly"
+				style="display:none" />
+			<i class="pro-icon"></i>
 			<?php _e( 'Appear after', PO_LANG ); ?>
 		</label>
 		<span class="opt-display-scroll">
@@ -81,7 +83,9 @@
 				id="po-display-anchor"
 				value="anchor"
 				data-toggle=".opt-display-anchor"
-				readonly="readonly" />
+				readonly="readonly"
+				style="display:none" />
+			<i class="pro-icon"></i>
 			<?php _e( 'Appear after user scrolled until CSS selector', PO_LANG ); ?>
 		</label>
 		<span class="opt-display-anchor">
@@ -95,10 +99,15 @@
 	<?php do_action( 'popup-display-behavior', $popup ); ?>
 	<div class="pro-note">
 		<div style="padding:30px 0 0;">
-		<?php printf(
-			__( 'Pro feature only. <a href="%1$s" target="_blank">Find out more &raquo;</a>', PO_LANG ),
-			'http://premium.wpmudev.org/project/the-pop-over-plugin/'
-		); ?>
+			<i class="pro-icon"></i>
+			<span class="text">
+			<?php
+			printf(
+				__( 'Pro feature. <a href="%1$s" target="_blank">Find out more &raquo;</a>', PO_LANG ),
+				'http://premium.wpmudev.org/project/the-pop-over-plugin/'
+			);
+			?>
+			</span>
 		</div>
 	</div>
 	</div>
@@ -131,7 +140,8 @@
 				id="po-close-hides"
 				data-toggle=".chk-can-hide"
 				data-or="#po-can-hide,#po-close-hides"
-				/>
+				style="display:none" />
+			<i class="pro-icon"></i>
 			<?php _e( 'Close button acts as "Never see this message again" link', PO_LANG ); ?>
 		</label>
 	</div>
@@ -150,10 +160,15 @@
 	</div>
 	<div class="pro-note">
 		<div style="padding:30px 0 0;">
-		<?php printf(
-			__( 'Pro feature only. <a href="%1$s" target="_blank">Find out more &raquo;</a>', PO_LANG ),
-			'http://premium.wpmudev.org/project/the-pop-over-plugin/'
-		); ?>
+			<i class="pro-icon"></i>
+			<span class="text">
+			<?php
+			printf(
+				__( 'Pro feature. <a href="%1$s" target="_blank">Find out more &raquo;</a>', PO_LANG ),
+				'http://premium.wpmudev.org/project/the-pop-over-plugin/'
+			);
+			?>
+			</span>
 		</div>
 	</div>
 	</div>
@@ -166,26 +181,17 @@
 		<strong><?php _e( 'Closing Pop-up conditions', PO_LANG ); ?></strong>
 	</div>
 </div>
-<div class="pro-only">
 <div class="wpmui-grid-12">
 	<div class="col-12 inp-row">
 		<label>
 			<input type="checkbox"
-				readonly="readonly"
 				name="po_overlay_close"
+				<?php checked( ! $popup->overlay_close ); ?>
 				/>
 			<?php _e( 'Click on the background does not close PopUp.', PO_LANG ); ?>
 		</label>
 	</div>
-</div>
-<div class="pro-note">
-	<div style="padding:15px 0 0;">
-	<?php printf(
-		__( 'Pro feature only. <a href="%1$s" target="_blank">Find out more &raquo;</a>', PO_LANG ),
-		'http://premium.wpmudev.org/project/the-pop-over-plugin/'
-	); ?>
-	</div>
-</div>
+
 </div>
 
 <hr />
@@ -216,13 +222,11 @@
 			<option value="default" <?php selected( $popup->form_submit, 'default' ); ?>>
 				<?php _e( 'Refresh PopUp or close (default)', PO_LANG ); ?>
 			</option>
-			<option value="ignore" disabled="disabled">
-				<?php _e( 'Refresh PopUp or do nothing (use for Ajax Forms)', PO_LANG ); ?> -
-				<?php _e( 'PRO Version only', PO_LANG ); ?>
+			<option value="ignore" <?php selected( $popup->form_submit, 'ignore' ); ?>>
+				<?php _e( 'Refresh PopUp or do nothing (use for Ajax Forms)', PO_LANG ); ?>
 			</option>
-			<option value="redirect" disabled="disabled">
-				<?php _e( 'Redirect to form target URL', PO_LANG ); ?> -
-				<?php _e( 'PRO Version only', PO_LANG ); ?>
+			<option value="redirect" <?php selected( $popup->form_submit, 'redirect' ); ?>>
+				<?php _e( 'Redirect to form target URL', PO_LANG ); ?>
 			</option>
 		</select>
 	</div>

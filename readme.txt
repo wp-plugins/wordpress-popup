@@ -72,6 +72,15 @@ For network wide control - add the line define('PO_GLOBAL', true); to your wp-co
 
 == Changelog ==
 
+= 4.7.0.9 =
+We added a lot of PRO features to the free version:
+* Free version can activate up to 3 PopUps at the same time!
+* Free version can now use the custom CSS editor for PopUps!
+* Free version now suppors PopUp Animations!
+* Free version can use all Form Submit actions!
+* Free version unlocked the Color options for PopUps!
+* Small code improvements to avoid PHP notices
+
 = 4.7.0.7 =
 * Add a link target option for CTA Button (use _blank to open CTA in new tab)
 * Add JS hook 'popup-submit-process' to allow manual updating of popup contents after form submit

@@ -5,7 +5,7 @@
  *
  * @since  1.1.4
  */
-class TheLib_2_0_1_Ui extends TheLib_2_0_1 {
+class TheLib_2_0_3_Ui extends TheLib_2_0_3 {
 
 	/**
 	 * Class constructor
@@ -17,7 +17,10 @@ class TheLib_2_0_1_Ui extends TheLib_2_0_1 {
 		parent::__construct();
 
 		// Check for persistent data from last request that needs to be processed.
-		$this->_check_admin_notices();
+		$this->add_action(
+			'plugins_loaded',
+			'_check_admin_notices'
+		);
 	}
 
 	/**
@@ -418,10 +421,26 @@ class TheLib_2_0_1_Ui extends TheLib_2_0_1 {
 	 * @param  string $id Message ID. Prevents adding duplicate messages.
 	 */
 	public function admin_message( $text, $class = '', $screen = '', $id = '' ) {
-		if ( 'red' == $class || 'err' == $class || 'error' == $class ) {
-			$class = 'error';
-		} else {
-			$class = 'updated';
+		switch ( $class ) {
+			case 'red':
+			case 'err':
+			case 'error':
+				$class = 'error';
+				break;
+
+			case 'warning':
+			case 'orange':
+				$class = 'warning';
+				break;
+
+			case 'info':
+			case 'blue':
+				$class = 'info';
+				break;
+
+			default:
+				$class = 'updated';
+				break;
 		}
 
 		// Check if the message is already queued...
@@ -447,6 +466,7 @@ class TheLib_2_0_1_Ui extends TheLib_2_0_1 {
 
 		self::_sess_add( 'admin_notice', compact( 'text', 'class', 'screen', 'id' ) );
 		$this->add_action( 'admin_notices', '_admin_notice_callback', 1 );
+		$this->add_action( 'network_admin_notices', '_admin_notice_callback', 1 );
 	}
 
 	/**
@@ -465,10 +485,11 @@ class TheLib_2_0_1_Ui extends TheLib_2_0_1 {
 			extract( $item ); // text, class, screen, id
 			if ( empty( $screen ) || $screen_id == $screen ) {
 				printf(
-					'<div class="%1$s %3$s"><p>%2$s</p></div>',
+					'<div class="%1$s notice notice-%1$s is-dismissible %3$s"><p>%2$s</p><button type="button" class="notice-dismiss"><span class="screen-reader-text">%4$s</span></button></div>',
 					esc_attr( $class ),
 					$text,
-					esc_attr( $id )
+					esc_attr( $id ),
+					__( 'Dismiss this notice.' )
 				);
 			}
 		}
@@ -484,6 +505,7 @@ class TheLib_2_0_1_Ui extends TheLib_2_0_1 {
 	public function _check_admin_notices() {
 		if ( self::_sess_have( 'admin_notice' ) ) {
 			$this->add_action( 'admin_notices', '_admin_notice_callback', 1 );
+			$this->add_action( 'network_admin_notices', '_admin_notice_callback', 1 );
 		}
 	}
 
