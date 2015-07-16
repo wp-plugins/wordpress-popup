@@ -28,7 +28,7 @@ While WordPress PopUp is feature-rich and flexible, you may need more - so we cr
 
 <ul>
 <li>Design pop-ups from a familiar intuitive interface</li>
-<li>Unlimited pop-ups that display across an entire network, on individual sites or on specific URLs - limited to 1 active pop-up in free version</li>
+<li>Unlimited pop-ups that display across an entire network, on individual sites or on specific URLs - limited to 3 active pop-up in free version</li>
 <li>Both responsive and fixed design options mean your pop-ups look great on every device</li>
 <li>3 built-in modern templates for displaying clean, simple or sophisticated pop-ups - 1 easy-to-use layout in the free version</li>
 <li>Choose to hide pop-ups from mobile devices - pro version only</li>
