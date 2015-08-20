@@ -369,8 +369,11 @@ class IncPopup extends IncPopupBase {
 
 			$settings = array();
 			$settings['loadingmethod'] = $_POST['po_option']['loadingmethod'];
-			$settings['geo_lookup'] = $_POST['po_option']['geo_lookup'];
-			$settings['geo_db'] = ( 'geo_db' === $settings['geo_lookup'] );
+
+			if ( isset( $_POST['po_option']['geo_lookup'] ) ) {
+				$settings['geo_lookup'] = $_POST['po_option']['geo_lookup'];
+				$settings['geo_db'] = ( 'geo_db' === $settings['geo_lookup'] );
+			}
 
 			$rules = $_POST['po_option']['rules'];
 			if ( ! is_array( $rules ) ) { $rules = array(); }
@@ -930,8 +933,20 @@ class IncPopup extends IncPopupBase {
 	 * @param  WP_Post $post The PopUp being edited.
 	 */
 	static public function form_metabox( $post ) {
+		$po_meta = array(
+			'submitdiv',
+			'meta-content',
+			'meta-appearance',
+			'meta_behavior',
+			'meta-rules',
+			'meta-customcss',
+		);
+
 		$meta_order = get_user_option( 'meta-box-order_' . IncPopupItem::POST_TYPE );
-		$po_meta = array( 'submitdiv', 'meta-content', 'meta-appearance', 'meta_behavior', 'meta-rules', 'meta-customcss' );
+		$meta_order = lib2()->array->get( $meta_order );
+		if ( empty( $meta_order['side'] ) ) { $meta_order['side'] = ''; }
+		if ( empty( $meta_order['normal'] ) ) { $meta_order['normal'] = ''; }
+		if ( empty( $meta_order['advanced'] ) ) { $meta_order['advanced'] = ''; }
 		$meta_order['side'] = str_replace( $po_meta, '', $meta_order['side'] );
 		$meta_order['normal'] = str_replace( $po_meta, '', $meta_order['normal'] );
 		$meta_order['advanced'] = str_replace( $po_meta, '', $meta_order['advanced'] );

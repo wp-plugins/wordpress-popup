@@ -63,8 +63,6 @@ abstract class IncPopupBase {
 		if ( ! empty( $_POST['thefrom'] ) ) { $_POST['thefrom'] = strrev( $_POST['thefrom'] ); }
 		if ( ! empty( $_POST['thereferrer'] ) ) { $_POST['thereferrer'] = strrev( $_POST['thereferrer'] ); }
 
-		lib2()->translate_plugin( PO_LANG, PO_LANG_DIR );
-
 		// Register the popup post type.
 		add_action(
 			'init',
@@ -575,7 +573,6 @@ abstract class IncPopupBase {
 	protected function select_popup() {
 		$data = array();
 		$items = $this->find_popups();
-		$this->popups = array();
 
 		/**
 		 * Filter the popup list so other modules can modify the popup details.
@@ -588,7 +585,9 @@ abstract class IncPopupBase {
 			return;
 		}
 
-		$this->popups = $items;
+		foreach ( $items as $item ) {
+			$this->popups[] = $item;
+		}
 	}
 
 	/**
@@ -635,6 +634,7 @@ abstract class IncPopupBase {
 			$this
 		);
 
+		$popup_ids = lib2()->array->get( $popup_ids );
 		foreach ( $popup_ids as $id ) {
 			$popup = IncPopupDatabase::get( $id );
 

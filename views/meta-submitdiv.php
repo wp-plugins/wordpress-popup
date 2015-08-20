@@ -69,7 +69,8 @@ $warn = ( 0 != IncPopupDatabase::count_active( $post->ID ) );
 					<?php _e( 'Duplicate', PO_LANG ); ?>
 				</a>
 			<?php endif; ?>
-			<button class="button-primary" id="publish" name="po-action" value="save">
+			<input type="hidden" name="po-action" value="save" />
+			<button class="button-primary" id="publish" name="publish">
 			<?php _e( 'Save', PO_LANG ); ?>
 			</button>
 		</div>
@@ -88,7 +89,8 @@ $warn = ( 0 != IncPopupDatabase::count_active( $post->ID ) );
 		</div>
 
 		<div class="publishing-action">
-			<button class="button-primary" name="po-action" value="save">
+			<input type="hidden" name="po-action" value="save" />
+			<button class="button-primary" id="publish" name="publish">
 			<?php _e( 'Save', PO_LANG ); ?>
 			</button>
 		</div>

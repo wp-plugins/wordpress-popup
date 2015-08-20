@@ -4,6 +4,13 @@ Author: Barry (Incsub), Marko Miljus (Incsub), Philipp Stracker (Incsub)
 Change Log:
 ----------------------------------------------------------------------
 
+4.7.1.0
+----------------------------------------------------------------------
+- Add new rules: Show on date, Hide on date
+- Fix incompatibility with ACF Pro plugin
+- Fix issue that made rules inaccessible (not clickable in editor)
+- Fix several PHP warnings and notices
+
 4.7.0.9
 ----------------------------------------------------------------------
 We added a lot of PRO features to the free version: 

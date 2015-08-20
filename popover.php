@@ -3,7 +3,7 @@
 Plugin Name: WordPress PopUp
 Plugin URI:  http://premium.wpmudev.org/project/the-pop-over-plugin/
 Description: Allows you to display a fancy PopUp to visitors sitewide or per blog. A *very* effective way of advertising a mailing list, special offer or running a plain old ad.
-Version:     4.7.0.9
+Version:     4.7.1.0
 Author:      WPMU DEV
 Author URI:  http://premium.wpmudev.org
 Textdomain:  popover
@@ -61,9 +61,22 @@ function inc_popup_free_init() {
 		define( 'PO_IMG_URL', $plugin_url . 'img/' );
 
 		// Include function library.
-		if ( file_exists( PO_INC_DIR . 'external/wpmu-lib/core.php' ) ) {
-			require_once PO_INC_DIR . 'external/wpmu-lib/core.php';
-		}
+		require_once PO_INC_DIR . 'external/wpmu-lib/core.php';
+
+		lib2()->translate_plugin( PO_LANG, PO_LANG_DIR );
+
+		require_once PO_INC_DIR . 'external/wdev-frash/module.php';
+
+		// Register the current plugin.
+		do_action(
+			'wdev-register-plugin',
+			/*             Plugin ID */ plugin_basename( __FILE__ ),
+			/*          Plugin Title */ 'WordPress PopUp',
+			/* https://wordpress.org */ '/plugins/wordpress-popup/',
+			/*      Email Button CTA */ __( 'Get Tips!', PO_LANG ),
+			/*  getdrip Plugin param */ ''
+		);
+		// All done!
 
 		require_once( PO_INC_DIR . 'config-defaults.php');
 		if ( is_admin() ) {
