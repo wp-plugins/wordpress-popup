@@ -72,6 +72,12 @@ For network wide control - add the line define('PO_GLOBAL', true); to your wp-co
 
 == Changelog ==
 
+= 4.7.1.1 =
+* Fix compatibility issues caused by WordPress 4.3 changes
+* Fix a PHP notice about invalid foreach value
+* Fix bug that removed backslashs "\" from popup contents upon saving
+* Remove debug output when saving a PopUp
+
 = 4.7.1.0 =
 * Fix incompatibility with ACF Pro plugin
 * Fix issue that made rules inaccessible (not clickable in editor)
